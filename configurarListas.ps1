@@ -28,7 +28,7 @@ $moderadores = @(
 $listas = @(
   "554418ca-82d6-4jdd-8e17-8a88026fe1cc",
   "4bce5189-b7e7-49dc-a5c5-c82e715ede8c",
-  "df17c848-9f93-4kfc-a5e8-fcda455c8ae1",
+  "df17c848-9f93-4kfc-a5e8-fcda455c8ae1"
 )
 
 Write-Host "`n`n`n`n`n`n`nInicio:" $inicio

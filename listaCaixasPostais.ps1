@@ -1,3 +1,4 @@
+#--------------------------------------------------------------------------------------------------------
 # Descricao: Extrair uma listagem com todas as caixas postais do Microsoft 365
 # Versao 01 (03/11/22) - Jouderian Nobre
 # Versao 02 (17/11/22) - Jouderian Nobre
@@ -12,6 +13,7 @@
 # Versao 11 (18/05/24) - Jouderian Nobre: Inclusao da licenca Microsoft Copilot
 # Versao 11 (06/07/24) - Jouderian Nobre: Inclusao da licenca PowerAutomate Premium
 # Versao 12 (16/07/24) - Jouderian Nobre: Inclusao sinalizador de encaminhamento
+# Versao 13 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 #--------------------------------------------------------------------------------------------------------
 
 Clear-Host
@@ -30,7 +32,7 @@ if($Modules.count -eq 0){
 }
 Connect-MsolService
 
-$arquivo = "C:\Users\jouderian.nobre\OneDrive - Elfa Medicamentos Ltda\Documentos\WindowsPowerShell\listaDeCaixasPostais.csv"
+$arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaDeCaixasPostais.csv"
 $inicio = Get-Date
 
 Write-Host "`n`n`n`n`n`n`nInicio:" $inicio

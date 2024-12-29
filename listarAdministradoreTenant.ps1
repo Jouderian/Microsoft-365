@@ -1,8 +1,10 @@
 ﻿#-------------------------------------------------------------------------------
 # Descricao: Listar os usuarios com direitos administrativos no M365
 # Requisitos: Nenhum
-# Versao: 1 - 30/11/22 (Jouderian Nobre): Criacao da rotina
-# Versao: 2 - 20/04/23 (Jouderian Nobre): Ajustes
+# Versao 1 (30/11/22) - Jouderian Nobre: Criacao da rotina
+# Versao 2 (20/04/23) - Jouderian Nobre: Ajustes
+# Versao 3 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+#--------------------------------------------------------------------------------------------------------
 
 #Valida existencia do modulo esta instalado
 $Modules = Get-Module -Name AzureAD -ListAvailable
@@ -12,7 +14,7 @@ if($Modules.count -eq 0){
 }
 Connect-AzureAD -AccountId jouderian.nobre.infra@grupoElfa.onMicrosoft.com
 
-$arquivo = "C:\Users\jouderian.nobre\OneDrive\Documentos\WindowsPowerShell\listaDeMembrosAdministrativos.csv"
+$arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaDeMembrosAdministrativos.csv"
 $inicio = Get-Date
 
 Write-Host Inicio: $inicio

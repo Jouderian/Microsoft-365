@@ -1,18 +1,20 @@
 ﻿#--------------------------------------------------------------------------------------------------------
 # Descricao: Script para gerar um arquivo .csv com as principais informcoes dos usuarios do AD.
-# Versao: 1 - 06/12/22 - Savio
-# Versao: 2 - 04/05/23 - Jouderian: Melhoria no tratamento do ultimo acesso
-# Versao: 3 - 08/05/23 - Jouderian: Inclusão de mais informações da credencial
-# Versao: 4 - 07/11/24 - Jouderian: Inclusáo da biblioteca, tratamento dos campos e melhoria no acompanhamento da progressao da extracao
+# Versao 1 (06/12/22) - Savio
+# Versao 2 (04/05/23) - Jouderian Nobre: Melhoria no tratamento do ultimo acesso
+# Versao 3 (08/05/23) - Jouderian Nobre: Inclusão de mais informações da credencial
+# Versao 4 (07/11/24) - Jouderian Nobre: Inclusáo da biblioteca, tratamento dos campos e melhoria no acompanhamento da progressao da extracao
+# Versao 5 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+#--------------------------------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------------------------------
 
-. "C:\Users\jouderian.nobre\OneDrive\Documentos\WindowsPowerShell\Scripts\bibliotecaDeFuncoes.ps1"
+. "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\Scripts\bibliotecaDeFuncoes.ps1"
 
 Clear-Host
 
 $indice = 0
 $inicio = Get-Date
-$arquivo = "C:\Users\jouderian.nobre\OneDrive\Documentos\WindowsPowerShell\listaUsuariosAD.csv"
+$arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaUsuariosAD.csv"
 
 #Import-Module ActiveDirectory
 

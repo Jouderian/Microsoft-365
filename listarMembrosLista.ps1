@@ -1,12 +1,13 @@
 #-------------------------------------------------------------------------------
 # Descricao: Lista a relacao de membros das Listas e Grupos do M365
-# Versao: 1 - 25/01/22 (Jouderian Nobre)
-# Versao: 2 - 30/06/22 (Jouderian Nobre)
-# Versao: 3 - 15/03/23 (Jouderian Nobre)
-# Versao: 4 - 09/11/24 (Jouderian Nobre): Inclusao do ID do grupo/lista e dos membros
-# Versao: 5 - 09/12/24 (Jouderian Nobre): Relaciona as listas sem membros (vazias)
-# Versao: 6 - 11/12/24 (Jouderian Nobre): Passa a exclui as listas vazias
-#-------------------------------------------------------------------------------
+# Versao 1 (25/01/22) - Jouderian Nobre
+# Versao 2 (30/06/22) - Jouderian Nobre
+# Versao 3 (15/03/23) - Jouderian Nobre
+# Versao 4 (09/11/24) - Jouderian Nobre: Inclusao do ID do grupo/lista e dos membros
+# Versao 5 (09/12/24) - Jouderian Nobre: Relaciona as listas sem membros (vazias)
+# Versao 6 (11/12/24) - Jouderian Nobre: Passa a exclui as listas vazias
+# Versao 7 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+#--------------------------------------------------------------------------------------------------------
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
@@ -21,8 +22,8 @@ Connect-ExchangeOnline
 #---------------------------------------------------------- Declarando variaveis
 $indice = 0
 $inicio = Get-Date
-$logs = "C:\Users\jouderian.nobre\OneDrive - Elfa Medicamentos Ltda\Documentos\WindowsPowerShell\listasVazias_$($inicio.ToString('yyMMdd_HHmmss')).txt"
-$arquivo = "C:\Users\jouderian.nobre\OneDrive - Elfa Medicamentos Ltda\Documentos\WindowsPowerShell\membrosListasGrupos.csv"
+$logs = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listasVazias_$($inicio.ToString('yyMMdd_HHmmss')).txt"
+$arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\membrosListasGrupos.csv"
 
 Write-Host Inicio: $inicio
 Write-Host Pesquisando Listas de Distribuicao...

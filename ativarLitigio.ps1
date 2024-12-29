@@ -1,8 +1,11 @@
-﻿# Descricao: Script para ativar o litigio nas caixas postais com licenças: Office 365 E3 e Business Premium
-# Versao: 1 - 23/06/23 - Jouderian Nobe
+﻿#--------------------------------------------------------------------------------------------------------
+# Descricao: Script para ativar o litigio nas caixas postais com licenças: Office 365 E3 e Business Premium
+# Versao 1 (23/06/23) - Jouderian Nobe
+# Versao 2 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+#--------------------------------------------------------------------------------------------------------
 
 Clear-Host
-$arquivoEntrada = "C:\Users\jouderian.nobre\OneDrive\Documentos\WindowsPowerShell\credenciaisLitigio.csv"
+$arquivoEntrada = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\credenciaisLitigio.csv"
 $inicio = Get-Date
 
 $Modules = Get-Module -Name ExchangeOnlineManagement -ListAvailable

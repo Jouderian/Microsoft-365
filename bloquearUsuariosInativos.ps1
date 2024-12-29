@@ -1,10 +1,12 @@
-﻿# Descricao:  Script para bloquear usuários suspeitos de inatividade no AD
-# Versao: 1 - 21/05/23 - Jouderian Nobe
-
+﻿#--------------------------------------------------------------------------------------------------------
+# Descricao:  Script para bloquear usuários suspeitos de inatividade no AD
+# Versao 1 (21/05/23) - Jouderian Nobe
+# Versao 2 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+#--------------------------------------------------------------------------------------------------------
 
 Clear-Host
-$arquivoEntrada = "C:\Users\jouderian.nobre\OneDrive\Documentos\WindowsPowerShell\credenciaisSuspeitasAD.csv"
-$arquivoSaida = "C:\Users\jouderian.nobre\OneDrive\Documentos\WindowsPowerShell\credenciaisBloqueadas.csv"
+$arquivoEntrada = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\credenciaisSuspeitasAD.csv"
+$arquivoSaida = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\credenciaisBloqueadas.csv"
 $inicio = Get-Date
 
 $Modules = Get-Module -Name ExchangeOnlineManagement -ListAvailable
