@@ -39,7 +39,7 @@ Foreach ($usuario in $usuarios){
       Set-ADUser `
         -Identity $usuario.AD `
         -description $Observacao `
-        -Replace @{info="Atualizado em $(date -format 'dd/MM/yy HH:mm')"}
+        -Replace @{info="Atualizado em $(Get-date -format 'dd/MM/yy HH:mm')"}
 
       Out-File -FilePath $arquivoLog -InputObject "$($usuario.Empresa),$($usuario.Nome),$($usuario.eMail),$($Observacao)" -Encoding UTF8 -append
     } else {

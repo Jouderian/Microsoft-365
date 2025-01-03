@@ -1,8 +1,8 @@
 #--------------------------------------------------------------------------------------------------------
 # Autor: Jouderian Nobre
 # Descricao: Biblioteca de funcoes de uso geral
-# Versao: 1 - 27/09/24 (Jouderian): Criacao do script
-# Versao: 2 - 10/10/24 (Jouderian): Criacao da funcao de gravacao de LOGs
+# Versao: 1 (27/09/24) Jouderian: Criacao do script
+# Versao: 2 (10/10/24) Jouderian: Criacao da funcao de gravacao de LOGs
 #--------------------------------------------------------------------------------------------------------
 
 function removeQuebraDeLinha{
