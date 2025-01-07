@@ -1,7 +1,8 @@
-﻿# Descricao: Relacao de computadores do AD
-# Versao 1 (06/02/23) - Jouderian Nobre
-# Versao 2 (18/03/24) - Jouderian Nobre: Melhoria para extracao dos dados
-# Versao 3 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+﻿#--------------------------------------------------------------------------------------------------------
+# Descricao: Relacao de computadores do AD
+# Versao 1 (06/02/23) Jouderian Nobre
+# Versao 2 (18/03/24) Jouderian Nobre: Melhoria para extracao dos dados
+# Versao 3 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 #--------------------------------------------------------------------------------------------------------
 
 Clear-Host

@@ -1,8 +1,8 @@
 #-------------------------------------------------------------------------------
-# Descricao: Remover as licencas os usuarios do tenant
+# Descricao: Remover as licencas os usuarios de uma lista no tenant
 # Versao 1 02/06/21 Andre Cardoso
-# Versao 2 (31/01/24) - Jouderian Nobre: Remover as licenas de uma lista
-# Versao 3 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+# Versao 2 (31/01/24) Jouderian Nobre: Remover as licenas de uma lista
+# Versao 3 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 #--------------------------------------------------------------------------------------------------------
 
 Clear-Host

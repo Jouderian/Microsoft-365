@@ -1,6 +1,6 @@
 ﻿#--------------------------------------------------------------------------------------------------------
 # Descricao: Remoção de eventos de uma credencial
-# Versao 01 (06/02/23) - Jouderian Nobre
+# Versao 01 (06/02/23) Jouderian Nobre:
 #--------------------------------------------------------------------------------------------------------
 
 $Modules = Get-Module -Name ExchangeOnlineManagement -ListAvailable

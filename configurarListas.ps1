@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
-# Descricao: Configurar as Listas de Distribuições
-# Versao: 1 - 12/12/24 (Jouderian Nobre)
+# Descricao: Configurar as Listas de Distribuições do Microsoft 365
+# Versao: 1 (12/12/24) Jouderian Nobre
 #-------------------------------------------------------------------------------
 
 Clear-Host

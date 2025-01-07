@@ -1,12 +1,12 @@
 #--------------------------------------------------------------------------------------------------------
-# Descricao: 
-# Versao 1 (16/09/22) - Jouderian Nobre
-# Versao 2 (17/09/22) - Jouderian Nobre
-# Versao 3 (21/09/22) - Jouderian Nobre
-# Versao 4 (06/10/22) - Jouderian Nobre
-# Versao 5 (13/10/22) - Jouderian Nobre
-# Versao 6 (21/05/23) - Jouderian Nobre
-# Versao 7 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+# Descricao: Expira ou libera credenciais baseado em uma planilha com o agendamento
+# Versao 1 (16/09/22) Jouderian Nobre
+# Versao 2 (17/09/22) Jouderian Nobre
+# Versao 3 (21/09/22) Jouderian Nobre
+# Versao 4 (06/10/22) Jouderian Nobre
+# Versao 5 (13/10/22) Jouderian Nobre
+# Versao 6 (21/05/23) Jouderian Nobre
+# Versao 7 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 #--------------------------------------------------------------------------------------------------------
 
 $Modules = Get-Module -Name ImportExcel -ListAvailable
@@ -19,7 +19,7 @@ Import-Module ImportExcel
 
 $hoje = Get-Date -Uformat "%Y%m%d"
 $arquivoUsuarios = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\Scripts\bloqueioDeUsuarios.xlsx"
-$arquivoLog = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\Scripts\" + (Get-date -Uformat "%Y%m%d_%M%H") + ".csv"
+$arquivoLog = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\Scripts\bloqueios_$($hoje).csv"
 
 $usuarios = Import-Excel -Path $arquivoUsuarios -WorksheetName "Ferias"
 Foreach ($usuario in $usuarios){

@@ -1,7 +1,7 @@
 ﻿#--------------------------------------------------------------------------------------------------------
 # Descricao:  Script para bloquear usuários suspeitos de inatividade no AD
-# Versao 1 (21/05/23) - Jouderian Nobe
-# Versao 2 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+# Versao 1 (21/05/23) Jouderian Nobe
+# Versao 2 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 #--------------------------------------------------------------------------------------------------------
 
 Clear-Host

@@ -1,7 +1,7 @@
 ﻿#--------------------------------------------------------------------------------------------------------
 # Descricao: Remove os computadores do AD baseado em uma listagem
-# Versao 1 (18/03/24) - Jouderian Nobre
-# Versao 2 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+# Versao 1 (18/03/24) Jouderian Nobre
+# Versao 2 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 #--------------------------------------------------------------------------------------------------------
 
 Clear-Host

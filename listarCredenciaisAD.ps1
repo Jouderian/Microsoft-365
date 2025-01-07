@@ -1,11 +1,10 @@
 ﻿#--------------------------------------------------------------------------------------------------------
 # Descricao: Script para gerar um arquivo .csv com as principais informcoes dos usuarios do AD.
-# Versao 1 (06/12/22) - Savio
-# Versao 2 (04/05/23) - Jouderian Nobre: Melhoria no tratamento do ultimo acesso
-# Versao 3 (08/05/23) - Jouderian Nobre: Inclusão de mais informações da credencial
-# Versao 4 (07/11/24) - Jouderian Nobre: Inclusáo da biblioteca, tratamento dos campos e melhoria no acompanhamento da progressao da extracao
-# Versao 5 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
-#--------------------------------------------------------------------------------------------------------
+# Versao 1 (06/12/22) Savio
+# Versao 2 (04/05/23) Jouderian Nobre: Melhoria no tratamento do ultimo acesso
+# Versao 3 (08/05/23) Jouderian Nobre: Inclusão de mais informações da credencial
+# Versao 4 (07/11/24) Jouderian Nobre: Inclusáo da biblioteca, tratamento dos campos e melhoria no acompanhamento da progressao da extracao
+# Versao 5 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 #--------------------------------------------------------------------------------------------------------
 
 . "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\Scripts\bibliotecaDeFuncoes.ps1"

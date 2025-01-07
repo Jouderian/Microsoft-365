@@ -1,7 +1,7 @@
 ﻿#--------------------------------------------------------------------------------------------------------
 # Descricao: Script para ativar o litigio nas caixas postais com licenças: Office 365 E3 e Business Premium
-# Versao 1 (23/06/23) - Jouderian Nobe
-# Versao 2 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+# Versao 1 (23/06/23) Jouderian Nobe
+# Versao 2 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 #--------------------------------------------------------------------------------------------------------
 
 Clear-Host

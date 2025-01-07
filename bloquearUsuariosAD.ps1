@@ -1,8 +1,8 @@
 ﻿#--------------------------------------------------------------------------------------------------------
 # Descricao: Bloquear os Usuários suspeitos
-# Versao 1 (19/07/22) - Jouderian Nobre
-# Versao 2 (18/07/23) - Jouderian Nobre: Alem do bloqueio passamos a identificar a credencial e move-la para uma OU
-# Versao 3 (29/12/24) - Jouderian Nobre: Corrige o receimento do parametro Arquivo
+# Versao 1 (19/07/22) Jouderian Nobre
+# Versao 2 (18/07/23) Jouderian Nobre: Alem do bloqueio passamos a identificar a credencial e move-la para uma OU
+# Versao 3 (29/12/24) Jouderian Nobre: Corrige o receimento do parametro Arquivo
 #--------------------------------------------------------------------------------------------------------
 
 param (

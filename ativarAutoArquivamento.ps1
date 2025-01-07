@@ -1,8 +1,8 @@
 #--------------------------------------------------------------------------------------------------------
 # Descricao: Ativar o autoarquivamento das caixas postais
-# Versao 1 (02/02/22) - Jouderian Nobre: Criacao do script
-# Versao 2 (28/10/24) - Jouderian Nobre: Melhoria no processamento e registro de acoes
-# Versao 3 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+# Versao 1 (02/02/22) Jouderian Nobre: Criacao do script
+# Versao 2 (28/10/24) Jouderian Nobre: Melhoria no processamento e registro de acoes
+# Versao 3 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 #--------------------------------------------------------------------------------------------------------
 
 $indice = 0

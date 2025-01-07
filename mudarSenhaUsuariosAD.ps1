@@ -1,6 +1,6 @@
 ﻿#-------------------------------------------------------------------------------
 # Descrição: Redefine as senhas de uma lista de credenciais
-# Versao: 1 - 22/08/23 (Jouderian Nobre)
+# Versao: 1 (22/08/23) Jouderian Nobre: 
 #-------------------------------------------------------------------------------
 
 Clear-Host

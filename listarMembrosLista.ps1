@@ -1,12 +1,12 @@
 #-------------------------------------------------------------------------------
 # Descricao: Lista a relacao de membros das Listas e Grupos do M365
-# Versao 1 (25/01/22) - Jouderian Nobre
-# Versao 2 (30/06/22) - Jouderian Nobre
-# Versao 3 (15/03/23) - Jouderian Nobre
-# Versao 4 (09/11/24) - Jouderian Nobre: Inclusao do ID do grupo/lista e dos membros
-# Versao 5 (09/12/24) - Jouderian Nobre: Relaciona as listas sem membros (vazias)
-# Versao 6 (11/12/24) - Jouderian Nobre: Passa a exclui as listas vazias
-# Versao 7 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+# Versao 1 (25/01/22) Jouderian Nobre
+# Versao 2 (30/06/22) Jouderian Nobre
+# Versao 3 (15/03/23) Jouderian Nobre
+# Versao 4 (09/11/24) Jouderian Nobre: Inclusao do ID do grupo/lista e dos membros
+# Versao 5 (09/12/24) Jouderian Nobre: Relaciona as listas sem membros (vazias)
+# Versao 6 (11/12/24) Jouderian Nobre: Passa a exclui as listas vazias
+# Versao 7 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 #--------------------------------------------------------------------------------------------------------
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"

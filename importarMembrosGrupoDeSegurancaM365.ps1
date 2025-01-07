@@ -1,7 +1,7 @@
 ﻿#--------------------------------------------------------------------------------------------------------
 # Descricao: Importa os membros de um Grupo de Segurança
-# Versao 1 (25/07/23) - Jouderian Nobre
-# Versao 2 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+# Versao 1 (25/07/23) Jouderian Nobre
+# Versao 2 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 #--------------------------------------------------------------------------------------------------------
 
 Connect-AzureAD

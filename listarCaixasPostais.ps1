@@ -1,19 +1,19 @@
 #--------------------------------------------------------------------------------------------------------
 # Descricao: Extrair uma listagem com todas as caixas postais do Microsoft 365
-# Versao 01 (03/11/22) - Jouderian Nobre
-# Versao 02 (17/11/22) - Jouderian Nobre
-# Versao 03 (21/11/22) - Jouderian Nobre
-# Versao 04 (02/12/22) - Jouderian Nobre
-# Versao 05 (11/01/23) - Jouderian Nobre
-# Versao 06 (11/03/23) - Jouderian Nobre
-# Versao 07 (26/06/23) - Jouderian Nobre
-# Versao 08 (26/07/23) - Jouderian Nobre: Inclusao do momento do ultimo ADsync, CC e Gerente
-# Versao 09 (28/09/23) - Jouderian Nobre: Melhoria no tratamento do MFA
-# Versao 10 (29/02/24) - Jouderian Nobre: Melhoria na gravacao do arquivo e remocao do MFA
-# Versao 11 (18/05/24) - Jouderian Nobre: Inclusao da licenca Microsoft Copilot
-# Versao 11 (06/07/24) - Jouderian Nobre: Inclusao da licenca PowerAutomate Premium
-# Versao 12 (16/07/24) - Jouderian Nobre: Inclusao sinalizador de encaminhamento
-# Versao 13 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+# Versao 01 (03/11/22) Jouderian Nobre
+# Versao 02 (17/11/22) Jouderian Nobre
+# Versao 03 (21/11/22) Jouderian Nobre
+# Versao 04 (02/12/22) Jouderian Nobre
+# Versao 05 (11/01/23) Jouderian Nobre
+# Versao 06 (11/03/23) Jouderian Nobre
+# Versao 07 (26/06/23) Jouderian Nobre
+# Versao 08 (26/07/23) Jouderian Nobre: Inclusao do momento do ultimo ADsync, CC e Gerente
+# Versao 09 (28/09/23) Jouderian Nobre: Melhoria no tratamento do MFA
+# Versao 10 (29/02/24) Jouderian Nobre: Melhoria na gravacao do arquivo e remocao do MFA
+# Versao 11 (18/05/24) Jouderian Nobre: Inclusao da licenca Microsoft Copilot
+# Versao 11 (06/07/24) Jouderian Nobre: Inclusao da licenca PowerAutomate Premium
+# Versao 12 (16/07/24) Jouderian Nobre: Inclusao sinalizador de encaminhamento
+# Versao 13 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 #--------------------------------------------------------------------------------------------------------
 
 Clear-Host

@@ -1,5 +1,5 @@
-﻿# Descricao: Expirar as seções dos usuários expirados do AD
-# Versao: 1 - 03/05/23 - Jouderian Nobre
+﻿# Descricao: Expirar as seções dos usuários no M365 que estao expirados do AD
+# Versao: 1 (03/05/23) Jouderian Nobre
 #-------------------------------------------------------------------------------
 
 Clear-Host
