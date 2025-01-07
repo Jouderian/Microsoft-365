@@ -1,5 +1,7 @@
-﻿# Descricao: Expirar as seções dos usuários no M365 que estao expirados do AD
+﻿#-------------------------------------------------------------------------------
+# Descricao: Expirar as seções dos usuários no M365 que estao expirados do AD
 # Versao: 1 (03/05/23) Jouderian Nobre
+# Versao: 2 (07/01/25) Jouderian Nobre: Inclusão no log da data de expiracao antes da remocao
 #-------------------------------------------------------------------------------
 
 Clear-Host
@@ -30,7 +32,7 @@ Foreach ($usuario in $usuarios){
         Revoke-AzureADUserAllRefreshToken -ObjectID $userID.ObjectId
 #      }
   }else{
-    Write-Host "  => Usuário bloqueado, vencimento removido"
+    Write-Host "  => Usuário bloqueado, vencimento removido: $($usuario.AccountExpirationDate.ToString('dd/MM/yy HH:mm'))"
     Clear-ADAccountExpiration -Identity $Usuario.SamAccountName
   }
 }

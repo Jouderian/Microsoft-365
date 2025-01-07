@@ -7,15 +7,13 @@
 # Versao 5 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 #--------------------------------------------------------------------------------------------------------
 
-. "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\Scripts\bibliotecaDeFuncoes.ps1"
+. "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\Scripts\Publico\Microsoft-365\bibliotecaDeFuncoes.ps1"
 
 Clear-Host
 
 $indice = 0
 $inicio = Get-Date
 $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaUsuariosAD.csv"
-
-#Import-Module ActiveDirectory
 
 Write-Host "`n`n`n`n`n`n`nInicio:" $inicio
 Write-Host Pesquisando relacao de credenciais no AD...
