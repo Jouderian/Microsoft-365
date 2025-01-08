@@ -14,6 +14,7 @@
 # Versao 11 (06/07/24) Jouderian Nobre: Inclusao da licenca PowerAutomate Premium
 # Versao 12 (16/07/24) Jouderian Nobre: Inclusao sinalizador de encaminhamento
 # Versao 13 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+# Versao 14 (08/01/25) Jouderian Nobre: Inclusao da ocupacao da caixa de arquivamento
 #--------------------------------------------------------------------------------------------------------
 
 Clear-Host
@@ -42,7 +43,7 @@ $caixas = Get-Mailbox -ResultSize Unlimited
 $totalCaixas = $caixas.Count
 $indice = 0
 
-Write-Output "Nome,UPN,Cidade,UF,Empresa,Escritorio,Departamento,Cargo,Gerente,CC,nomeCC,Tipo,AD,Desabilitada,SenhaForte,SenhaNaoExpira,Compartilhada,Encaminhada,Litigio,Itens,usado(GB),Arquivamento,Criacao,MudancaSenha,ultimoSyncAD,ultimoAcesso,nomeConta,objectId,Licencas,outrasLicencas" > $arquivo
+Write-Output "Nome,UPN,Cidade,UF,Empresa,Escritorio,Departamento,Cargo,Gerente,CC,nomeCC,Tipo,AD,Desabilitada,SenhaForte,SenhaNaoExpira,Compartilhada,Encaminhada,Litigio,Itens,usado(GB),Arquivamento,Arquivamento(GB),Criacao,MudancaSenha,ultimoSyncAD,ultimoAcesso,nomeConta,objectId,Licencas,outrasLicencas" > $arquivo
 
 Foreach ($caixa in $caixas){
 
@@ -55,6 +56,13 @@ Foreach ($caixa in $caixas){
 
   $tamanho = [math]::Round((($detalheCaixa.TotalItemSize.Value.ToString()).Split('(')[1].Split(' ')[0].Replace(',','')/1GB),2)
 
+  if($caixa.ArchiveStatus -eq 'Active'){
+    $detalheArquivo = Get-MailboxStatistics -Identity $caixa.ExternalDirectoryObjectId -Archive
+    $tamanhoArquivamento = [math]::Round((($detalheArquivo.TotalItemSize.Value.ToString()).Split('(')[1].Split(' ')[0].Replace(',','')/1GB),2)
+  } else {
+    $tamanhoArquivamento = 0
+  }
+  
   $infoCaixa = "$($caixa.DisplayName)," # Nome
   $infoCaixa += "$($caixa.UserPrincipalName)," # UPN
   $infoCaixa += "$($usuario.City)," # Cidade
@@ -77,6 +85,7 @@ Foreach ($caixa in $caixas){
   $infoCaixa += "$($detalheCaixa.ItemCount)," # Itens
   $infoCaixa += "$($tamanho)," # usado(GB)
   $infoCaixa += "$($caixa.ArchiveStatus)," # Arquivamento
+  $infoCaixa += "$($tamanhoArquivamento)," # Arquivamento(GB)
   $infoCaixa += "$($usuario.WhenCreated.ToString('dd/MM/yy HH:mm'))," # Criacao
   $infoCaixa += "$($usuario.LastPasswordChangeTimestamp.ToString('dd/MM/yy HH:mm'))," # MudancaSenha
 
