@@ -15,6 +15,7 @@
 # Versao 12 (16/07/24) Jouderian Nobre: Inclusao sinalizador de encaminhamento
 # Versao 13 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 # Versao 14 (08/01/25) Jouderian Nobre: Inclusao da ocupacao da caixa de arquivamento
+# Versao 15 (10/01/25) Jouderian Nobre: Inclusao de novas licencas na relacao
 #--------------------------------------------------------------------------------------------------------
 
 Clear-Host
@@ -116,34 +117,41 @@ Foreach ($caixa in $caixas){
       $licencaPaga += "+Online Plan1" #Apenas eMail de 50Gb
     } elseif($licenca -eq "reseller-account:EXCHANGEENTERPRISE"){
       $licencaPaga += "+Online Plan2" #Apenas eMail de 100Gb
-    } elseif($licenca -eq "reseller-account:DESKLESSPACK"){
-      $licencaPaga += "+Office 365 F3" #eMail de 2Gb e msOffice onLine
+
+    } elseif($licenca -eq "reseller-account:O365_BUSINESS"){
+      $licencaPaga += "+AppsBusiness" #Apenas msOffice presencial
     } elseif($licenca -eq "reseller-account:O365_BUSINESS_ESSENTIALS"){
       $licencaPaga += "+Business Basic" #eMail de 50Gb e msOffice onLine
-    } elseif($licenca -eq "reseller-account:STANDARDPACK"){
-      $licencaPaga += "+Office 365 E1" #eMail de 50Gb e msOffice onLine
     } elseif($licenca -eq "reseller-account:O365_BUSINESS_PREMIUM"){
       $licencaPaga += "+Business Standard" #eMail de 50Gb e msOffice presencial
     } elseif($licenca -eq "reseller-account:SPB"){
       $licencaPaga += "+Business Premium" #eMail de 50Gb, msOffice presencial e Windows 10
-    } elseif($licenca -eq "reseller-account:ENTERPRISEPACK"){
-      $licencaPaga += "+Office 365 E3" #eMail de 100Gb e msOffice presencial
-    } elseif($licenca -eq "reseller-account:O365_BUSINESS"){
-      $licencaPaga += "+AppsBusiness" #Apenas msOffice presencial
+
     } elseif($licenca -eq "reseller-account:OFFICESUBSCRIPTION"){
       $licencaPaga += "+AppsEnterprise" #Apenas msOffice presencial
+    } elseif($licenca -eq "reseller-account:M365_F1_COMM"){
+      $licencaPaga += "+M365 F1" #Apenas Colaboracao
+    } elseif($licenca -eq "reseller-account:DESKLESSPACK"){
+      $licencaPaga += "+O365 F3" #eMail de 2Gb e msOffice onLine
+    } elseif($licenca -eq "reseller-account:STANDARDPACK"){
+      $licencaPaga += "+O365  E1" #eMail de 50Gb e msOffice onLine
+    } elseif($licenca -eq "reseller-account:Office365_E1_Plus"){
+      $licencaPaga += "+O365 E1 Plus"
+    } elseif($licenca -eq "reseller-account:ENTERPRISEPACK"){
+      $licencaPaga += "+O365 E3" #eMail de 100Gb e msOffice presencial
+
     } elseif($licenca -eq "reseller-account:POWER_BI_PRO"){
       $licencaPaga += "+PowerBI Pro"
-    } elseif($licenca -eq "reseller-account:PROJECT_P1"){
-      $licencaPaga += "+Project Plan 1" # Apenas Project Online
-    } elseif($licenca -eq "reseller-account:PROJECTPROFESSIONAL"){
-      $licencaPaga += "+Project Plan 3" # Apenas Project presencial
     } elseif($licenca -eq "reseller-account:Microsoft_365_Copilot"){
-      $licencaPaga += "+Copilot 365"
+      $licencaPaga += "+M365 Copilot"
     } elseif($licenca -eq "reseller-account:FLOW_PER_USER"){
       $licencaPaga += "+PowerAutomate" # Power Automate Por User Plan
     } elseif($licenca -eq "reseller-account:POWERAUTOMATE_ATTENDED_RPA"){
       $licencaPaga += "+Automate Premium" # Power Automate Premium
+    } elseif($licenca -eq "reseller-account:PROJECT_P1"){
+      $licencaPaga += "+Project Plan 1" # Apenas Project Online
+    } elseif($licenca -eq "reseller-account:PROJECTPROFESSIONAL"){
+      $licencaPaga += "+Project Plan 3" # Apenas Project presencial
     } else {
       $outrasLicencas += [System.String]::Concat("+", $licenca)
     }
