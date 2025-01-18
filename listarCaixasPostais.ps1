@@ -16,6 +16,7 @@
 # Versao 13 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 # Versao 14 (08/01/25) Jouderian Nobre: Inclusao da ocupacao da caixa de arquivamento
 # Versao 15 (10/01/25) Jouderian Nobre: Inclusao de novas licencas na relacao
+# Versao 16 (17/01/25) Jouderian Nobre: Remocao da coluna itens da caixa postal
 #--------------------------------------------------------------------------------------------------------
 
 Clear-Host
@@ -44,7 +45,7 @@ $caixas = Get-Mailbox -ResultSize Unlimited
 $totalCaixas = $caixas.Count
 $indice = 0
 
-Write-Output "Nome,UPN,Cidade,UF,Empresa,Escritorio,Departamento,Cargo,Gerente,CC,nomeCC,Tipo,AD,Desabilitada,SenhaForte,SenhaNaoExpira,Compartilhada,Encaminhada,Litigio,Itens,usado(GB),Arquivamento,Arquivamento(GB),Criacao,MudancaSenha,ultimoSyncAD,ultimoAcesso,nomeConta,objectId,Licencas,outrasLicencas" > $arquivo
+Write-Output "Nome,UPN,Cidade,UF,Empresa,Escritorio,Departamento,Cargo,Gerente,CC,nomeCC,Tipo,AD,Desabilitada,SenhaForte,SenhaNaoExpira,Compartilhada,Encaminhada,Litigio,usado(GB),Arquivamento,Arquivamento(GB),Criacao,MudancaSenha,ultimoSyncAD,ultimoAcesso,nomeConta,objectId,Licencas,outrasLicencas" > $arquivo
 
 Foreach ($caixa in $caixas){
 
@@ -83,7 +84,6 @@ Foreach ($caixa in $caixas){
   $infoCaixa += "$($caixa.IsShared)," # Compartilhada
   $infoCaixa += "$($caixa.DeliverToMailboxAndForward)," # Encaminhada
   $infoCaixa += "$($caixa.LitigationHoldDuration)," # Litigio
-  $infoCaixa += "$($detalheCaixa.ItemCount)," # Itens
   $infoCaixa += "$($tamanho)," # usado(GB)
   $infoCaixa += "$($caixa.ArchiveStatus)," # Arquivamento
   $infoCaixa += "$($tamanhoArquivamento)," # Arquivamento(GB)
@@ -111,13 +111,14 @@ Foreach ($caixa in $caixas){
   $outrasLicencas = ""
   $licencas = $usuario.Licenses.AccountSkuId
   Foreach ($licenca in $licencas){
+<# Licencas Exchange #>
     if($licenca -eq "reseller-account:EXCHANGEDESKLESS"){
       $licencaPaga += "+Online Kiosk" #Apenas eMail de 2Gb
     } elseif($licenca -eq "reseller-account:EXCHANGESTANDARD"){
       $licencaPaga += "+Online Plan1" #Apenas eMail de 50Gb
     } elseif($licenca -eq "reseller-account:EXCHANGEENTERPRISE"){
       $licencaPaga += "+Online Plan2" #Apenas eMail de 100Gb
-
+<# Licencas Business #>
     } elseif($licenca -eq "reseller-account:O365_BUSINESS"){
       $licencaPaga += "+AppsBusiness" #Apenas msOffice presencial
     } elseif($licenca -eq "reseller-account:O365_BUSINESS_ESSENTIALS"){
@@ -126,7 +127,7 @@ Foreach ($caixa in $caixas){
       $licencaPaga += "+Business Standard" #eMail de 50Gb e msOffice presencial
     } elseif($licenca -eq "reseller-account:SPB"){
       $licencaPaga += "+Business Premium" #eMail de 50Gb, msOffice presencial e Windows 10
-
+<# Licencas Enterprise #>
     } elseif($licenca -eq "reseller-account:OFFICESUBSCRIPTION"){
       $licencaPaga += "+AppsEnterprise" #Apenas msOffice presencial
     } elseif($licenca -eq "reseller-account:M365_F1_COMM"){
@@ -139,7 +140,7 @@ Foreach ($caixa in $caixas){
       $licencaPaga += "+O365 E1 Plus"
     } elseif($licenca -eq "reseller-account:ENTERPRISEPACK"){
       $licencaPaga += "+O365 E3" #eMail de 100Gb e msOffice presencial
-
+<# Licencas Diversas #>
     } elseif($licenca -eq "reseller-account:POWER_BI_PRO"){
       $licencaPaga += "+PowerBI Pro"
     } elseif($licenca -eq "reseller-account:Microsoft_365_Copilot"){
