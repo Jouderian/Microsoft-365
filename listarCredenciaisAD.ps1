@@ -49,43 +49,43 @@ Foreach ($credencial in $credenciais){
   $departamento = if($null -ne $credencial.Department){ removeQuebraDeLinha -texto $credencial.Department }
   $cargo = if($null -ne $credencial.Title){ removeQuebraDeLinha -texto $credencial.Title }
 
-  $infoCredencial = "$($credencial.SamAccountName);"
-  $infoCredencial += "$($credencial.DisplayName);"
-  $infoCredencial += "$($credencial.EmailAddress);"
-  $infoCredencial += "$($credencial.Enabled);"
-  $infoCredencial += "$($credencial.Company);"
-  $infoCredencial += "$($credencial.Office);"
-  $infoCredencial += "$($departamento);"
-  $infoCredencial += "$($cargo);"
-  $infoCredencial += [System.String]::Concat("""","$($credencial.Manager)",""";")
+  $infoCredencial = "$($credencial.SamAccountName);" # Credencial
+  $infoCredencial += "$($credencial.DisplayName);" # Nome
+  $infoCredencial += "$($credencial.EmailAddress);" # eMail
+  $infoCredencial += "$($credencial.Enabled);" # Ativa
+  $infoCredencial += "$($credencial.Company);" # Empresa
+  $infoCredencial += "$($credencial.Office);" # Escritorio
+  $infoCredencial += "$($departamento);" # Departamento
+  $infoCredencial += "$($cargo);" # Cargo
+  $infoCredencial += [System.String]::Concat("""","$($credencial.Manager)",""";") # Gerente
 
   $momento = $credencial.Created
-  $infoCredencial += "$($momento.ToString('dd/MM/yy HH:mm'));"
+  $infoCredencial += "$($momento.ToString('dd/MM/yy HH:mm'));" # Criacao
 
   $momento = $credencial.LastLogonDate
   $momento2 = [DateTime]::FromFileTimeUtc($credencial.LastLogonTimestamp)
-  If($momento -gt $momento2){
+  If($momento -gt $momento2){ # ultimoAcesso
     $infoCredencial += "$($momento.ToString('dd/MM/yy HH:mm'));"
   } else {
     $infoCredencial += "$($momento2.ToString('dd/MM/yy HH:mm'));"
   }
 
   $momento = $credencial.AccountExpirationDate
-  if($null -eq $momento){
+  if($null -eq $momento){ # Expiracao
     $infoCredencial += ";"
   } Else {
     $infoCredencial += "$($momento.ToString('dd/MM/yy HH:mm'));"
   }
 
   $momento = $credencial.PasswordLastSet
-  if($null -eq $momento){
+  if($null -eq $momento){ # mudancaSenha
     $infoCredencial += ";"
   } Else {
     $infoCredencial += "$($momento.ToString('dd/MM/yy HH:mm'));"
   }
 
-  $infoCredencial += "$($credencial.CanonicalName);"
-  $infoCredencial += "$($credencial.ObjectGUID);"
+  $infoCredencial += "$($credencial.CanonicalName);" # CanonicalName
+  $infoCredencial += "$($credencial.ObjectGUID);" # ObjectGUID
 
 #  $texto = '"'
 #  Foreach ($grupo in $grupos){

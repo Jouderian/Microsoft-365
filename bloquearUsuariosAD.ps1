@@ -2,7 +2,7 @@
 # Descricao: Bloquear os Usuários suspeitos
 # Versao 1 (19/07/22) Jouderian Nobre
 # Versao 2 (18/07/23) Jouderian Nobre: Alem do bloqueio passamos a identificar a credencial e move-la para uma OU
-# Versao 3 (29/12/24) Jouderian Nobre: Corrige o receimento do parametro Arquivo
+# Versao 3 (29/12/24) Jouderian Nobre: Corrige o recebimento do parametro Arquivo
 #--------------------------------------------------------------------------------------------------------
 
 param (
@@ -25,6 +25,7 @@ Foreach ($Usuario in $Usuarios){
   Set-ADUser -Identity $Usuario.contaAD `
     -description "Conta suspeita de inatividade em $(Get-date -format 'MMM/yy')." `
     -Enabled $false
+  
   Get-ADUser -Identity $Usuario.contaAD | Move-ADObject -TargetPath "OU=Suspeitos,OU=0-IntegracaoRM,OU=Unidades,DC=grupoelfa,DC=srv"
 
 }
