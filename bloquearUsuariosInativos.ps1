@@ -39,17 +39,17 @@ $Usuarios | ForEach-Object {
   $usuarioAD = get-ADUser `
     -Identity $_.contaAD `
     -properties `
-     DisplayName, `
-     EmailAddress, `
-     Company, `
-     office, `
-     Department, `
-     Title, `
-     Manager, `
-     CanonicalName, `
-     Manager, `
-     Description, `
-     info
+      DisplayName, `
+      EmailAddress, `
+      Company, `
+      office, `
+      Department, `
+      Title, `
+      Manager, `
+      CanonicalName, `
+      Manager, `
+      Description, `
+      info
 
   $usuario365 = Get-MsolUser -UserPrincipalName $usuarioAD.EmailAddress
   $caixa = Get-Mailbox -Identity $_.contaAD
@@ -69,13 +69,13 @@ $Usuarios | ForEach-Object {
   If($usuarioAD.Enabled){
     $Observacao = [System.String]::Concat( `
       $usuarioAD.Description, `
-      " ~ Usuário bloqueado por falta de acesso MFA em " + $final.ToString("dd/MM/yy HH:mm") `
+      " ~ Usuário bloqueado por falta de acesso em " + $final.ToString("dd/MM/yy HH:mm") `
     )
   } else {
     $Observacao = $usuarioAD.Description
   }
 
-  $informacao = $usuarioAD.info + "`nUsuário bloqueado por falta de acesso MFA em " + $final.ToString("dd/MM/yy HH:mm")
+  $informacao = $usuarioAD.info + "`nUsuário bloqueado por falta de acesso em " + $final.ToString("dd/MM/yy HH:mm")
 
   $licencaPaga = ""
   $licencas = $usuario365.Licenses.AccountSkuId
@@ -118,7 +118,7 @@ $Usuarios | ForEach-Object {
   $infoCredencial += [System.String]::Concat("""","$($licencaPaga)",""",")
 
   $nomeGrupos = ""
-  $grupos = Get-ADPrincipalGroupMembership -Identity $UsuarioAD | where {($_.name -notmatch 'Domain Users' -and $_.name -notmatch 'MFA')}
+  $grupos = Get-ADPrincipalGroupMembership -Identity $UsuarioAD | Where-Object {($_.name -notmatch 'Domain Users' -and $_.name -notmatch 'MFA')}
   Foreach ($grupo in $grupos){
     $nomeGrupos += "+" + $grupo.name
 #    Remove-ADPrincipalGroupMembership -Identity $UsuarioAD -MemberOf $grupo -Confirm:$False
