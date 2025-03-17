@@ -17,6 +17,7 @@
 # Versao 14 (08/01/25) Jouderian Nobre: Inclusao da ocupacao da caixa de arquivamento
 # Versao 15 (10/01/25) Jouderian Nobre: Inclusao de novas licencas na relacao
 # Versao 16 (17/01/25) Jouderian Nobre: Remocao da coluna itens da caixa postal
+# Versao 17 (20/02/25) Jouderian Nobre: Inclusao da licenca PowerApps Premium
 #--------------------------------------------------------------------------------------------------------
 
 Clear-Host
@@ -137,18 +138,21 @@ Foreach ($caixa in $caixas){
     } elseif($licenca -eq "reseller-account:STANDARDPACK"){
       $licencaPaga += "+O365  E1" #eMail de 50Gb e msOffice onLine
     } elseif($licenca -eq "reseller-account:Office365_E1_Plus"){
-      $licencaPaga += "+O365 E1 Plus"
+      $licencaPaga += "+O365 E1 Plus" #eMail de 50Gb, msOffice onLine e entraID P1
     } elseif($licenca -eq "reseller-account:ENTERPRISEPACK"){
       $licencaPaga += "+O365 E3" #eMail de 100Gb e msOffice presencial
-<# Licencas Diversas #>
+<# Licencas Power #>
     } elseif($licenca -eq "reseller-account:POWER_BI_PRO"){
       $licencaPaga += "+PowerBI Pro"
-    } elseif($licenca -eq "reseller-account:Microsoft_365_Copilot"){
-      $licencaPaga += "+M365 Copilot"
+    } elseif($licenca -eq "reseller-account:POWERAPPS_PER_USER"){
+      $licencaPaga += "+PowerApps Premium" # PowerApss Premium
     } elseif($licenca -eq "reseller-account:FLOW_PER_USER"){
-      $licencaPaga += "+PowerAutomate" # Power Automate Por User Plan
+      $licencaPaga += "+PowerAutomate" # PowerAutomate Por User Plan
     } elseif($licenca -eq "reseller-account:POWERAUTOMATE_ATTENDED_RPA"){
       $licencaPaga += "+Automate Premium" # Power Automate Premium
+<# Licencas Diversas #>
+    } elseif($licenca -eq "reseller-account:Microsoft_365_Copilot"){
+      $licencaPaga += "+M365 Copilot"
     } elseif($licenca -eq "reseller-account:PROJECT_P1"){
       $licencaPaga += "+Project Plan 1" # Apenas Project Online
     } elseif($licenca -eq "reseller-account:PROJECTPROFESSIONAL"){

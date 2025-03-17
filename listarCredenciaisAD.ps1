@@ -5,6 +5,7 @@
 # Versao 3 (08/05/23) Jouderian Nobre: Inclusão de mais informações da credencial
 # Versao 4 (07/11/24) Jouderian Nobre: Inclusáo da biblioteca, tratamento dos campos e melhoria no acompanhamento da progressao da extracao
 # Versao 5 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+# Versao 6 (17/03/25) Jouderian Nobre: Incluir o campo POBox para identificar sincronismo com o M365
 #--------------------------------------------------------------------------------------------------------
 
 . "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\Scripts\Publico\Microsoft-365\bibliotecaDeFuncoes.ps1"
@@ -23,6 +24,7 @@ $credenciais = Get-ADUser -Filter * `
     DisplayName, `
     EmailAddress, `
     Enabled, `
+    POBox, `
     Company, `
     Office, `
     Department, `
@@ -36,7 +38,7 @@ $credenciais = Get-ADUser -Filter * `
     CanonicalName, `
     ObjectGUID
 
-Out-File -FilePath $arquivo -InputObject "Credencial;Nome;eMail;Ativa;Empresa;Escritorio;Departamento;Cargo;Gerente;Criacao;ultimoAcesso;Expiracao;mudancaSenha;CanonicalName;ObjectGUID;Grupos" -Encoding UTF8
+Out-File -FilePath $arquivo -InputObject "Credencial;Nome;eMail;Ativa;M365;Empresa;Escritorio;Departamento;Cargo;Gerente;Criacao;ultimoAcesso;Expiracao;mudancaSenha;CanonicalName;ObjectGUID;Grupos" -Encoding UTF8
 $totalCredenciais = $credenciais.Count
 
 Foreach ($credencial in $credenciais){
@@ -53,6 +55,7 @@ Foreach ($credencial in $credenciais){
   $infoCredencial += "$($credencial.DisplayName);" # Nome
   $infoCredencial += "$($credencial.EmailAddress);" # eMail
   $infoCredencial += "$($credencial.Enabled);" # Ativa
+  $infoCredencial += "$($credencial.POBox);" # M365
   $infoCredencial += "$($credencial.Company);" # Empresa
   $infoCredencial += "$($credencial.Office);" # Escritorio
   $infoCredencial += "$($departamento);" # Departamento
