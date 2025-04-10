@@ -3,6 +3,7 @@
 # Descricao: Biblioteca de funcoes de uso geral
 # Versao: 1 (27/09/24) Jouderian: Criacao do script
 # Versao: 2 (10/10/24) Jouderian: Criacao da funcao de gravacao de LOGs
+# Versao: 3 (10/04/25) Jouderian: Criacao da funcao de geracao de senha aleatoria
 #--------------------------------------------------------------------------------------------------------
 
 function removeQuebraDeLinha{
@@ -51,4 +52,14 @@ Function gravaLOG {
 
   Out-File $arquivo -InputObject "$(if($erro){ "[ERRO] $texto" } else { $texto })" -Append
   Write-Host "$(if($erro){ "[ERRO] $texto" } else { $texto })"
+}
+
+function geraSenhaAleatoria {
+  Param (
+    [parameter(Mandatory=$false)][int]$tamanho = 16,
+    [parameter(Mandatory=$false)][string]$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()"
+  )
+  
+  $password = -join ((65..90) + (97..122) + (48..57) + (33..47) | Get-Random -Count $tamanho | ForEach-Object {[char]$_})
+  return $password
 }

@@ -18,80 +18,116 @@
 # Versao 15 (10/01/25) Jouderian Nobre: Inclusao de novas licencas na relacao
 # Versao 16 (17/01/25) Jouderian Nobre: Remocao da coluna itens da caixa postal
 # Versao 17 (20/02/25) Jouderian Nobre: Inclusao da licenca PowerApps Premium
+# Versao 18 (24/03/25) Jouderian Nobre: Adequacao para usar o MgGraph e seus comandos
 #--------------------------------------------------------------------------------------------------------
 
 Clear-Host
 
-$Modules = Get-Module -Name ExchangeOnlineManagement -ListAvailable
-if($Modules.count -eq 0){
-  Write-Host Instale o modulo do ExchangeOnlineManagement usando o comando abaixo:`n  Install-Module ExchangeOnlineManagement -ForegroundColor yellow
-  Exit
+#--------------------------------------------------------------------- VARIAVEIS
+$indice = 0
+$arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaDeCaixasPostais.csv"
+$EXOMgmtModule = Get-Module ExchangeOnlineManagement -ListAvailable
+$MsGraphModule = Get-Module Microsoft.Graph -ListAvailable
+
+#-------------------------------------------------------------------- VALIDACOES
+if( $null -eq $MsGraphModule ){
+  gravaLOG -arquivo $arquivoLogs -texto "O modulo Microsoft Graph e necessario e nao esta instalado no sistema" -erro:$true
+  $confirm = Read-Host Are you sure you want to install Microsoft Graph module? [Y] Yes [N] No  
+  if($confirm -match "[yY]"){
+    Write-host "Instalando o modulo Microsoft Graph..."
+    Install-Module -Name Microsoft.Graph -Scope CurrentUser -AllowClobber
+    Write-host "O modulo Microsoft Graph foi instalado com sucesso" -ForegroundColor Magenta 
+  } else {
+    Write-host "Saindo. `nNota: O modulo Microsoft Graph nao esta disponivel em seu sistemapara executar o script" -ForegroundColor Red
+    Exit 
+  }
+}
+Import-Module -Name Microsoft.Graph.Users
+Connect-MgGraph -Scopes "User.Read.All", "MailboxSettings.Read", "Directory.Read.All" -NoWelcome
+
+if( $null -eq $EXOMgmtModule ){
+  gravaLOG -arquivo $arquivoLogs -texto "O modulo Microsoft Exchange Online Management e necessario e nao esta instalado no sistema" -erro:$true
+  $confirm = Read-Host Are you sure you want to install Microsoft Exchange Online Management module? [Y] Yes [N] No  
+  if( $confirm -match "[yY]" ){
+    Write-host "Instalando o modulo Microsoft Exchange Online Management..."
+    Install-Module -Name ExchangeOnlineManagement -Scope CurrentUser -AllowClobber
+    Write-host "Microsoft Exchange Online Management module is installed in the machine successfully" -ForegroundColor Magenta 
+  } else {
+    Write-host "Exiting. `nNote: Microsoft Exchange Online Management module must be available in your system to run the script" -ForegroundColor Red
+    Exit 
+  } 
 }
 Connect-ExchangeOnline
 
-$Modules = Get-Module -Name MSOnline -ListAvailable
-if($Modules.count -eq 0){
-  Write-Host Instale o modulo do MSOnline usando o comando abaixo:`n  Install-Module MSOnline -ForegroundColor yellow
-  Exit
-}
-Connect-MsolService
-
-$arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaDeCaixasPostais.csv"
 $inicio = Get-Date
-
 Write-Host "`n`n`n`n`n`n`nInicio:" $inicio
 Write-Host Pesquisando Relacao de Caixas Postais no ExchangeOnline...
-$caixas = Get-Mailbox -ResultSize Unlimited
+$caixas = Get-MgUser `
+  -ALL `
+  -ConsistencyLevel eventual `
+  -Property "Id,DisplayName,UserPrincipalName,City,State,CompanyName,OfficeLocation,Department,JobTitle,PostalCode,StreetAddress,OnPremisesSyncEnabled,AccountEnabled,PasswordPolicies,CreatedDateTime,LastPasswordChangeDateTime,OnPremisesLastSyncDateTime"
+
+$caixas = $caixas | Where-Object { $_.UserPrincipalName -notlike "*#EXT#*" }
 
 $totalCaixas = $caixas.Count
-$indice = 0
 
-Write-Output "Nome,UPN,Cidade,UF,Empresa,Escritorio,Departamento,Cargo,Gerente,CC,nomeCC,Tipo,AD,Desabilitada,SenhaForte,SenhaNaoExpira,Compartilhada,Encaminhada,Litigio,usado(GB),Arquivamento,Arquivamento(GB),Criacao,MudancaSenha,ultimoSyncAD,ultimoAcesso,nomeConta,objectId,Licencas,outrasLicencas" > $arquivo
+Write-Output "Nome,UPN,Cidade,UF,Empresa,Escritorio,Departamento,Cargo,Gerente,CC,nomeCC,Tipo,AD,Desabilitada,SenhaForte,SenhaNaoExpira,Compartilhada,Encaminhada,Litigio,usado(GB),Arquivamento,Arquivamento(GB),Criacao,MudancaSenha,ultimoSyncAD,ultimoAcesso,conta,objectId,Licencas,outrasLicencas" > $arquivo
 
 Foreach ($caixa in $caixas){
 
   $indice++
+
   Write-Progress -Activity "Exportando caixas postais" -Status "Progresso: $indice de $totalCaixas extraidas" -PercentComplete (($indice / $totalCaixas) * 100)
 
-  $detalheCaixa = Get-MailboxStatistics -Identity $caixa.ExternalDirectoryObjectId
-  $detalheCaixa2 = Get-User -Identity $caixa.ExternalDirectoryObjectId
-  $usuario = Get-MsolUser -ObjectId $caixa.ExternalDirectoryObjectId
+#  if($caixa.UserPrincipalName.Contains("#EXT#")){ # Credencial de convidado
+#    continue
+#  }
 
+  $detalheCaixa = Get-MailboxStatistics -Identity $caixa.Id
+  $licencas = Get-MgUserLicenseDetail -UserId $caixa.Id
   $tamanho = [math]::Round((($detalheCaixa.TotalItemSize.Value.ToString()).Split('(')[1].Split(' ')[0].Replace(',','')/1GB),2)
 
-  if($caixa.ArchiveStatus -eq 'Active'){
+  if($detalheCaixa.IsArchiveMailbox -eq 'Active'){
     $detalheArquivo = Get-MailboxStatistics -Identity $caixa.ExternalDirectoryObjectId -Archive
     $tamanhoArquivamento = [math]::Round((($detalheArquivo.TotalItemSize.Value.ToString()).Split('(')[1].Split(' ')[0].Replace(',','')/1GB),2)
   } else {
     $tamanhoArquivamento = 0
   }
   
+  try {
+    $gerente = Get-MgUserManager -UserId $caixa.Id
+    $gerente = $gerente.AdditionalProperties.displayName    
+  }
+  catch {
+    $gerente = ""
+  }
+
   $infoCaixa = "$($caixa.DisplayName)," # Nome
   $infoCaixa += "$($caixa.UserPrincipalName)," # UPN
-  $infoCaixa += "$($usuario.City)," # Cidade
-  $infoCaixa += "$($usuario.State)," # UF
-  $infoCaixa += "$($detalheCaixa2.Company)," # Empresa
-  $infoCaixa += "$($usuario.Office)," # Escritorio
-  $infoCaixa += [System.String]::Concat("""","$($usuario.Department)",""",") # Departamento
-  $infoCaixa += [System.String]::Concat("""","$($usuario.Title)",""",") # Cargo
-  $infoCaixa += "$($detalheCaixa2.Manager)," #Gerente
-  $infoCaixa += "$($detalheCaixa2.postalCode)," # CC
-  $infoCaixa += "$($detalheCaixa2.streetAddress)," # nomeCC
-  $infoCaixa += "$($caixa.RecipientTypeDetails)," # Tipo
-  $infoCaixa += "$($caixa.IsDirSynced)," # AD
-  $infoCaixa += "$($caixa.AccountDisabled)," # Desabilitada
-  $infoCaixa += "$($usuario.StrongPasswordRequired)," # SenhaForte
-  $infoCaixa += "$($usuario.PasswordNeverExpires)," # SenhaNaoExpira
-  $infoCaixa += "$($caixa.IsShared)," # Compartilhada
-  $infoCaixa += "$($caixa.DeliverToMailboxAndForward)," # Encaminhada
-  $infoCaixa += "$($caixa.LitigationHoldDuration)," # Litigio
+  $infoCaixa += "$($caixa.City)," # Cidade
+  $infoCaixa += "$($caixa.State)," # UF
+  $infoCaixa += "$($caixa.CompanyName)," # Empresa
+  $infoCaixa += "$($caixa.OfficeLocation)," # Escritorio
+  $infoCaixa += [System.String]::Concat("""","$($caixa.Department)",""",") # Departamento
+  $infoCaixa += [System.String]::Concat("""","$($caixa.JobTitle)",""",") # Cargo
+  $infoCaixa += "$($gerente)," #Gerente
+  $infoCaixa += "$($caixa.postalCode)," # CC
+  $infoCaixa += "$($caixa.streetAddress)," # nomeCC
+  $infoCaixa += "$($detalheCaixa.MailboxTypeDetail.Value)," # Tipo
+  $infoCaixa += "$($caixa.OnPremisesSyncEnabled)," # AD
+  $infoCaixa += "$($caixa.AccountEnabled)," # Desabilitada
+  $infoCaixa += "$($caixa.PasswordPolicies -contains "DisableStrongPassword")," # SenhaForte
+  $infoCaixa += "$($caixa.PasswordPolicies -contains "DisablePasswordExpiration")," # SenhaNaoExpira
+  $infoCaixa += "," # Compartilhada
+  $infoCaixa += "," # Encaminhada
+  $infoCaixa += "," # Litigio
   $infoCaixa += "$($tamanho)," # usado(GB)
-  $infoCaixa += "$($caixa.ArchiveStatus)," # Arquivamento
+  $infoCaixa += "$($detalheCaixa.IsArchiveMailbox)," # Arquivamento
   $infoCaixa += "$($tamanhoArquivamento)," # Arquivamento(GB)
-  $infoCaixa += "$($usuario.WhenCreated.ToString('dd/MM/yy HH:mm'))," # Criacao
-  $infoCaixa += "$($usuario.LastPasswordChangeTimestamp.ToString('dd/MM/yy HH:mm'))," # MudancaSenha
+  $infoCaixa += "$($caixa.CreatedDateTime.ToString('dd/MM/yy HH:mm'))," # Criacao
+  $infoCaixa += "$($caixa.LastPasswordChangeDateTime.ToString('dd/MM/yy HH:mm'))," # MudancaSenha
 
-  $momento = $usuario.LastDirSyncTime # ultimoSyncAD
+  $momento = $caixa.OnPremisesLastSyncDateTime # ultimoSyncAD
   if($null -eq $momento){
     $infoCaixa += ","
   } Else {
@@ -105,60 +141,60 @@ Foreach ($caixa in $caixas){
     $infoCaixa += "$($momento.ToString('dd/MM/yy HH:mm')),"
   }
 
-  $infoCaixa += "$($caixa.Alias)," # nomeConta
-  $infoCaixa += "$($caixa.ExternalDirectoryObjectId)," # objectId
+  $infoCaixa += "," # conta
+  $infoCaixa += "$($caixa.Id)," # objectId
 
   $licencaPaga = ""
   $outrasLicencas = ""
-  $licencas = $usuario.Licenses.AccountSkuId
+
   Foreach ($licenca in $licencas){
-<# Licencas Exchange #>
-    if($licenca -eq "reseller-account:EXCHANGEDESKLESS"){
+# Licencas Exchange
+    if($licenca.SkuPartNumber -eq "EXCHANGEDESKLESS"){
       $licencaPaga += "+Online Kiosk" #Apenas eMail de 2Gb
-    } elseif($licenca -eq "reseller-account:EXCHANGESTANDARD"){
+    } elseif($licenca.SkuPartNumber -eq "EXCHANGESTANDARD"){
       $licencaPaga += "+Online Plan1" #Apenas eMail de 50Gb
-    } elseif($licenca -eq "reseller-account:EXCHANGEENTERPRISE"){
+    } elseif($licenca.SkuPartNumber -eq "EXCHANGEENTERPRISE"){
       $licencaPaga += "+Online Plan2" #Apenas eMail de 100Gb
-<# Licencas Business #>
-    } elseif($licenca -eq "reseller-account:O365_BUSINESS"){
+# Licencas Business
+    } elseif($licenca.SkuPartNumber -eq "O365_BUSINESS"){
       $licencaPaga += "+AppsBusiness" #Apenas msOffice presencial
-    } elseif($licenca -eq "reseller-account:O365_BUSINESS_ESSENTIALS"){
+    } elseif($licenca.SkuPartNumber -eq "O365_BUSINESS_ESSENTIALS"){
       $licencaPaga += "+Business Basic" #eMail de 50Gb e msOffice onLine
-    } elseif($licenca -eq "reseller-account:O365_BUSINESS_PREMIUM"){
+    } elseif($licenca.SkuPartNumber -eq "O365_BUSINESS_PREMIUM"){
       $licencaPaga += "+Business Standard" #eMail de 50Gb e msOffice presencial
-    } elseif($licenca -eq "reseller-account:SPB"){
+    } elseif($licenca.SkuPartNumber -eq "SPB"){
       $licencaPaga += "+Business Premium" #eMail de 50Gb, msOffice presencial e Windows 10
-<# Licencas Enterprise #>
-    } elseif($licenca -eq "reseller-account:OFFICESUBSCRIPTION"){
+# Licencas Enterprise
+    } elseif($licenca.SkuPartNumber -eq "OFFICESUBSCRIPTION"){
       $licencaPaga += "+AppsEnterprise" #Apenas msOffice presencial
-    } elseif($licenca -eq "reseller-account:M365_F1_COMM"){
+    } elseif($licenca.SkuPartNumber -eq "M365_F1_COMM"){
       $licencaPaga += "+M365 F1" #Apenas Colaboracao
-    } elseif($licenca -eq "reseller-account:DESKLESSPACK"){
+    } elseif($licenca.SkuPartNumber -eq "DESKLESSPACK"){
       $licencaPaga += "+O365 F3" #eMail de 2Gb e msOffice onLine
-    } elseif($licenca -eq "reseller-account:STANDARDPACK"){
+    } elseif($licenca.SkuPartNumber -eq "STANDARDPACK"){
       $licencaPaga += "+O365  E1" #eMail de 50Gb e msOffice onLine
-    } elseif($licenca -eq "reseller-account:Office365_E1_Plus"){
+    } elseif($licenca.SkuPartNumber -eq "Office365_E1_Plus"){
       $licencaPaga += "+O365 E1 Plus" #eMail de 50Gb, msOffice onLine e entraID P1
-    } elseif($licenca -eq "reseller-account:ENTERPRISEPACK"){
+    } elseif($licenca.SkuPartNumber -eq "ENTERPRISEPACK"){
       $licencaPaga += "+O365 E3" #eMail de 100Gb e msOffice presencial
-<# Licencas Power #>
-    } elseif($licenca -eq "reseller-account:POWER_BI_PRO"){
+# Licencas Power
+    } elseif($licenca.SkuPartNumber -eq "POWER_BI_PRO"){
       $licencaPaga += "+PowerBI Pro"
-    } elseif($licenca -eq "reseller-account:POWERAPPS_PER_USER"){
+    } elseif($licenca.SkuPartNumber -eq "POWERAPPS_PER_USER"){
       $licencaPaga += "+PowerApps Premium" # PowerApss Premium
-    } elseif($licenca -eq "reseller-account:FLOW_PER_USER"){
+    } elseif($licenca.SkuPartNumber -eq "FLOW_PER_USER"){
       $licencaPaga += "+PowerAutomate" # PowerAutomate Por User Plan
-    } elseif($licenca -eq "reseller-account:POWERAUTOMATE_ATTENDED_RPA"){
+    } elseif($licenca.SkuPartNumber -eq "POWERAUTOMATE_ATTENDED_RPA"){
       $licencaPaga += "+Automate Premium" # Power Automate Premium
-<# Licencas Diversas #>
-    } elseif($licenca -eq "reseller-account:Microsoft_365_Copilot"){
+# Licencas Diversas
+    } elseif($licenca.SkuPartNumber -eq "Microsoft_365_Copilot"){
       $licencaPaga += "+M365 Copilot"
-    } elseif($licenca -eq "reseller-account:PROJECT_P1"){
+    } elseif($licenca.SkuPartNumber -eq "PROJECT_P1"){
       $licencaPaga += "+Project Plan 1" # Apenas Project Online
-    } elseif($licenca -eq "reseller-account:PROJECTPROFESSIONAL"){
+    } elseif($licenca.SkuPartNumber -eq "PROJECTPROFESSIONAL"){
       $licencaPaga += "+Project Plan 3" # Apenas Project presencial
     } else {
-      $outrasLicencas += [System.String]::Concat("+", $licenca)
+      $outrasLicencas += [System.String]::Concat("+", $licenca.SkuPartNumber)
     }
   }
   $infoCaixa += [System.String]::Concat("""","$($licencaPaga)",""",") # Licencas
@@ -173,3 +209,6 @@ $final = Get-Date
 Write-Host `nInicio: $inicio
 Write-Host Final: $final
 Write-Host Tempo: (NEW-TIMESPAN -Start $inicio -End $final).ToString()
+
+Disconnect-ExchangeOnline -Confirm:$false
+Disconnect-MgGraph
