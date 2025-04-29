@@ -2,8 +2,9 @@
 # Autor: Jouderian Nobre
 # Descricao: Biblioteca de funcoes de uso geral
 # Versao: 1 (27/09/24) Jouderian: Criacao do script
-# Versao: 2 (10/10/24) Jouderian: Criacao da funcao de gravacao de LOGs
-# Versao: 3 (10/04/25) Jouderian: Criacao da funcao de geracao de senha aleatoria
+# Versao: 2 (10/10/24) Jouderian: Funcao de gravacao de LOGs
+# Versao: 3 (10/04/25) Jouderian: Funcao de geracao de senha aleatoria
+# Versao: 4 (14/04/25) Jouderian: Funcao de validacao de modulo e obter descricao de licenca
 #--------------------------------------------------------------------------------------------------------
 
 function removeQuebraDeLinha{
@@ -62,4 +63,56 @@ function geraSenhaAleatoria {
   
   $password = -join ((65..90) + (97..122) + (48..57) + (33..47) | Get-Random -Count $tamanho | ForEach-Object {[char]$_})
   return $password
+}
+
+function VerificaModulo {
+  param (
+    [parameter(Mandatory=$true)][string]$NomeModulo,
+    [parameter(Mandatory=$true)][string]$MensagemErro
+  )
+  $modulo = Get-Module -Name $NomeModulo -ListAvailable
+  if ($null -eq $modulo){
+    gravaLOG -arquivo $arquivoLogs -texto $MensagemErro -erro:$true
+    $confirm = Read-Host "O módulo $NomeModulo não está instalado. Deseja instalá-lo? [Y/N]"
+    if ($confirm -match "[yY]"){
+      Write-Host "Instalando o módulo $NomeModulo..."
+      Install-Module -Name $NomeModulo -Scope CurrentUser -AllowClobber
+      Write-Host "O módulo $NomeModulo foi instalado com sucesso" -ForegroundColor Magenta
+    } else {
+      Write-Host "Saindo. O módulo $NomeModulo é necessário para executar o script." -ForegroundColor Red
+      Exit
+    }
+  }
+}
+
+function ObterDescricaoLicenca {
+  param ([string]$SkuPartNumber)
+  switch ($SkuPartNumber) {
+# Licencas Exchange
+    "EXCHANGEDESKLESS" { return "Online Kiosk" }
+    "EXCHANGESTANDARD" { return "Online Plan1" }
+    "EXCHANGEENTERPRISE" { return "Online Plan2" }
+# Licencas Business
+    "O365_BUSINESS" { return "AppsBusiness" }
+    "O365_BUSINESS_ESSENTIALS" { return "Business Basic" }
+    "O365_BUSINESS_PREMIUM" { return "Business Standard" }
+    "SPB" { return "Business Premium" }
+# Licencas Enterprise
+    "OFFICESUBSCRIPTION" { return "AppsEnterprise" }
+    "M365_F1_COMM" { return "M365 F1" }
+    "DESKLESSPACK" { return "O365 F3" }
+    "STANDARDPACK" { return "O365  E1" }
+    "Office365_E1_Plus" { return "O365 E1 Plus" }
+    "ENTERPRISEPACK" { return "O365 E3" }
+# Licencas Power
+    "POWER_BI_PRO" { return "PowerBI Pro" }
+    "POWERAPPS_PER_USER" { return "PowerApps Premium" }
+    "FLOW_PER_USER" { return "PowerAutomate" }
+    "POWERAUTOMATE_ATTENDED_RPA" { return "Automate Premium" }
+# Licencas Diversas
+    "Microsoft_365_Copilot" { return "M365 Copilot" }
+    "PROJECT_P1" { return "Project Plan 1" }
+    "PROJECTPROFESSIONAL" { return "Project Plan 3" }
+    default { return $null }
+  }
 }
