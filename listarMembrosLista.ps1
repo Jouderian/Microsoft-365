@@ -1,23 +1,24 @@
 #-------------------------------------------------------------------------------
 # Descricao: Lista a relacao de membros das Listas e Grupos do M365
 # Versao 1 (25/01/22) Jouderian Nobre
-# Versao 2 (30/06/22) Jouderian Nobre
-# Versao 3 (15/03/23) Jouderian Nobre
+# :::
 # Versao 4 (09/11/24) Jouderian Nobre: Inclusao do ID do grupo/lista e dos membros
 # Versao 5 (09/12/24) Jouderian Nobre: Relaciona as listas sem membros (vazias)
 # Versao 6 (11/12/24) Jouderian Nobre: Passa a exclui as listas vazias
 # Versao 7 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+# Versao 8 (29/04/25) Jouderian Nobre: Otimizacao do script com uso de funcoes
 #--------------------------------------------------------------------------------------------------------
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
 #--------------------------------------------------------- Conectando ao servico
-$Modules = Get-Module -Name ExchangeOnlineManagement -ListAvailable
-if($Modules.count -eq 0){
-  Write-Host Instale o modulo do ExchangeOnlineManagement usando o comando abaixo:`n  Install-Module ExchangeOnlineManagement -ForegroundColor yellow
+VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O módulo Exchange Online Management é necessário e não está instalado no sistema."
+try {
+  Connect-ExchangeOnline
+} catch {
+  Write-Host "Erro ao conectar ao Exchange Online: $_" -ForegroundColor Red
   Exit
 }
-Connect-ExchangeOnline
 
 #---------------------------------------------------------- Declarando variaveis
 $indice = 0
@@ -34,7 +35,10 @@ Out-File -FilePath $arquivo -InputObject "idGrupo;nomeGrupo;eMailGrupo;adSync;ti
 
 Foreach ($Lista in $Listas){
   $indice++
-  Write-Progress -Activity "Exportando Listas/Grupos" -Status "Progresso: $indice/$totalListas - $Lista" -PercentComplete ($indice / $totalListas * 100)
+
+  if ($indice % 10 -eq 0){ # Atualiza o progresso a cada 10 listas processadas
+    Write-Progress -Activity "Exportando Listas/Grupos" -Status "Progresso: $indice/$totalListas - $($Lista.DisplayName)" -PercentComplete (($indice / $totalListas) * 100)
+  }
 
   $Membros = Get-DistributionGroupMember -Identity $Lista.ExternalDirectoryObjectId
   if ($Membros.Length -eq 0){
@@ -43,7 +47,7 @@ Foreach ($Lista in $Listas){
         Remove-DistributionGroup -Identity $Lista.ExternalDirectoryObjectId -Confirm:$false
         gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Excluida"
       } catch {
-        gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId), ERRO: $($_)"
+        gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId), ERRO: $($_)" -erro:$true
       }
     } else {
       gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Sincronizada AD"
