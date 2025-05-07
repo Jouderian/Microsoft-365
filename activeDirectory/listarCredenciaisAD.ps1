@@ -44,7 +44,10 @@ $totalCredenciais = $credenciais.Count
 Foreach ($credencial in $credenciais){
 
   $indice++
-  Write-Progress -Activity "Coletando dados das credenciais" -Status "Progresso: $indice de $totalCredenciais coletadas" -PercentComplete (($indice / $totalCredenciais) * 100)
+
+  if ($indice % 10 -eq 0){ # Atualiza o progresso a cada 10 caixas processadas
+    Write-Progress -Activity "Coletando dados das credenciais" -Status "Progresso: $indice de $totalCredenciais coletadas" -PercentComplete (($indice / $totalCredenciais) * 100)
+  }
 
 #  $grupos = Get-ADPrincipalGroupMembership -Identity $credencial.SamAccountName
 
