@@ -10,7 +10,7 @@ Clear-Host
 $inicio = Get-Date
 $groupName = "semMFA.M365"
 
-#Connect-AzureAD
+Connect-AzureAD
 
 Write-Host "Inicio:" $inicio
 Write-Host "Pesquisando relacao de credenciais no grupo:" $groupName
