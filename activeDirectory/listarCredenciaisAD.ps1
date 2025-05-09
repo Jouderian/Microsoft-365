@@ -6,6 +6,7 @@
 # Versao 4 (07/11/24) Jouderian Nobre: Inclusáo da biblioteca, tratamento dos campos e melhoria no acompanhamento da progressao da extracao
 # Versao 5 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 # Versao 6 (17/03/25) Jouderian Nobre: Incluir o campo POBox para identificar sincronismo com o M365
+# Versao 7 (09/05/25) Jouderian Nobre: Incluir o campo descricao
 #--------------------------------------------------------------------------------------------------------
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
@@ -35,10 +36,11 @@ $credenciais = Get-ADUser -Filter * `
     LastLogonTimestamp, `
     AccountExpirationDate, `
     PasswordLastSet, `
+    Description, `
     CanonicalName, `
     ObjectGUID
 
-Out-File -FilePath $arquivo -InputObject "Credencial;Nome;eMail;Ativa;M365;Empresa;Escritorio;Departamento;Cargo;Gerente;Criacao;ultimoAcesso;Expiracao;mudancaSenha;CanonicalName;ObjectGUID;Grupos" -Encoding UTF8
+Out-File -FilePath $arquivo -InputObject "Credencial;Nome;eMail;Ativa;M365;Empresa;Escritorio;Departamento;Cargo;Gerente;Criacao;ultimoAcesso;Expiracao;mudancaSenha;Descricao;CanonicalName;ObjectGUID;Grupos" -Encoding UTF8
 $totalCredenciais = $credenciais.Count
 
 Foreach ($credencial in $credenciais){
@@ -90,6 +92,7 @@ Foreach ($credencial in $credenciais){
     $infoCredencial += "$($momento.ToString('dd/MM/yy HH:mm'));"
   }
 
+  $infoCredencial += [System.String]::Concat("""","$($credencial.Description)",""";") # Descricao
   $infoCredencial += "$($credencial.CanonicalName);" # CanonicalName
   $infoCredencial += "$($credencial.ObjectGUID);" # ObjectGUID
 
