@@ -19,8 +19,8 @@ $indice = 0
 $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaDeCaixasPostais.csv"
 
 #-------------------------------------------------------------------- VALIDACOES
-VerificaModulo -NomeModulo "Microsoft.Graph" -MensagemErro "O módulo Microsoft Graph é necessário e não está instalado no sistema."
-VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O módulo Exchange Online Management é necessário e não está instalado no sistema."
+VerificaModulo -NomeModulo "Microsoft.Graph" -MensagemErro "O modulo Microsoft Graph e necessario e nao esta instalado no sistema."
+VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O modulo Exchange Online Management e necessario e nao esta instalado no sistema."
 
 try {
   Import-Module -Name Microsoft.Graph.Users
