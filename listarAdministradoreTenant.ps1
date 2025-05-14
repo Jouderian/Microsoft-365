@@ -4,45 +4,54 @@
 # Versao 1 (30/11/22) - Jouderian Nobre: Criacao da rotina
 # Versao 2 (20/04/23) - Jouderian Nobre: Ajustes
 # Versao 3 (29/12/24) - Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+# Versao 4 (14/05/26) - Jouderian Nobre: Otimizando o script e uso de funcoes
 #--------------------------------------------------------------------------------------------------------
 
-#Valida existencia do modulo esta instalado
-$Modules = Get-Module -Name AzureAD -ListAvailable
-if($Modules.count -eq 0){
-  Write-Host Instale o modulo do AzureAD usando o comando abaixo:`n  Install-Module AzureAD -ForegroundColor yellow
+Clear-Host
+
+. "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
+
+#--------------------------------------------------------- Conectando ao servico
+VerificaModulo -NomeModulo "AzureAD" -MensagemErro "O módulo AzureAD é necessário e não está instalado no sistema."
+try {
+  Connect-AzureAD -AccountId jouderian.nobre.infra@grupoElfa.onMicrosoft.com
+} catch {
+  Write-Host "Erro ao conectar no AzureAD: $($_.Exception.Message)" -ForegroundColor Red
   Exit
 }
-Connect-AzureAD -AccountId jouderian.nobre.infra@grupoElfa.onMicrosoft.com
 
-$arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaDeMembrosAdministrativos.csv"
+#---------------------------------------------------------- Declarando variaveis
 $inicio = Get-Date
+$resultados = @()
+$arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaDeMembrosAdministrativos.csv"
 
 Write-Host Inicio: $inicio
 Write-Host Pesquisando Grupos Administrativos...
 $gruposAdministrativos = Get-AzureADDirectoryRole
 
-Out-File -FilePath $arquivo -InputObject "grupoId,grupoAdministrativo,usuarioID,tipo,usuario,UPN,ativa" -Encoding UTF8
-
 Foreach ($grupo in $gruposAdministrativos){
-
-  Write-Host $grupo.DisplayName
 
   $membros = Get-AzureADDirectoryRoleMember -ObjectId $grupo.ObjectId
 
   Foreach ($usuario in $membros){
-    $infoMembro = "$($grupo.ObjectId),"
-    $infoMembro += "$($grupo.DisplayName),"
-    $infoMembro += "$($usuario.ObjectId),"
-    $infoMembro += "$($usuario.UserType),"
-    $infoMembro += "$($usuario.DisplayName),"
-    $infoMembro += "$($usuario.UserPrincipalName),"
-    $infoMembro += "$($usuario.AccountEnabled)"
-
-    Out-File -FilePath $arquivo -InputObject $infoMembro -Encoding UTF8 -append
+    $resultados += [PSCustomObject]@{
+      grupoId = $grupo.ObjectId
+      grupoAdministrativo= $grupo.DisplayName
+      usuarioID = $usuario.ObjectId
+#      tipo = $usuario.UserType
+      usuario = $usuario.DisplayName
+      UPN = $usuario.UserPrincipalName
+      ativa = $usuario.AccountEnabled
+    }
   }
 }
+$resultados | Export-Csv -Path $arquivo -NoTypeInformation -Encoding UTF8
+
+Write-Host "`nTotal de grupos administrativos: $($gruposAdministrativos.Count)"
+Write-Host "Total de membros administrativos: $($resultados.Count)"
+
+Disconnect-AzureAD
 
 $final = Get-Date
-Write-Host `nInicio: $inicio
-Write-Host Final: $final
+Write-Host `nFinal: $final
 Write-Host Tempo: (NEW-TIMESPAN -Start $inicio -End $final).ToString()
