@@ -16,7 +16,7 @@ VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O módulo E
 try {
   Connect-ExchangeOnline
 } catch {
-  Write-Host "Erro ao conectar ao Exchange Online: $_" -ForegroundColor Red
+  Write-Host "Erro ao conectar ao Exchange Online: $($_.Exception.Message)" -ForegroundColor Red
   Exit
 }
 
@@ -47,7 +47,7 @@ Foreach ($Lista in $Listas){
         Remove-DistributionGroup -Identity $Lista.ExternalDirectoryObjectId -Confirm:$false
         gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Excluida"
       } catch {
-        gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId), ERRO: $($_)" -erro:$true
+        gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId), ERRO: $($_.Exception.Message)" -erro:$true
       }
     } else {
       gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Sincronizada AD"
