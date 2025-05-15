@@ -1,6 +1,7 @@
 #--------------------------------------------------------------------------------------------------------
 # Descricao: Listar todos os membros de uma caixa postal compartilhada no Exchange Online (M365)
 # Versao 1 (13/05/25) Jouderian Nobre
+# Versao 2 (14/05/25) Jouderian Nobre: Mostra tambem as caixa compartilhadas sem membros
 #--------------------------------------------------------------------------------------------------------
 
 Clear-Host
@@ -17,7 +18,7 @@ VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O modulo Ex
 try {
   Connect-ExchangeOnline
 } catch {
-  Write-Host "Erro ao conectar ao Exchange Online: $_" -ForegroundColor Red
+  Write-Host "Erro ao conectar ao Exchange Online: $($_.Exception.Message)" -ForegroundColor Red
   Exit
 }
 
@@ -41,12 +42,20 @@ foreach ($Mailbox in $SharedMailboxes){
     # Filtrar apenas os usuários com permissões explícitas
     $Members = $Permissions | Where-Object { $_.User -notlike "NT AUTHORITY\SELF" -and $_.User -notlike "S-1-*" }
 
-    # Adicionar os resultados à lista
+    if($Members.Count -eq 0){
+      $Results += [PSCustomObject]@{
+        SharedMailbox = $Mailbox.PrimarySmtpAddress
+        User = "SEM MEMBROS"
+#        AccessRights = ""
+      }
+      continue
+    }
+
     foreach ($Member in $Members){
       $Results += [PSCustomObject]@{
         SharedMailbox = $Mailbox.PrimarySmtpAddress
         User = $Member.User
-        AccessRights = ($Member.AccessRights -join ", ")
+#        AccessRights = ($Member.AccessRights -join ", ")
       }
     }
   } catch {
