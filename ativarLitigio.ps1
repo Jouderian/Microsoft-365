@@ -2,18 +2,21 @@
 # Descricao: Script para ativar o litigio nas caixas postais com licenças: Office 365 E3 e Business Premium
 # Versao 1 (23/06/23) Jouderian Nobe
 # Versao 2 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+# Versao 3 (28/06/25) Jouderian Nobre: Adequando ao uso da biblioteca de funcoes
 #--------------------------------------------------------------------------------------------------------
 
-Clear-Host
-$arquivoEntrada = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\credenciaisLitigio.csv"
-$inicio = Get-Date
+. "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
-$Modules = Get-Module -Name ExchangeOnlineManagement -ListAvailable
-if($Modules.count -eq 0){
-  Write-Host Instale o modulo do ExchangeOnlineManagement usando o comando abaixo:`n  Install-Module ExchangeOnlineManagement -ForegroundColor yellow
-  Exit
-}
-Connect-ExchangeOnline
+Clear-Host
+
+# Declarando variaveis
+$inicio = Get-Date
+$arquivoEntrada = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\credenciaisLitigio.csv"
+
+# Validacoes
+VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O modulo Exchange Online Management e necessario e nao esta instalado no sistema."
+Import-Module ExchangeOnlineManagement -ErrorAction Stop
+Connect-ExchangeOnline -ShowBanner:$false
 
 Write-Host Inicio: $inicio
 Write-Host Importantdo relação de caixas postais...
