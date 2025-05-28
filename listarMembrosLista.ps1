@@ -7,20 +7,21 @@
 # Versao 6 (11/12/24) Jouderian Nobre: Passa a exclui as listas vazias
 # Versao 7 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 # Versao 8 (29/04/25) Jouderian Nobre: Otimizacao do script com uso de funcoes
+# Versao 9 (28/05/25) Jouderian Nobre: Otimizando a logica de exclusao das listas vazias
 #--------------------------------------------------------------------------------------------------------
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
-#--------------------------------------------------------- Conectando ao servico
+# Conectando ao servico
 VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O módulo Exchange Online Management é necessário e não está instalado no sistema."
 try {
-  Connect-ExchangeOnline
+  Connect-ExchangeOnline -ShowBanner:$false
 } catch {
   Write-Host "Erro ao conectar ao Exchange Online: $($_.Exception.Message)" -ForegroundColor Red
   Exit
 }
 
-#---------------------------------------------------------- Declarando variaveis
+# Declarando variaveis
 $indice = 0
 $inicio = Get-Date
 $logs = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listasVazias_$($inicio.ToString('yyMMdd_HHmmss')).txt"
@@ -34,29 +35,31 @@ $totalListas = $Listas.Count
 Out-File -FilePath $arquivo -InputObject "idGrupo;nomeGrupo;eMailGrupo;adSync;tipoGrupo;idMembro;membro;tipo;eMailMembro" -Encoding UTF8
 
 Foreach ($Lista in $Listas){
+
   $indice++
-
-  if ($indice % 10 -eq 0){ # Atualiza o progresso a cada 10 listas processadas
-    Write-Progress -Activity "Exportando Listas/Grupos" -Status "Progresso: $indice/$totalListas - $($Lista.DisplayName)" -PercentComplete (($indice / $totalListas) * 100)
-  }
-
+  Write-Progress -Activity "Exportando Listas/Grupos" -Status "Progresso: $indice/$totalListas - $($Lista.DisplayName)" -PercentComplete (($indice / $totalListas) * 100)
+  
   $Membros = Get-DistributionGroupMember -Identity $Lista.ExternalDirectoryObjectId
   if ($Membros.Length -eq 0){
-    if($Lista.IsDirSynced -eq $false){
-      try {
-        Remove-DistributionGroup -Identity $Lista.ExternalDirectoryObjectId -Confirm:$false
-        gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Excluida"
-      } catch {
-        gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId), ERRO: $($_.Exception.Message)" -erro:$true
-      }
-    } else {
+
+    if($Lista.IsDirSynced -eq $true){
       gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Sincronizada AD"
+      continue
     }
-  } else {
-    Foreach ($Membro in $Membros){
-      Out-File -FilePath $arquivo -InputObject "$($Lista.ExternalDirectoryObjectId);$($Lista.DisplayName);$($Lista.PrimarySMTPAddress);$($Lista.IsDirSynced);$($Lista.RecipientType);$($Membro.ExternalDirectoryObjectId);$($Membro.DisplayName);$($Membro.RecipientType);$($Membro.PrimarySMTPAddress)" -Encoding UTF8 -append
+
+    try {
+      Remove-DistributionGroup -Identity $Lista.ExternalDirectoryObjectId -Confirm:$false
+      gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Excluida"
+    } catch {
+      gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),ERRO: $($_.Exception.Message)" -erro:$true
     }
+    continue
   }
+  
+  Foreach ($Membro in $Membros){
+    Out-File -FilePath $arquivo -InputObject "$($Lista.ExternalDirectoryObjectId);$($Lista.DisplayName);$($Lista.PrimarySMTPAddress);$($Lista.IsDirSynced);$($Lista.RecipientType);$($Membro.ExternalDirectoryObjectId);$($Membro.DisplayName);$($Membro.RecipientType);$($Membro.PrimarySMTPAddress)" -Encoding UTF8 -append
+  }
+
 }
 Write-Progress -Activity "Exportando Listas/Grupos" -PercentComplete 100
 
