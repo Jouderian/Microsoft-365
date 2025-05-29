@@ -6,29 +6,31 @@
 
 Clear-Host
 
-#--------------------------------------------------------------------- VARIAVEIS
+# Declarando variaveis
 $inicio = Get-Date
 $groupName = "semMFA.M365"
 
+# Conexoes
 Connect-AzureAD
 
+# Validando grupo
 Write-Host "Inicio:" $inicio
 Write-Host "Pesquisando relacao de credenciais no grupo:" $groupName
 $group = Get-AzureADGroup -SearchString $groupName
 
 if ($group){
-    # Obtenha os membros do grupo
-    $members = Get-AzureADGroupMember -ObjectId $group.ObjectId
+  # Obtenha os membros do grupo
+  $members = Get-AzureADGroupMember -ObjectId $group.ObjectId
 
-    foreach ($member in $members){
-        $user = Get-AzureADUser -ObjectId $member.ObjectId
-        $situacao = if ($user.AccountEnabled) { "Ativa" } else { "Bloqueada" }
-        Write-Output "$($user.DisplayName),$($user.UserPrincipalName),$($user.UserType),$($situacao)"
-    }
+  foreach ($member in $members){
+    $user = Get-AzureADUser -ObjectId $member.ObjectId
+    $situacao = if ($user.AccountEnabled) { "Ativa" } else { "Bloqueada" }
+    Write-Output "$($user.DisplayName),$($user.UserPrincipalName),$($user.UserType),$($situacao)"
+  }
 
-    Write-Output "`n`nTotal de membros: $($members.Count)"
+  Write-Output "`n`nTotal de membros: $($members.Count)"
 } else {
-    Write-Output "Grupo não encontrado: $groupName"
+  Write-Output "Grupo não encontrado: $groupName"
 }
 
 $final = Get-Date
