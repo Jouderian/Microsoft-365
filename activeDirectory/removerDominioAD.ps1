@@ -12,12 +12,14 @@ Param(
 )
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
+. "C:\ScriptsRotinas\bibliotecas\M365_Functions_elfa.ps1"
 
 Clear-Host
 
 # Declarando variaveis
 
 $inicio = Get-Date
+$mensagem = "Remocao dominio $($dominio) em $($inicio.ToString('dd/MM/yy HH:mm'))"
 $logs = "C:\ScriptsRotinas\remocaoDominio\removerDominioEmails_$((Get-Date).ToString('MMMyy')).txt"
 $contadores = @{
   Total = 0
@@ -27,53 +29,77 @@ $contadores = @{
 
 gravaLOG -arquivo $logs -texto "$($inicio.ToString('dd/MM/yy HH:mm:ss')) - Iniciando a remocao do dominio $($dominio) dos eMails..."
 
-# Busca usuarios na OU especificada
-try {
-  $usuarios = Get-ADUser -Filter "EmailAddress -like '*@$dominio'" -Properties DisplayName, DistinguishedName, UserPrincipalName, EmailAddress, proxyAddresses
-  $contadores.Total = $usuarios.Count
-    
-  gravaLOG -arquivo $logs -texto "Encontrados $($contadores.Total) usuarios com eMail do dominio $dominio"
+$usuarios = Get-ADUser -Filter "EmailAddress -like '*@$dominio'" -Properties SamAccountName, Name, DisplayName, DistinguishedName, UserPrincipalName, EmailAddress, proxyAddresses, POBox
+$contadores.Total = $usuarios.Count
+gravaLOG -arquivo $logs -texto "Encontrados $($contadores.Total) usuarios com eMail do dominio $dominio"
 
-  foreach ($usuario in $usuarios){
+foreach ($usuario in $usuarios){
+  $caixaPostal = ""
+  $nome = "[Inativo] $($usuarioAD.Name)"
+
+  try {
+    $emailAtual = $usuario.UserPrincipalName
+    $proxiesAtuais = $usuario.proxyAddresses
+    $novoEmail = $emailAtual.Split('@')[0] + "@" + $novoUPN
+
+    # Remove eMails com o dominio
+    $novosProxies = $proxiesAtuais | Where-Object { $_ -notlike "*@$dominio" }
+    if(-not $novosProxies){
+	  $novosProxies = " "
+    }
+
+    if($usuarioAD.POBox -eq 'O365' -or $usuarioAD.POBox -eq 'NOGAL'){
+	  $caixaPostal = "NOGAL"
+    }
+
+    if ($WhatIf){
+	  Write-Host "Usuario $($usuario.DisplayName), UPN Atual: $($emailAtual), Novo UPN: $($novoEmail), Proxies atuais: $($proxiesAtuais -join ', '), Novos proxies: $($novosProxies -join ', ')"
+	 continue
+    }
+
+    # Atualiza credencial
+    Set-ADUser -Identity $usuario.DistinguishedName `
+	  -displayname $nome `
+	  -UserPrincipalName $novoEmail `
+	  -EmailAddress $novoEmail `
+	  -POBox $caixaPostal `
+	  -Replace @{proxyAddresses = $novosProxies} `
+    -Replace @{info=$mensagem} `
+	  -Enabled $false `
+	  -Country "BR"
+
     try {
-      $emailAtual = $usuario.UserPrincipalName
-      $proxiesAtuais = $usuario.proxyAddresses
-      $novoEmail = $emailAtual.Split('@')[0] + "@" + $novoUPN
-
-      # Remove emails com o dominio especificado
-      $novosProxies = $proxiesAtuais | Where-Object { $_ -notlike "*@$dominio" }
-      if(-not $novosProxies){
-        $novosProxies = " "
-      }
-
-      if ($WhatIf){
-        Write-Host "Usuario $($usuario.DisplayName), UPN Atual: $($emailAtual), Novo UPN: $($novoEmail), Proxies atuais: $($proxiesAtuais -join ', '), Novos proxies: $($novosProxies -join ', ')"
-        continue
-      }
-
-      # Atualiza UPN
-      Set-ADUser -Identity $usuario.DistinguishedName -UserPrincipalName $novoEmail
-
-      # Atualiza proxyAddresses
-      Set-ADUser -Identity $usuario.DistinguishedName `
-        -UserPrincipalName $novoEmail `
-        -EmailAddress $novoEmail `
-        -Country "BR" `
-        -Replace @{proxyAddresses = $novosProxies}
-
-      gravaLOG -arquivo $logs -texto "Usuario $($usuario.Name) atualizado com sucesso"
-      $contadores.Alterados++
-
+      #Remover TODOS os grupos do AD, exceto o grupo padrao "Domain Users"
+      Get-ADPrincipalGroupMembership -Identity $usuario.SamAccountName | Where-Object {($_.name -notmatch 'Domain Users')} | ForEach-Object {Remove-ADPrincipalGroupMembership -Identity $Usuario -MemberOf $_ -Confirm:$False}
     } catch {
-      gravaLOG -arquivo $logs -texto "Atualizando usuario $($usuario.Name): $($_.Exception.Message)" -erro:$true
+      gravaLOG -arquivo $logs -texto "Removendo os grupos do $($usuario.SamAccountName) no AD: $($_.Exception.Message)" -erro:$true
+      $contadores.Erros++
+      continue
+    }
+
+    try {
+      #Mudando a senha da credencial para uma senha aleatoria
+      $novaSenha = geraSenhaAleatoria
+      Set-ADAccountPassword -Identity $usuario.SamAccountName -NewPassword (ConvertTo-SecureString -AsPlainText $novaSenha -Force)
+    } catch {
+      gravaLOG -arquivo $logs -texto "Mudando a senha do $($usuario.SamAccountName) no AD: $($_.Exception.Message)" -erro:$true
       $contadores.Erros++
     }
-  }
 
-} catch {
-  gravaLOG -arquivo $logs -texto "Erro ao buscar usuarios: $($_.Exception.Message)" -erro:$true
-  Exit
+    try {
+      #Envia notificacao de cancelamento de 120 dias das reunioes.
+      Remove-CalendarEvents -Identity $($usuario.EmailAddress) -Confirm:$false -CancelOrganizedMeetings -QueryWindowInDays 120
+    } catch {
+      gravaLOG -arquivo $logs -texto "Cancelando os eventos de $($Usuario.EmailAddress): $($_.Exception.Message)" -erro:$true
+      $contadores.Erros++
+    }
+
+  } catch {
+    gravaLOG -arquivo $logs -texto "Atualizando usuario $($usuario.Name): $($_.Exception.Message)" -erro:$true
+    $contadores.Erros++
+  }
 }
+
 
 $final = Get-Date
 gravaLOG -arquivo $logs -texto "Processamento finalizado em $($final.ToString('dd/MM/yy HH:mm:ss'))"
