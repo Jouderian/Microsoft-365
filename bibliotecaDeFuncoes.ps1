@@ -5,6 +5,7 @@
 # Versao: 2 (10/10/24) Jouderian: Funcao de gravacao de LOGs
 # Versao: 3 (10/04/25) Jouderian: Funcao de geracao de senha aleatoria
 # Versao: 4 (14/04/25) Jouderian: Funcao de validacao de modulo e obter descricao de licenca
+# Versao: 5 (30/05/25) Jouderian: Melhoria na funcao de validacao de modulo
 #--------------------------------------------------------------------------------------------------------
 
 function removeQuebraDeLinha{
@@ -70,18 +71,20 @@ function VerificaModulo {
     [parameter(Mandatory=$true)][string]$NomeModulo,
     [parameter(Mandatory=$true)][string]$MensagemErro
   )
+
   $modulo = Get-Module -Name $NomeModulo -ListAvailable
-  if ($null -eq $modulo){
+  if($Modulo.count -eq 0){
     gravaLOG -arquivo $arquivoLogs -texto $MensagemErro -erro:$true
-    $confirm = Read-Host "O módulo $NomeModulo não está instalado. Deseja instalá-lo? [Y/N]"
-    if ($confirm -match "[yY]"){
+    $confirm = Read-Host "O módulo $NomeModulo não está instalado. Deseja instalá-lo? [S]im ou [N]ao"
+    if ($confirm -match "[sS]"){
       Write-Host "Instalando o módulo $NomeModulo..."
-      Install-Module -Name $NomeModulo -Scope CurrentUser -AllowClobber
+      Install-Module -Name $NomeModulo -Repository PSGallery -AllowClobber -Scope CurrentUser
       Write-Host "O módulo $NomeModulo foi instalado com sucesso" -ForegroundColor Magenta
-    } else {
-      Write-Host "Saindo. O módulo $NomeModulo é necessário para executar o script." -ForegroundColor Red
       Exit
     }
+
+    Write-Host "Saindo. O módulo $NomeModulo é necessário para executar o script." -ForegroundColor Red
+    Exit
   }
 }
 
