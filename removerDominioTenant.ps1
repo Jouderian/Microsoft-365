@@ -3,6 +3,9 @@
 # Descricao: Remover um dominio de tenant
 # Versao: 1 (30/05/25) Jouderian: Criacao do script
 #--------------------------------------------------------------------------------------------------------
+# NOTA: Este script deve ser executado com permissões de administrador e requer o módulo ExchangeOnlineManagement instalado.
+# Ainda em desencolvimento, portanto, pode conter erros ou não funcionar como esperado.
+#--------------------------------------------------------------------------------------------------------
 
 Param(
   [Parameter(Mandatory = $false)]
