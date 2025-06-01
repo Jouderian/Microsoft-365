@@ -45,28 +45,28 @@ foreach ($usuario in $usuarios){
     # Remove eMails com o dominio
     $novosProxies = $proxiesAtuais | Where-Object { $_ -notlike "*@$dominio" }
     if(-not $novosProxies){
-	  $novosProxies = " "
+      $novosProxies = " "
     }
 
     if($usuarioAD.POBox -eq 'O365' -or $usuarioAD.POBox -eq 'NOGAL'){
-	  $caixaPostal = "NOGAL"
+      $caixaPostal = "NOGAL"
     }
 
     if ($WhatIf){
-	  Write-Host "Usuario $($usuario.DisplayName), UPN Atual: $($emailAtual), Novo UPN: $($novoEmail), Proxies atuais: $($proxiesAtuais -join ', '), Novos proxies: $($novosProxies -join ', ')"
-	 continue
+      Write-Host "Usuario $($usuario.DisplayName), UPN Atual: $($emailAtual), Novo UPN: $($novoEmail), Proxies atuais: $($proxiesAtuais -join ', '), Novos proxies: $($novosProxies -join ', ')"
+      continue
     }
 
     # Atualiza credencial
     Set-ADUser -Identity $usuario.DistinguishedName `
-	  -displayname $nome `
-	  -UserPrincipalName $novoEmail `
-	  -EmailAddress $novoEmail `
-	  -POBox $caixaPostal `
-	  -Replace @{proxyAddresses = $novosProxies} `
-    -Replace @{info=$mensagem} `
-	  -Enabled $false `
-	  -Country "BR"
+      -displayname $nome `
+      -UserPrincipalName $novoEmail `
+      -EmailAddress $novoEmail `
+      -POBox $caixaPostal `
+      -Replace @{proxyAddresses = $novosProxies} `
+      -Replace @{info=$mensagem} `
+      -Enabled $false `
+      -Country "BR"
 
     try {
       #Remover TODOS os grupos do AD, exceto o grupo padrao "Domain Users"
