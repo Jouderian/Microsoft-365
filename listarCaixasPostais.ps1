@@ -69,8 +69,7 @@ Foreach ($caixa in $caixas){
   $tamanhoArquivamento = 0
 
   if($caixa.ArchiveStatus -eq 'Active'){
-    $detalheArquivo = Get-EXOMailboxStatistics -Identity $caixa.Guid -PropertySets All -Properties LastInteractionTime, TotalItemSize
-
+    $detalheArquivo = Get-EXOMailboxStatistics -Identity $caixa.Guid  -Archive -PropertySets All -Properties TotalItemSize
     $tamanhoArquivamento = [math]::Round((($detalheArquivo.TotalItemSize.Value.ToString()).Split('(')[1].Split(' ')[0].Replace(',','')/1GB),2)
   }
 
