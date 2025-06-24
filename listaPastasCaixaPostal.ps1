@@ -2,7 +2,7 @@
 # Autor: Fernando Olimpio
 # Descricao: Lista as pastas de um email e gera uma listagem das pastas
 # Versao: 1 (01/05/25) Olimpio
-# Versao: 1 (03/06/25) Jouderian Nobre: Adequacao para usar biblioteca de funcoes
+# Versao: 2 (03/06/25) Jouderian Nobre: Adequacao para usar biblioteca de funcoes
 #--------------------------------------------------------------------------------------------------------
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
