@@ -6,9 +6,9 @@
 
 Param(
   [Parameter(Mandatory = $false)]
-  [string]$dominio = "seuZe.com.br",  # Dominio a ser removido
-  [string]$novoUPN = "donaMaria.onMicrosoft.com",  # Novo dominio UPN
-  [switch]$WhatIf  # Permite simular a execucao sem fazer alteracoes
+    [string]$dominio = "seuZe.com.br",  # Dominio a ser removido
+    [string]$novoUPN = "donaMaria.onMicrosoft.com",  # Novo dominio UPN
+    [switch]$WhatIf  # Permite simular a execucao sem fazer alteracoes
 )
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
@@ -17,7 +17,6 @@ Param(
 Clear-Host
 
 # Declarando variaveis
-
 $inicio = Get-Date
 $mensagem = "Remocao dominio $($dominio) em $($inicio.ToString('dd/MM/yy HH:mm'))"
 $logs = "C:\ScriptsRotinas\remocaoDominio\removerDominioEmails_$((Get-Date).ToString('MMMyy')).txt"
@@ -27,15 +26,15 @@ $contadores = @{
   Erros = 0
 }
 
+# Iniciando coleta de credenciais
 gravaLOG -arquivo $logs -texto "$($inicio.ToString('dd/MM/yy HH:mm:ss')) - Iniciando a remocao do dominio $($dominio) dos eMails..."
-
 $usuarios = Get-ADUser -Filter "EmailAddress -like '*@$dominio'" -Properties SamAccountName, Name, DisplayName, DistinguishedName, UserPrincipalName, EmailAddress, proxyAddresses, POBox
 $contadores.Total = $usuarios.Count
 gravaLOG -arquivo $logs -texto "Encontrados $($contadores.Total) usuarios com eMail do dominio $dominio"
 
 foreach ($usuario in $usuarios){
   $caixaPostal = ""
-  $nome = "[Inativo] $($usuarioAD.Name)"
+  $nomeNovo = "[Inativo] $($usuarioAD.Name)"
 
   try {
     $emailAtual = $usuario.UserPrincipalName
@@ -45,7 +44,7 @@ foreach ($usuario in $usuarios){
     # Remove eMails com o dominio
     $novosProxies = $proxiesAtuais | Where-Object { $_ -notlike "*@$dominio" }
     if(-not $novosProxies){
-      $novosProxies = " "
+      $novosProxies = ""
     }
 
     if($usuarioAD.POBox -eq 'O365' -or $usuarioAD.POBox -eq 'NOGAL'){
@@ -59,12 +58,14 @@ foreach ($usuario in $usuarios){
 
     # Atualiza credencial
     Set-ADUser -Identity $usuario.DistinguishedName `
-      -displayname $nome `
+      -displayname $nomeNovo `
       -UserPrincipalName $novoEmail `
       -EmailAddress $novoEmail `
       -POBox $caixaPostal `
-      -Replace @{proxyAddresses = $novosProxies} `
-      -Replace @{info=$mensagem} `
+      -Replace @{
+        proxyAddresses = $novosProxies;
+        info = $mensagem
+      } `
       -Enabled $false `
       -Country "BR"
 
@@ -99,7 +100,6 @@ foreach ($usuario in $usuarios){
     $contadores.Erros++
   }
 }
-
 
 $final = Get-Date
 gravaLOG -arquivo $logs -texto "Processamento finalizado em $($final.ToString('dd/MM/yy HH:mm:ss'))"

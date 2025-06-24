@@ -7,13 +7,16 @@
 # Versao 5 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 # Versao 6 (17/03/25) Jouderian Nobre: Incluir o campo POBox para identificar sincronismo com o M365
 # Versao 7 (09/05/25) Jouderian Nobre: Incluir o campo descricao
+# Versao 8 (05/06/25) Jouderian Nobre: Otimizando o script
 #--------------------------------------------------------------------------------------------------------
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
 Clear-Host
 
+# Declarando variaveis
 $indice = 0
+$buffer = @()
 $inicio = Get-Date
 $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaUsuariosAD.csv"
 
@@ -46,10 +49,6 @@ $totalCredenciais = $credenciais.Count
 Foreach ($credencial in $credenciais){
 
   $indice++
-
-  if ($indice % 10 -eq 0){ # Atualiza o progresso a cada 10 caixas processadas
-    Write-Progress -Activity "Coletando dados das credenciais" -Status "Progresso: $indice de $totalCredenciais coletadas" -PercentComplete (($indice / $totalCredenciais) * 100)
-  }
 
 #  $grupos = Get-ADPrincipalGroupMembership -Identity $credencial.SamAccountName
 
@@ -103,7 +102,14 @@ Foreach ($credencial in $credenciais){
 #  $texto += '"'
 #  $infoCredencial += "$($texto)"
 
-  Out-File -FilePath $arquivo -InputObject $infoCredencial -Encoding UTF8 -append
+  $buffer += $infoCredencial
+
+  # Atualiza a cada 50 caixas processadas
+  if (($indice % 50 -eq 0) -or ($indice -eq $totalCredenciais)){ 
+    Write-Progress -Activity "Coletando dados das credenciais" -Status "Progresso: $indice de $totalCredenciais coletadas" -PercentComplete (($indice / $totalCredenciais) * 100)
+    Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
+    $buffer = @()
+  }
 }
 
 Write-Progress -Activity "Coletando dados das credenciais" -PercentComplete 100
