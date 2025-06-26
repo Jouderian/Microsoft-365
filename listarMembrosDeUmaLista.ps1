@@ -1,5 +1,5 @@
 ﻿#--------------------------------------------------------------------------------------------------------
-# Descricao: Mostra os membros de um grupo do EntraID
+# Descricao: Mostra os membros de um grupo/Lista do EntraID
 # Versao 1 (06/03/25) Jouderian Nobre
 # Versao 2 (07/05/25) Jouderian Nobre: Melhoria na exibicao dos dados
 #--------------------------------------------------------------------------------------------------------
