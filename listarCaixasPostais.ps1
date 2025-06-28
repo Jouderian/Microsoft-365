@@ -22,7 +22,8 @@ $inicio = Get-Date
 $logs = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaCaixasPostais_$($inicio.ToString('MMMyy')).txt"
 $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaDeCaixasPostais.csv"
 
-gravaLOG -arquivo $logs -texto "$(($inicio).ToString('dd/MM/yy HH:mm:ss')) - Iniciando a exportacao de caixas postais do Microsoft 365..."
+gravaLOG -arquivo $logs -texto "$("=" * 62) $($inicio.ToString('dd/MM/yy HH:mm:ss'))"
+gravaLOG -arquivo $logs -texto "Iniciando a exportacao de caixas postais do Microsoft 365..."
 
 # Validacoes
 VerificaModulo -NomeModulo "Microsoft.Graph" -MensagemErro "O modulo Microsoft Graph e necessario e nao esta instalado no sistema."
@@ -80,7 +81,7 @@ Foreach ($caixa in $caixas){
 
   try {
     $gerente = Get-MgUserManager -UserId $caixa.UserPrincipalName
-    $gerente = $gerente.AdditionalProperties.displayName    
+    $gerente = $gerente.AdditionalProperties.displayName
   } catch {
     $gerente = ""
   }
@@ -150,7 +151,7 @@ Foreach ($caixa in $caixas){
     $buffer = @()
 
     if ($indice % 100 -eq 0){
-      gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando $($indice) caixas postais"
+      gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando $($indice) caixas postais. Parcial: $((NEW-TIMESPAN -Start $inicio -End Get-Date).ToString())"
     }
   }
 
