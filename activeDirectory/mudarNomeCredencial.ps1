@@ -28,9 +28,14 @@ foreach ($credencial in $credenciais){
   $novoUPN = $usuario.NovoUPN
 
   # Atualize o SamAccountName e o UPN
-  Set-ADUser -Identity $samAccountNameAtual -SamAccountName $novoSamAccountName -UserPrincipalName $novoUPN
+  Set-ADUser `
+    -Identity $samAccountNameAtual `
+    -SamAccountName $novoSamAccountName `
+    -UserPrincipalName $novoUPN
 
   # Adicione um apelido para o antigo UPN
-  Set-ADUser -Identity $novoSamAccountName -Add @{proxyAddresses="smtp:$upnAtual"}
+  Set-ADUser `
+    -Identity $novoSamAccountName `
+    -Add @{proxyAddresses="smtp:$upnAtual"}
 
 }

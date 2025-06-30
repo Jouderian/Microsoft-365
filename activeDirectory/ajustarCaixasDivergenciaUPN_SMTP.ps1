@@ -53,7 +53,8 @@ foreach ($usuario in $usuarios){
     gravaLOG -arquivo $logs -texto "$($usuario.DistinguishedName -replace ',', '/'),$($usuario.UserPrincipalName),$($usuario.proxyAddresses -join ' / '),$($smtpPrincipal -join ' / '),$($novosProxies -join ' / '),$($observacao)"
 
     # Atualiza credencial
-    Set-ADUser -Identity $usuario.DistinguishedName `
+    Set-ADUser `
+      -Identity $usuario.DistinguishedName `
       -Replace @{
         proxyAddresses = $novosProxies;
         info = $observacao
