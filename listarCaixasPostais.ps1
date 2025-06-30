@@ -49,9 +49,9 @@ try {
 #busca as caixas postais
 gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Pesquisando Relacao de Caixas Postais no ExchangeOnline..."
 $Caixas = Get-EXOMailbox -ResultSize Unlimited -PropertySets All | Select-Object Id, Guid, DisplayName, UserPrincipalName, Office, RecipientTypeDetails, IsDirSynced, AccountDisabled, IsShared, LitigationHoldEnabled, ArchiveStatus, ArchiveGuid, Alias
-$totalCaixas = $caixas.Count
+$total = $caixas.Count
 
-gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando $($totalCaixas) caixas postais no arquivo $($arquivo)"
+gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando $($total) caixas postais no arquivo $($arquivo)"
 Out-File -FilePath $arquivo -InputObject "Nome,UPN,Cidade,UF,Empresa,Escritorio,Departamento,Cargo,Gerente,CC,nomeCC,Tipo,AD,Desabilitada,SenhaForte,SenhaNaoExpira,Compartilhada,Encaminhada,Litigio,usado(GB),Arquivamento,Arquivamento(GB),Criacao,MudancaSenha,ultimoSyncAD,ultimoAcesso,conta,objectId,Licencas,outrasLicencas" -Encoding UTF8
 
 Foreach ($caixa in $caixas){
@@ -145,8 +145,8 @@ Foreach ($caixa in $caixas){
   $buffer += $infoCaixa
 
   # Atualiza a cada 50 caixas processadas
-  if (($indice % 50 -eq 0) -or ($indice -eq $totalCaixas)){ 
-    Write-Progress -Activity "Exportando caixas postais" -Status "Progresso: $indice de $totalCaixas extraidas" -PercentComplete (($indice / $totalCaixas) * 100)
+  if (($indice % 50 -eq 0) -or ($indice -eq $total)){ 
+    Write-Progress -Activity "Exportando caixas postais" -Status "Progresso: $indice de $total extraidas" -PercentComplete (($indice / $total) * 100)
     Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
     $buffer = @()
 
