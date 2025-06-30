@@ -23,8 +23,14 @@ $arquivoLog = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\Scripts\bloqueios_$
 
 $usuarios = Import-Excel -Path $arquivoUsuarios -WorksheetName "Ferias"
 Foreach ($usuario in $usuarios){
-  if (($usuario.Comeco -eq $hoje) -or ($usuario.Fim -eq $hoje)){
-    if (($usuario.Comeco -le $hoje) -and ($usuario.Fim -gt $hoje)){
+  if (
+    ($usuario.Comeco -eq $hoje) -or
+    ($usuario.Fim -eq $hoje)
+  ){
+    if (
+      ($usuario.Comeco -le $hoje) -and
+      ($usuario.Fim -gt $hoje)
+    ){
       $Observacao = [System.String]::Concat( `
         "Ausente de ", `
         $usuario.Comeco.Substring(6,2), "/", `
@@ -57,12 +63,13 @@ Foreach ($usuario in $usuarios){
 $usuarios = Import-Excel -Path $arquivoUsuarios -WorksheetName "Desligados"
 Foreach ($usuario in $usuarios){
   if ($usuario.Momento -le $hoje){
-    $userAD = {}
-    $userAD = get-ADUser -Identity $usuario.AD -properties office,displayName,title,department,mail
+    $userAD = get-ADUser `
+      -Identity $usuario.AD `
+      -properties office,displayName,title,department,mail
 
     if($usuarioAD.Enabled){
       $Observacao = [System.String]::Concat( `
-        "Desligado em ", `
+        "Revofado em ", `
         $usuario.Momento.Substring(6,2), "/", `
         $usuario.Momento.Substring(4,2), "/", `
         $usuario.Momento.Substring(2,2) `
@@ -71,10 +78,12 @@ Foreach ($usuario in $usuarios){
       $nomeInativo = [System.String]::Concat("[Inativo] ", $userAD.DisplayName)
 
       Write-Host $usuario.nome ":" $userAD.mail " =>" $Observacao
-      Set-ADUser -Identity $usuario.AD `
+      Set-ADUser `
+        -Identity $usuario.AD `
         -Enabled $false `
         -DisplayName $nomeInativo `
         -Description $Observacao
+
       Out-File -FilePath $arquivoLog -InputObject "$($userAD.office),$($userAD.DisplayName),$($userAD.mail),$($Observacao)" -Encoding UTF8 -append
     }
   }
