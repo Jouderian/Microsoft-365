@@ -18,12 +18,12 @@ $periodo = $inicio.AddDays(-90)
 $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\computadoresAD.csv"
 
 Write-Host "`n`n`n`n`n"
-Write-Host "$($inicio.ToString('dd/MM/yy HH:mm:ss')) - Consultado computadores no AD..."
+Write-Host "$($inicio.ToString('dd/MM/yy HH:mm:ss')) | Consultado computadores no AD..."
 
 # Conexoes
 Import-Module ActiveDirectory
 
-#busca as caixas postais
+# Busca computadores no AD
 $computadoresAD = Get-ADComputer `
   -Filter * `
   -Properties `
@@ -39,7 +39,7 @@ $computadoresAD = Get-ADComputer `
 
 $total = $computadoresAD.Count
 
-Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando Arquivo..."
+Write-Host "$(Get-Date -Format 'dd-MM-yy HH:mm:ss') | Gravando Arquivo..."
 Out-File -FilePath $arquivo -InputObject "Nome;ultimoAcesso;ultimaModificacao;sistemaOperacional;versaoSO;IPv4;IPv6;DNSHostName;OU;arquivado;situacao" -Encoding UTF8
 
 foreach ($computador in $computadoresAD){
@@ -80,4 +80,4 @@ Write-Progress -Activity "Listando computadores" -PercentComplete 100
 
 # Finalizando o script
 $final = Get-Date
-Write-Host "$($final.ToString('dd/MM/yy HH:mm:ss')) - Final => Duracao: $(($inicio - $final).TotalMinutes)"
+Write-Host "$($final.ToString('dd/MM/yy HH:mm:ss')) | Final => Duracao: $(($inicio - $final).TotalMinutes)"
