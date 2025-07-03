@@ -8,7 +8,7 @@
 
 param (
   [Parameter(Mandatory=$true)][string]$arquivo,
-  [Parameter(Mandatory=$false)][string]$ouDestino, <# Move credencial para a OU informada: "OU=Suspeitos,OU=0-IntegracaoRM,OU=Unidades,DC=grupoelfa,DC=srv" #>
+  [Parameter(Mandatory=$false)][string]$ouDestino, <# Move credencial para a OU informada: "OU=Suspeitos,DC=servidor,DC=srv" #>
   [Parameter(Mandatory=$false)][boolean]$removeGrupos = $true, <# Remove os grupos da credencial #>
   [Parameter(Mandatory=$false)][string]$mensagem <# Mensagem para registrar na descricao da credencial #>
 )

@@ -4,8 +4,8 @@
 #--------------------------------------------------------------------------------------------------------
 
 # Variaveis
-$localBusca = "OU=Unidades,DC=grupoelfa,DC=srv" # "OU=Desligados,OU=0-IntegracaoRM,OU=Unidades,DC=grupoelfa,DC=srv" `
-$localDestino = "OU=Suspeitos,OU=0-IntegracaoRM,OU=Unidades,DC=grupoelfa,DC=srv"
+$localBusca = "OU=Unidades,DC=servidor,DC=srv"
+$localDestino = "OU=Suspeitos,OU=0-IntegracaoRM,OU=Unidades,DC=servidor,DC=srv"
 $escopoBusca = "OneLevel" #Subtree = para busca recursiva
 
 $usuariosBloqueados = Get-ADUser `

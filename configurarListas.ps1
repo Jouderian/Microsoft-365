@@ -44,8 +44,6 @@ Foreach ($lista in $listas){
     -ModeratedBy $moderadores `
     -BypassModerationFromSendersOrMembers @() `
     -SendModerationNotifications Internal
-
-  #Set-DistributionGroup -Identity $lista -BypassModerationFromSendersOrMembers @{Add="comunicacao@grupoelfa.com.br",Remove="comunicacao@grupoelfa.com.br"}
 }
 
 $final = Get-Date

@@ -33,21 +33,21 @@ foreach ($computador in $computadoresAD){
       foreach ($objeto in $objetosFilhos){
         Try {
           Remove-ADObject -Identity $objeto.ObjectGUID -Confirm:$False -ErrorAction Stop
-          $bufferLog += "$(Get-Date -Format 'dd-MM-yy HH:mm:ss') | $($computador.nomeDistinto).$($objeto.name) => Filho removido com sucesso"
+          $bufferLog += "$(Get-Date -Format 'dd/MM/yy HH:mm:ss') | $($computador.nomeDistinto).$($objeto.name) => Filho removido com sucesso"
         } Catch {
-          $bufferLog += "$(Get-Date -Format 'dd-MM-yy HH:mm:ss') | $($computador.nomeDistinto).$($objeto.name) => ERRO Objeto Filho: $($_.Exception.Message)"
+          $bufferLog += "$(Get-Date -Format 'dd/MM/yy HH:mm:ss') | $($computador.nomeDistinto).$($objeto.name) => ERRO Objeto Filho: $($_.Exception.Message)"
         }
       }
     }
   } Catch {
-    $bufferLog += "$(Get-Date -Format 'dd-MM-yy HH:mm:ss') | $($computador.nomeDistinto) => ERRO ao buscar filhos: $($_.Exception.Message)"
+    $bufferLog += "$(Get-Date -Format 'dd/MM/yy HH:mm:ss') | $($computador.nomeDistinto) => ERRO ao buscar filhos: $($_.Exception.Message)"
   }
 
   Try {
     Remove-ADComputer -Identity $computador.nomeDistinto -Confirm:$False -ErrorAction Stop
-    $bufferLog += "$(Get-Date -Format 'dd-MM-yy HH:mm:ss') | $($computador.nomeDistinto) => Removido com sucesso"
+    $bufferLog += "$(Get-Date -Format 'dd/MM/yy HH:mm:ss') | $($computador.nomeDistinto) => Removido com sucesso"
   } Catch {
-    $bufferLog += "$(Get-Date -Format 'dd-MM-yy HH:mm:ss') | $($computador.nomeDistinto) => ERRO: $($_.Exception.Message)"
+    $bufferLog += "$(Get-Date -Format 'dd/MM/yy HH:mm:ss') | $($computador.nomeDistinto) => ERRO: $($_.Exception.Message)"
   }
 }
 

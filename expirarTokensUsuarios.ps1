@@ -11,7 +11,7 @@ if($Modules.count -eq 0){
   Write-Host Instale o modulo do AzureAD usando o comando abaixo:`n  Install-Module AzureAD -ForegroundColor yellow
   Exit
 }
-Connect-AzureAD -AccountId jouderian.nobre.infra@grupoElfa.onMicrosoft.com
+Connect-AzureAD
 
 $inicio = Get-Date
 
