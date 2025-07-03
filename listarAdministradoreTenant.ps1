@@ -14,7 +14,7 @@ Clear-Host
 #--------------------------------------------------------- Conectando ao servico
 VerificaModulo -NomeModulo "AzureAD" -MensagemErro "O módulo AzureAD é necessário e não está instalado no sistema."
 try {
-  Connect-AzureAD -AccountId jouderian.nobre.infra@grupoElfa.onMicrosoft.com
+  Connect-AzureAD
 } catch {
   Write-Host "Erro ao conectar no AzureAD: $($_.Exception.Message)" -ForegroundColor Red
   Exit

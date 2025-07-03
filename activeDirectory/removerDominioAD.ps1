@@ -12,7 +12,6 @@ Param(
 )
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
-. "C:\ScriptsRotinas\bibliotecas\M365_Functions_elfa.ps1"
 
 Clear-Host
 
