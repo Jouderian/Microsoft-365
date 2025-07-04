@@ -1,13 +1,22 @@
 ﻿#--------------------------------------------------------------------------------------------------------
 # Descricao: Remoção de eventos de uma credencial
 # Versao 01 (06/02/23) Jouderian Nobre:
+# Versao 02 (04/07/23) Jouderian Nobre: Passa a perguntar a caixa postal ao usuário
 #--------------------------------------------------------------------------------------------------------
 
-$Modules = Get-Module -Name ExchangeOnlineManagement -ListAvailable
-if($Modules.count -eq 0){
-  Write-Host Instale o modulo do ExchangeOnlineManagement usando o comando abaixo:`n  Install-Module ExchangeOnlineManagement -ForegroundColor yellow
-  Exit
-}
-Connect-ExchangeOnline
+. "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
-Remove-CalendarEvents -Identity moacir.neto@descarpack.com.br -Confirm:$false -CancelOrganizedMeetings -QueryWindowInDays 120
+Clear-Host
+
+Write-Host "Este script ira remover todos os eventos da caixa postal nos ultimos 120 dias." -ForegroundColor Red
+$caixaPostal = Read-Host "Informe a caixa postal"
+
+VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O modulo Exchange Online Management e necessario e nao esta instalado no sistema."
+Import-Module ExchangeOnlineManagement
+Connect-ExchangeOnline -ShowBanner:$false
+
+Remove-CalendarEvents `
+  -Identity $caixaPostal `
+  -Confirm:$false `
+  -CancelOrganizedMeetings `
+  -QueryWindowInDays 120
