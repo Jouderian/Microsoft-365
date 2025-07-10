@@ -16,9 +16,9 @@ $usuariosAtivos = Get-ADUser -Filter {Enabled -eq $true} -Properties co, c, coun
 
 foreach ($usuario in $usuariosAtivos){
   if (
-    $usuario.co -eq 'Brasil' -and
-    $usuario.c -eq 'BR' -and
-    $usuario.countryCode -eq 76
+    $usuario.co -eq $nomePais -and
+    $usuario.c -eq $codigoPais -and
+    $usuario.countryCode -eq $codigoNumerico
   ){
     continue
   }
