@@ -6,6 +6,7 @@
 # Versao: 3 (10/04/25) Jouderian: Funcao de geracao de senha aleatoria
 # Versao: 4 (14/04/25) Jouderian: Funcao de validacao de modulo e obter descricao de licenca
 # Versao: 5 (30/05/25) Jouderian: Melhoria na funcao de validacao de modulo
+# Versao: 6 (12/07/25) Jouderian: Inclusao da licenca Teams Premium na funcao ObterDescricaoLicenca
 #--------------------------------------------------------------------------------------------------------
 
 function removeQuebraDeLinha{
@@ -114,6 +115,7 @@ function ObterDescricaoLicenca {
     "POWERAUTOMATE_ATTENDED_RPA" { return "Automate Premium" }
 # Licencas Diversas
     "Microsoft_365_Copilot" { return "M365 Copilot" }
+    "Microsoft_Teams_Premium" { return "Teams Premium" }
     "PROJECT_P1" { return "Project Plan 1" }
     "PROJECTPROFESSIONAL" { return "Project Plan 3" }
     default { return $null }
