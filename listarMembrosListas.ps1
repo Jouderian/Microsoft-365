@@ -2,15 +2,19 @@
 # Descricao: Lista a relacao de membros das Listas e Grupos do M365
 # Versao 1 (25/01/22) Jouderian Nobre
 # :::
-# Versao 4 (09/11/24) Jouderian Nobre: Inclusao do ID do grupo/lista e dos membros
-# Versao 5 (09/12/24) Jouderian Nobre: Relaciona as listas sem membros (vazias)
-# Versao 6 (11/12/24) Jouderian Nobre: Passa a exclui as listas vazias
-# Versao 7 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 # Versao 8 (29/04/25) Jouderian Nobre: Otimizacao do script com uso de funcoes
 # Versao 9 (28/05/25) Jouderian Nobre: Otimizando a logica de exclusao das listas vazias
-#--------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
+
+Clear-Host
+
+# Declarando variaveis
+$indice = 0
+$inicio = Get-Date
+$logs = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listasVazias_$($inicio.ToString('yyMMdd_HHmmss')).txt"
+$arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\membrosListasGrupos.csv"
 
 # Conectando ao servico
 VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O módulo Exchange Online Management é necessário e não está instalado no sistema."
@@ -21,14 +25,8 @@ try {
   Exit
 }
 
-# Declarando variaveis
-$indice = 0
-$inicio = Get-Date
-$logs = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listasVazias_$($inicio.ToString('yyMMdd_HHmmss')).txt"
-$arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\membrosListasGrupos.csv"
-
-Write-Host Inicio: $inicio
-Write-Host Pesquisando Listas de Distribuicao...
+Write-Host "Inicio: $inicio"
+Write-Host "Pesquisando Listas de Distribuicao e Grupos..."
 $Listas = Get-DistributionGroup -ResultSize Unlimited
 $totalListas = $Listas.Count
 
@@ -47,6 +45,7 @@ Foreach ($Lista in $Listas){
       continue
     }
 
+    # Removendo listas vazias
     try {
       Remove-DistributionGroup -Identity $Lista.ExternalDirectoryObjectId -Confirm:$false
       gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Excluida"
@@ -64,6 +63,6 @@ Foreach ($Lista in $Listas){
 Write-Progress -Activity "Exportando Listas/Grupos" -PercentComplete 100
 
 $final = Get-Date
-Write-Host `nInicio: $inicio
-Write-Host Final: $final
-Write-Host Tempo: (NEW-TIMESPAN -Start $inicio -End $final).ToString()
+Write-Host "`nInicio: $inicio"
+Write-Host "Final: $final"
+Write-Host "Tempo: $((NEW-TIMESPAN -Start $inicio -End $final).ToString())"
