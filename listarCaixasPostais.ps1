@@ -145,16 +145,15 @@ Foreach ($caixa in $caixas){
   $buffer += $infoCaixa
 
   # Atualiza a cada 50 caixas processadas
-  if (($indice % 50 -eq 0) -or ($indice -eq $total)){ 
+  if (($indice % 100 -eq 0) -or ($indice -eq $total)){ 
     Write-Progress -Activity "Exportando caixas postais" -Status "Progresso: $indice de $total extraidas" -PercentComplete (($indice / $total) * 100)
     Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
     $buffer = @()
 
-    if ($indice % 100 -eq 0){
-      gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando $($indice) caixas postais. Parcial: $((NEW-TIMESPAN -Start $inicio -End Get-Date).ToString())"
+    if ($indice % 250 -eq 0){
+      gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando $($indice) caixas postais. Parcial: $((NEW-TIMESPAN -Start $inicio -End (Get-Date)).ToString())"
     }
   }
-
 }
 
 Write-Progress -Activity "Exportando caixas postais" -PercentComplete 100

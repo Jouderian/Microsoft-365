@@ -4,9 +4,9 @@
 # Versao 02 (04/07/23) Jouderian Nobre: Passa a perguntar a caixa postal ao usuário
 #--------------------------------------------------------------------------------------------------------
 
-. "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
-
 Clear-Host
+
+. "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
 Write-Host "Este script ira remover todos os eventos da caixa postal nos ultimos 120 dias." -ForegroundColor Red
 $caixaPostal = Read-Host "Informe a caixa postal"
