@@ -13,8 +13,9 @@ Clear-Host
 
 # Declarando variaveis
 $indice = 0
+$buffer = @()
 $inicio = Get-Date
-$periodo = $inicio.AddDays(-90)
+$periodo = $inicio.AddDays(-90) # 3 meses
 $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\computadoresAD.csv"
 
 Write-Host "`n`n`n`n`n"
@@ -80,4 +81,4 @@ Write-Progress -Activity "Listando computadores" -PercentComplete 100
 
 # Finalizando o script
 $final = Get-Date
-Write-Host "$($final.ToString('dd/MM/yy HH:mm:ss')) | Final => Duracao: $(($inicio - $final).TotalMinutes)"
+Write-Host "$($final.ToString('dd/MM/yy HH:mm:ss')) | Final => Duracao: $(($final - $inicio).TotalMinutes)"
