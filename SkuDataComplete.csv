@@ -30,13 +30,14 @@ f30db892-07e9-47e9-837c-80727f46fd3d;FLOW_FREE;Microsoft Power Automate Free;;Fr
 710779e8-3d4a-4c88-adb9-386c958d1fdf;TEAMS_EXPLORATORY;Microsoft Teams Exploratory;;Trial
 6af4b3d6-14bb-4a2a-960c-6c902aad34f3;Microsoft_Teams_Rooms_Basic;Microsoft Teams Rooms Basic;;Free
 4cde982a-ede4-4409-9ae6-b003453c8ea6;Microsoft_Teams_Rooms_Pro;Microsoft Teams Rooms Pro;;Commercial
+36a0f3b3-adb5-49ea-bf66-762134cf063a;Microsoft_Teams_Premium;Microsoft Teams Premium;Teams Premium;Commercial
 18181a46-0d4e-45cd-891e-60aabd171b4e;STANDARDPACK;Office 365 E1;O365  E1;Commercial
 12a0b0ef-3d7c-4456-8f61-aa3817576c8d;Office365_E1_Plus;Office 365 E1 Plus;O365 E1 Plus;Commercial
 6fd2c87f-b296-42f0-b197-1e91e994b900;ENTERPRISEPACK;Office 365 E3;O365 E3;Commercial
 4b585984-651b-448a-9e53-3b10f069cf7f;DESKLESSPACK;Office 365 F3;O365 F3;Commercial
 c2273bd0-dff7-4215-9ef5-2c7bcfb06425;OFFICESUBSCRIPTION;Microsoft Apps Enterprise;AppsEnterprise;Commercial
 5b340c18-f635-4a12-8623-cc33fae96ed4;POWERAPPS_PORTALS_LOGIN;Power Apps Portals login capacity add-on;;Commercial
-;POWERAPPS_PER_USER;Power Apps Premium;PowerApps Premium;Commercial
+b30411f5-fea1-4a59-9ad9-3db7c7ead579;POWERAPPS_PER_USER;Power Apps Premium;PowerApps Premium;Commercial
 4a51bf65-409c-4a91-b845-1121b571cc9d;FLOW_PER_USER;Power Automate per user plan;PowerAutomate;Commercial
 eda1941c-3c4f-4995-b5eb-e85a42175ab9;POWERAUTOMATE_ATTENDED_RPA;Power Automate Premium;Automate Premium;Commercial
 f8a1db68-be16-40ed-86d5-cb42ce701560;POWER_BI_PRO;Power BI Pro;PowerBI Pro;Commercial
