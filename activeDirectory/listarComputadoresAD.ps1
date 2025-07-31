@@ -5,6 +5,7 @@
 # Versao 3 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 # Versao 4 (20/03/25) Jouderian Nobre: Incluindo a ultima alteração da maquina no AD
 # Versao 5 (29/06/25) Jouderian Nobre: Otimizacao do script e melhoria nos logs
+# Versao 5 (31/07/25) Jouderian Nobre: Ajuste periodo de expiracao para licenca maternidade (180 dias + 10 dias de tolerancia)
 #--------------------------------------------------------------------------------------------------------
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
@@ -15,7 +16,7 @@ Clear-Host
 $indice = 0
 $buffer = @()
 $inicio = Get-Date
-$periodo = $inicio.AddDays(-90) # 3 meses
+$periodo = $inicio.AddDays(-190) # licenca maternidade
 $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\computadoresAD.csv"
 
 Write-Host "`n`n`n`n`n"
