@@ -37,9 +37,9 @@ function trataTexto{
     $textoTratado = (Get-Culture).TextInfo.ToTitleCase($textoTratado.ToLower())
     $textoTratado = $textoTratado.replace(' Da ', ' da ').replace(' De ', ' de ').replace(' Di ', ' di ').replace(' Do ', ' do ').replace(' Du ', ' du ').replace(' Das ', ' das ').replace(' Dos ', ' dos ').replace(' Iii', ' III').replace(' Ii', ' II')
   } elseif ($notacao -eq "m"){
-    $textoTratado = $texto.ToLower()
+    $textoTratado = $textoTratado.ToLower()
   } elseif ($notacao -eq "M"){
-    $textoTratado = $texto.ToUpper()
+    $textoTratado = $textoTratado.ToUpper()
   }
   $textoTratado = $textoTratado.replace(',', ' ')
   
