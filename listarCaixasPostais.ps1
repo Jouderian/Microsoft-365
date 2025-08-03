@@ -9,6 +9,7 @@
 # Versao 18 (24/03/25) Jouderian Nobre: Adequacao para usar o MgGraph e seus comandos
 # Versao 19 (14/04/25) Jouderian Nobre: Otimizacao do script com uso de funcoes
 # Versao 20 (28/05/25) Jouderian Nobre: Portando o script para usar Get-EXOMailbox e melhoria nos logs
+# Versao 21 (03/08/25) Jouderian Nobre: Otimizacao do script para melhorar a performance
 #--------------------------------------------------------------------------------------------------------
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
@@ -145,12 +146,18 @@ Foreach ($caixa in $caixas){
   $buffer += $infoCaixa
 
   # Atualiza a cada 50 caixas processadas
-  if (($indice % 100 -eq 0) -or ($indice -eq $total)){ 
+  if (
+    $indice % 250 -eq 0 -or
+    $indice -eq $total
+  ){
     Write-Progress -Activity "Exportando caixas postais" -Status "Progresso: $indice de $total extraidas" -PercentComplete (($indice / $total) * 100)
     Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
     $buffer = @()
 
-    if ($indice % 250 -eq 0){
+    if (
+      $indice % 500 -eq 0 -or
+      $indice -eq $total
+    ){
       gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando $($indice) caixas postais. Parcial: $((NEW-TIMESPAN -Start $inicio -End (Get-Date)).ToString())"
     }
   }
