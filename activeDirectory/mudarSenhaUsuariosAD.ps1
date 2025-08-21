@@ -5,7 +5,7 @@
 
 Clear-Host
 
-$Users = Import-Csv -Delimiter:";" -Path C:\Users\jouderian.nobre\OneDrive\Documentos\WindowsPowerShell\mudarSenhas.csv
+$Users = Import-Csv -Delimiter:";" -Path "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\mudarSenhas.csv"
 #$Users | Format-Table
 
 $Users | ForEach-Object {
