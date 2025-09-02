@@ -36,9 +36,9 @@ function trataTexto{
   if ($notacao -eq "C"){
     $textoTratado = (Get-Culture).TextInfo.ToTitleCase($textoTratado.ToLower())
     $textoTratado = $textoTratado.replace(' Da ', ' da ').replace(' De ', ' de ').replace(' Di ', ' di ').replace(' Do ', ' do ').replace(' Du ', ' du ').replace(' Das ', ' das ').replace(' Dos ', ' dos ').replace(' Iii', ' III').replace(' Ii', ' II')
-  } elseif ($notacao -eq "m"){
+  } elseif ($notacao -ceq "m"){
     $textoTratado = $textoTratado.ToLower()
-  } elseif ($notacao -eq "M"){
+  } elseif ($notacao -ceq "M"){
     $textoTratado = $textoTratado.ToUpper()
   }
   $textoTratado = $textoTratado.replace(',', ' ')
@@ -70,7 +70,8 @@ function geraSenhaAleatoria {
 function VerificaModulo {
   param (
     [parameter(Mandatory=$true)][string]$NomeModulo,
-    [parameter(Mandatory=$true)][string]$MensagemErro
+    [parameter(Mandatory=$true)][string]$MensagemErro,
+    [parameter(Mandatory=$true)][string]$arquivoLogs
   )
 
   $modulo = Get-Module -Name $NomeModulo -ListAvailable
@@ -85,7 +86,7 @@ function VerificaModulo {
     }
 
     Write-Host "Saindo. O módulo $NomeModulo é necessário para executar o script." -ForegroundColor Red
-    Exit
+    Exit 1
   }
 }
 
