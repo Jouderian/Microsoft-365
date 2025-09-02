@@ -2,6 +2,7 @@
 # Descricao: Mostra os membros de um grupo/Lista do EntraID
 # Versao 1 (06/03/25) Jouderian Nobre
 # Versao 2 (07/05/25) Jouderian Nobre: Melhoria na exibicao dos dados
+# Versao 3 (01/09/25) Jouderian Nobre: Ajuste nos campos exibidos
 #--------------------------------------------------------------------------------------------------------
 
 Clear-Host
@@ -25,7 +26,7 @@ if ($group){
   foreach ($member in $members){
     $user = Get-AzureADUser -ObjectId $member.ObjectId
     $situacao = if ($user.AccountEnabled) { "Ativa" } else { "Bloqueada" }
-    Write-Output "$($user.DisplayName),$($user.UserPrincipalName),$($user.UserType),$($situacao)"
+    Write-Output "$($user.DisplayName),$($user.UserPrincipalName),$($situacao)"
   }
 
   Write-Output "`n`nTotal de membros: $($members.Count)"
