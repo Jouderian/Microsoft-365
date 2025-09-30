@@ -22,13 +22,17 @@ $buffer = @()
 $inicio = Get-Date
 $logs = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaCaixasPostais_$($inicio.ToString('MMMyy')).txt"
 $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaDeCaixasPostais.csv"
+$camposCaixa = @(
+  'Id', 'Guid', 'DisplayName', 'UserPrincipalName', 'Office', 'RecipientTypeDetails', 'IsDirSynced',
+  'AccountDisabled', 'IsShared', 'LitigationHoldEnabled', 'ArchiveStatus', 'ArchiveGuid', 'Alias'
+)
 
 gravaLOG -arquivo $logs -texto "$("=" * 62) $($inicio.ToString('dd/MM/yy HH:mm:ss'))"
 gravaLOG -arquivo $logs -texto "Iniciando a exportacao de caixas postais do Microsoft 365..."
 
 # Validacoes
-VerificaModulo -NomeModulo "Microsoft.Graph" -MensagemErro "O modulo Microsoft Graph e necessario e nao esta instalado no sistema."
-VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O modulo Exchange Online Management e necessario e nao esta instalado no sistema."
+VerificaModulo -arquivoLogs $logs -NomeModulo "Microsoft.Graph" -MensagemErro "O modulo Microsoft Graph e necessario e nao esta instalado no sistema."
+VerificaModulo -arquivoLogs $logs -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O modulo Exchange Online Management e necessario e nao esta instalado no sistema."
 
 # Conexoes
 try {
@@ -49,7 +53,8 @@ try {
 
 #busca as caixas postais
 gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Pesquisando Relacao de Caixas Postais no ExchangeOnline..."
-$Caixas = Get-EXOMailbox -ResultSize Unlimited -PropertySets All | Select-Object Id, Guid, DisplayName, UserPrincipalName, Office, RecipientTypeDetails, IsDirSynced, AccountDisabled, IsShared, LitigationHoldEnabled, ArchiveStatus, ArchiveGuid, Alias
+$Caixas = Get-EXOMailbox -ResultSize Unlimited -PropertySets All | Select-Object $camposCaixa
+
 $total = $caixas.Count
 
 gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando $($total) caixas postais no arquivo $($arquivo)"
@@ -145,21 +150,26 @@ Foreach ($caixa in $caixas){
 
   $buffer += $infoCaixa
 
-  # Atualiza a cada 50 caixas processadas
+  if (
+    $indice % 50 -eq 0 -or
+    $indice -eq $total
+  ){
+    Write-Progress -Activity "Exportando caixas postais" -Status "Progresso: $indice de $total extraidas" -PercentComplete (($indice / $total) * 100)
+  }
+
   if (
     $indice % 250 -eq 0 -or
     $indice -eq $total
   ){
-    Write-Progress -Activity "Exportando caixas postais" -Status "Progresso: $indice de $total extraidas" -PercentComplete (($indice / $total) * 100)
     Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
     $buffer = @()
+  }
 
-    if (
-      $indice % 500 -eq 0 -or
-      $indice -eq $total
-    ){
-      gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando $($indice) caixas postais. Parcial: $((NEW-TIMESPAN -Start $inicio -End (Get-Date)).ToString())"
-    }
+  if (
+    $indice % 500 -eq 0 -or
+    $indice -eq $total
+  ){
+    gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando $($indice) caixas postais. Parcial: $((NEW-TIMESPAN -Start $inicio -End (Get-Date)).ToString())"
   }
 }
 
@@ -168,7 +178,7 @@ gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Te
 
 # Desconectando dos ambientes
 Disconnect-ExchangeOnline -Confirm:$false
-Disconnect-MgGraph -Confirm:$false
+Disconnect-MgGraph
 
 # Finalizando o script
 gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Ambientes desconectados."
