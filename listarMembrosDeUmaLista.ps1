@@ -35,6 +35,4 @@ if ($group){
 }
 
 $final = Get-Date
-Write-Host `nInicio: $inicio
-Write-Host Final: $final
-Write-Host Tempo: (NEW-TIMESPAN -Start $inicio -End $final).ToString()
+Write-Host `nInicio: $inicio Final: $final > Tempo: (NEW-TIMESPAN -Start $inicio -End $final).ToString()
