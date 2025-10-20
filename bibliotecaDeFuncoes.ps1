@@ -7,6 +7,7 @@
 # Versao: 4 (14/04/25) Jouderian: Funcao de validacao de modulo e obter descricao de licenca
 # Versao: 5 (30/05/25) Jouderian: Melhoria na funcao de validacao de modulo
 # Versao: 6 (12/07/25) Jouderian: Inclusao da licenca Teams Premium na funcao ObterDescricaoLicenca
+# Versao: 7 (06/10/25) Jouderian: Ajuste no retorno da funcao VerificaModulo
 #--------------------------------------------------------------------------------------------------------
 
 function removeQuebraDeLinha{
@@ -71,12 +72,16 @@ function VerificaModulo {
   param (
     [parameter(Mandatory=$true)][string]$NomeModulo,
     [parameter(Mandatory=$true)][string]$MensagemErro,
-    [parameter(Mandatory=$true)][string]$arquivoLogs
+    [parameter(Mandatory=$false)][string]$arquivoLogs
   )
 
   $modulo = Get-Module -Name $NomeModulo -ListAvailable
   if($Modulo.count -eq 0){
-    gravaLOG -arquivo $arquivoLogs -texto $MensagemErro -erro:$true
+    if($arquivoLogs){
+      gravaLOG -arquivo $arquivoLogs -texto $MensagemErro -erro:$true
+    } else {
+      Write-Host $MensagemErro -ForegroundColor Red
+    }
     $confirm = Read-Host "O módulo $NomeModulo não está instalado. Deseja instalá-lo? [S]im ou [N]ao"
     if ($confirm -match "[sS]"){
       Write-Host "Instalando o módulo $NomeModulo..."
