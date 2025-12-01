@@ -63,9 +63,7 @@ Out-File -FilePath $arquivo -InputObject "Nome,UPN,Cidade,UF,Empresa,Escritorio,
 Foreach ($caixa in $caixas){
 
   $indice++
-
   $licencas = Get-MgUserLicenseDetail -UserId $caixa.UserPrincipalName
-
   $detalheCaixa = Get-EXOMailboxStatistics -Identity $caixa.Guid -PropertySets All -Properties LastInteractionTime, TotalItemSize
 
   $detalheCredencial = Get-MgUser `
@@ -161,17 +159,17 @@ Foreach ($caixa in $caixas){
     $indice % 250 -eq 0 -or
     $indice -eq $total
   ){
-    Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
-    $buffer = @()
+    gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando $($indice) caixas postais. Parcial: $((NEW-TIMESPAN -Start $inicio -End (Get-Date)).ToString())"
   }
-
   if (
     $indice % 500 -eq 0 -or
     $indice -eq $total
   ){
-    gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando $($indice) caixas postais. Parcial: $((NEW-TIMESPAN -Start $inicio -End (Get-Date)).ToString())"
+    Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
+    $buffer = @()
   }
-}
+
+}  
 
 Write-Progress -Activity "Exportando caixas postais" -PercentComplete 100
 gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Terminada gravacao."
