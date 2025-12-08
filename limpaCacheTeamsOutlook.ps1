@@ -1,12 +1,10 @@
 <#
 .SYNOPSIS
-    Limpa cache de TODAS as versoes comuns de Microsoft Teams (classico, novo)
-    e Outlook (classico e novo do Windows 11) para o usuario atual, fechando
-    os apps, apagando caches e reabrindo em seguida.
+  Limpa cache de TODAS as versoes comuns de Microsoft Teams (classico, novo) e Outlook (classico e novo do Windows 11) para o usuario atual, fechando os apps, apagando caches e reabrindo em seguida.
 
 .NOTES
-    - Nao requer privilégios administrativos.
-    - Executar na sessao do próprio usuario.
+  - Nao requer privilégios administrativos.
+  - Executar na sessao do próprio usuario.
 #>
 
 # Funcoes utilitarias
@@ -61,8 +59,7 @@ function Remove-PathSafe {
   }
 }
 
-# Limpeza Teams
-## Teams classico (cache principal em %APPDATA%\Microsoft\Teams)
+# Teams classico (cache principal em %APPDATA%\Microsoft\Teams)
 function Clear-TeamsClassicRoamingCache {
   Write-Log "=== Limpando cache do Teams (Roaming - classico) ==="
 
@@ -205,7 +202,7 @@ function Start-TeamsSafe {
     Write-Log "Falha ao iniciar Teams via ms-Teams:. Tentando via Update.exe padrao do Teams classico..." "WARN"
   }
 
-  if (-not $started) {
+  if (-not $started){
     $updateExe = Join-Path $env:LOCALAPPDATA "Microsoft\Teams\Update.exe"
     if (Test-Path $updateExe){
       try {
@@ -220,7 +217,7 @@ function Start-TeamsSafe {
     }
   }
 
-  if (-not $started) {
+  if (-not $started){
     Write-Log "Nao foi possivel iniciar o Teams automaticamente. Inicie manualmente se necessario." "ERROR"
   }
 }
@@ -264,15 +261,15 @@ function Start-OutlookSafe {
 
 # Execucao principal
 
-Write-Log "==== INiCIO DA LIMPEZA DE CACHE TEAMS/OUTLOOK ===="
+Write-Log "==== INICIO DA LIMPEZA DE CACHE TEAMS/OUTLOOK ===="
 
 # 1. Fechar Teams e Outlook (varias variacoes de processo)
 Write-Log "Fechando Teams e Outlook..." "INFO"
 Stop-ProcessSafe -Names @(
   # Teams
-  "ms-teams",   # novo Teams (ms-teams.exe)
-  "MSTeams",    # algumas builds
-  "teams",      # Teams classico (Teams.exe)
+  "ms-teams", # novo Teams (ms-teams.exe)
+  "MSTeams",  # algumas builds
+  "teams",    # Teams classico (Teams.exe)
 
   # Outlook novo & Mail app
   "olk",
