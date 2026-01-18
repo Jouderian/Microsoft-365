@@ -10,6 +10,7 @@
 # Versao 19 (14/04/25) Jouderian Nobre: Otimizacao do script com uso de funcoes
 # Versao 20 (28/05/25) Jouderian Nobre: Portando o script para usar Get-EXOMailbox e melhoria nos logs
 # Versao 21 (03/08/25) Jouderian Nobre: Otimizacao do script para melhorar a performance
+# Versao 22 (18/01/26) Jouderian Nobre: Melhoria na validação das dependencias e remoção do campo "SenhaForte"
 #--------------------------------------------------------------------------------------------------------
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
@@ -36,18 +37,18 @@ VerificaModulo -arquivoLogs $logs -NomeModulo "ExchangeOnlineManagement" -Mensag
 
 # Conexoes
 try {
-  Import-Module -Name Microsoft.Graph.Users
-  Connect-MgGraph -Scopes "User.Read.All", "MailboxSettings.Read", "Directory.Read.All" -NoWelcome
-} catch {
-  gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Erro ao conectar ao Microsoft Graph: $($_.Exception.Message)" -erro:$true
-  Exit
-}
-
-try {
   Import-Module ExchangeOnlineManagement
   Connect-ExchangeOnline -ShowBanner:$false
 } catch {
   gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Erro ao conectar ao Exchange Online: $($_.Exception.Message)" -erro:$true
+  Exit
+}
+
+try {
+  Import-Module -Name Microsoft.Graph.Users
+  Connect-MgGraph -Scopes "User.Read.All", "MailboxSettings.Read", "Directory.Read.All" -NoWelcome
+} catch {
+  gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Erro ao conectar ao Microsoft Graph: $($_.Exception.Message)" -erro:$true
   Exit
 }
 
@@ -58,7 +59,7 @@ $Caixas = Get-EXOMailbox -ResultSize Unlimited -PropertySets All | Select-Object
 $total = $caixas.Count
 
 gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando $($total) caixas postais no arquivo $($arquivo)"
-Out-File -FilePath $arquivo -InputObject "Nome,UPN,Cidade,UF,Empresa,Escritorio,Departamento,Cargo,Gerente,CC,nomeCC,Tipo,AD,Desabilitada,SenhaForte,SenhaNaoExpira,Compartilhada,Encaminhada,Litigio,usado(GB),Arquivamento,Arquivamento(GB),Criacao,MudancaSenha,ultimoSyncAD,ultimoAcesso,conta,objectId,Licencas,outrasLicencas" -Encoding UTF8
+Out-File -FilePath $arquivo -InputObject "Nome,UPN,Cidade,UF,Empresa,Escritorio,Departamento,Cargo,Gerente,CC,nomeCC,Tipo,AD,Desabilitada,SenhaNaoExpira,Compartilhada,Encaminhada,Litigio,usado(GB),Arquivamento,Arquivamento(GB),Criacao,MudancaSenha,ultimoSyncAD,ultimoAcesso,conta,objectId,Licencas,outrasLicencas" -Encoding UTF8
 
 Foreach ($caixa in $caixas){
 
@@ -104,7 +105,6 @@ Foreach ($caixa in $caixas){
   $infoCaixa += "$($caixa.RecipientTypeDetails)," # Tipo
   $infoCaixa += "$($caixa.IsDirSynced)," # AD
   $infoCaixa += "$($caixa.AccountDisabled)," # Desabilitada
-  $infoCaixa += "$($detalheCredencial.PasswordPolicies -contains "DisableStrongPassword")," # SenhaForte
   $infoCaixa += "$($detalheCredencial.PasswordPolicies -contains "DisablePasswordExpiration")," # SenhaNaoExpira
   $infoCaixa += "$($caixa.IsShared)," # Compartilhada
   $infoCaixa += "$($encaminhamento)," # Encaminhada
