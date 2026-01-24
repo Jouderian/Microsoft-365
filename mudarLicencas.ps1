@@ -18,7 +18,7 @@ Clear-Host
 # Declarando variaveis
 $qtdCaixas = 0
 $inicio = Get-Date
-$logs = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\trocaLicencas_$($inicio.ToString('MMMyy')).txt"
+$logs = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\mudarLicencas_$($inicio.ToString('MMMyy')).txt"
 $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\eMails.txt"
 
 # Para obter os SkuId, use: Get-MgSubscribedSku -All | Select SkuId, SkuPartNumber, ConsumedUnits
@@ -30,9 +30,9 @@ $licencasRemover = @(
   #"80b2d799-d2ba-4d2a-8842-fb0d0f3a4b82" <# Online Kiosk #>
   #"6fd2c87f-b296-42f0-b197-1e91e994b900" <# O365 E3 #>
   #"4b585984-651b-448a-9e53-3b10f069cf7f" <# O365 F3 #>
-  )
+)
   
-  $licencasIncluir = @(
+$licencasIncluir = @(
   @{SkuId = "12a0b0ef-3d7c-4456-8f61-aa3817576c8d"}, <# O365 E1 Plus #>
   @{SkuId = "c2273bd0-dff7-4215-9ef5-2c7bcfb06425"} <# AppsEnterprise #>
   #@{SkuId = "50f60901-3181-4b75-8a2c-4c8e4c1d5a72"} <# M365 F1 #>
@@ -41,7 +41,7 @@ $licencasRemover = @(
   #@{SkuId = "80b2d799-d2ba-4d2a-8842-fb0d0f3a4b82"} <# Online Kiosk #>
   #@{SkuId = "19ec0d23-8335-4cbd-94ac-6050e30712fa"} <# Online Plan2 #>
   #@{SkuId = "18181a46-0d4e-45cd-891e-60aabd171b4e"} <# O365 E1 #>
-  )
+)
 
 gravaLOG -arquivo $logs -texto "$("=" * 62) $($inicio.ToString('dd/MM/yy HH:mm:ss'))"
 gravaLOG -arquivo $logs -texto "Iniciando a troca do licenciamento de caixas postais do Microsoft 365"
