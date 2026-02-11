@@ -65,7 +65,7 @@ foreach ($member in $members){
   Write-Host "$($user.DisplayName),$($user.UserPrincipalName),$situacao"
 }
 
-Write-Host "`n`nTotal de membros (usuarios): $($userMembers.Count)"
+Write-Host "`n`nTotal de membros (usuarios): $($members.Count)"
 
 $final = Get-Date
 Write-Host "`nInicio: $inicio Final: $final > Tempo:" (NEW-TIMESPAN -Start $inicio -End $final).ToString()
