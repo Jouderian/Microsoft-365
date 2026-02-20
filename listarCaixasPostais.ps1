@@ -91,31 +91,31 @@ Foreach ($caixa in $caixas){
     $gerente = ""
   }
 
-  $infoCaixa = "$($caixa.DisplayName)," # Nome
-  $infoCaixa += "$($caixa.UserPrincipalName)," # UPN
+  $infoCaixa = "$($caixa.displayName)," # Nome
+  $infoCaixa += "$($caixa.userPrincipalName)," # UPN
   $infoCaixa += "$($detalheCredencial.City)," # Cidade
   $infoCaixa += "$($detalheCredencial.State)," # UF
   $infoCaixa += "$($detalheCredencial.CompanyName)," # Empresa
   $infoCaixa += "$($caixa.Office)," # Escritorio
   $infoCaixa += [System.String]::Concat('"',$detalheCredencial.Department,'",') # Departamento
-  $infoCaixa += [System.String]::Concat('"',$detalheCredencial.JobTitle,'",') # Cargo
+  $infoCaixa += [System.String]::Concat('"',$detalheCredencial.jobTitle,'",') # Cargo
   $infoCaixa += "$($gerente)," #Gerente
   $infoCaixa += "$($detalheCredencial.postalCode)," # CC
   $infoCaixa += "$($detalheCredencial.streetAddress)," # nomeCC
-  $infoCaixa += "$($caixa.RecipientTypeDetails)," # Tipo
-  $infoCaixa += "$($caixa.IsDirSynced)," # AD
-  $infoCaixa += "$($caixa.AccountDisabled)," # Desabilitada
-  $infoCaixa += "$($detalheCredencial.PasswordPolicies -contains "DisablePasswordExpiration")," # SenhaNaoExpira
-  $infoCaixa += "$($caixa.IsShared)," # Compartilhada
+  $infoCaixa += "$($caixa.recipientTypeDetails)," # Tipo
+  $infoCaixa += "$($caixa.isDirSynced)," # AD
+  $infoCaixa += "$($caixa.accountDisabled)," # Desabilitada
+  $infoCaixa += "$($detalheCredencial.passwordPolicies -contains "DisablePasswordExpiration")," # SenhaNaoExpira
+  $infoCaixa += "$($caixa.isShared)," # Compartilhada
   $infoCaixa += "$($encaminhamento)," # Encaminhada
-  $infoCaixa += "$($caixa.LitigationHoldEnabled)," # Litigio
+  $infoCaixa += "$($caixa.litigationHoldEnabled)," # Litigio
   $infoCaixa += "$($tamanho)," # usado(GB)
-  $infoCaixa += "$($caixa.ArchiveStatus)," # Arquivamento
+  $infoCaixa += "$($caixa.archiveStatus)," # Arquivamento
   $infoCaixa += "$($tamanhoArquivamento)," # Arquivamento(GB)
-  $infoCaixa += "$($detalheCredencial.CreatedDateTime.ToString('dd/MM/yy HH:mm'))," # Criacao
-  $infoCaixa += "$($detalheCredencial.LastPasswordChangeDateTime.ToString('dd/MM/yy HH:mm'))," # MudancaSenha
+  $infoCaixa += "$($detalheCredencial.createdDateTime.ToString('dd/MM/yy HH:mm'))," # Criacao
+  $infoCaixa += "$($detalheCredencial.lastPasswordChangeDateTime.ToString('dd/MM/yy HH:mm'))," # MudancaSenha
 
-  $momento = $detalheCredencial.OnPremisesLastSyncDateTime # ultimoSyncAD
+  $momento = $detalheCredencial.onPremisesLastSyncDateTime # ultimoSyncAD
   if($null -eq $momento){
     $infoCaixa += ","
   } Else {
@@ -177,8 +177,8 @@ gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Te
 # Desconectando dos ambientes
 Disconnect-ExchangeOnline -Confirm:$false
 Disconnect-MgGraph
+gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Ambientes desconectados."
 
 # Finalizando o script
-gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Ambientes desconectados."
 $final = Get-Date
 gravaLOG -arquivo $logs -texto "$($final.ToString('dd/MM/yy HH:mm:ss')) - Tempo de duracao: $((NEW-TIMESPAN -Start $inicio -End $final).ToString())"
