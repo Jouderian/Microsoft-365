@@ -1,13 +1,21 @@
 #--------------------------------------------------------------------------------------------------------
 # Descricao: Ajusta temporariamente o limite de exclusões do entraConnectSync e restaura ao final.
 # Versao 02 (23/07/25) Jouderian Nobre
+# Versao 03 (20/02/25) Jouderian Nobre: Passa a validar se a execução tem privilégios administrativos
 #--------------------------------------------------------------------------------------------------------
 # Observacao: Este script deve ser executado com permissões administrativas e no computador com o módulo ADSync instalado
 #--------------------------------------------------------------------------------------------------------
 
+. "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
+
 Import-Module ADSync
 
 Clear-Host
+
+if (-not (testaAcessoAdmin)){
+  Write-Host "Este script deve ser executado com permissões administrativas." -ForegroundColor Red
+  exit
+}
 
 # Declarando variaveis
 $sugestao = 0
