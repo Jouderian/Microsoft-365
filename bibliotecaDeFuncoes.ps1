@@ -8,6 +8,7 @@
 # Versao: 5 (30/05/25) Jouderian: Melhoria na funcao de validacao de modulo
 # Versao: 6 (12/07/25) Jouderian: Inclusao da licenca Teams Premium na funcao ObterDescricaoLicenca
 # Versao: 7 (06/10/25) Jouderian: Ajuste no retorno da funcao VerificaModulo
+# Versao: 8 (20/02/25) Jouderian: Funcao para testar se o acesso tem elevacao de administrador
 #--------------------------------------------------------------------------------------------------------
 
 function removeQuebraDeLinha{
@@ -126,4 +127,9 @@ function ObterDescricaoLicenca {
     "PROJECTPROFESSIONAL" { return "Project Plan 3" }
     default { return $null }
   }
+}
+
+function testaAcessoAdmin {
+    $p  = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+    return $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
