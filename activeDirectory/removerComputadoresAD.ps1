@@ -3,15 +3,23 @@
 # Versao 1 (18/03/24) Jouderian Nobre
 # Versao 2 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 # Versao 3 (30/06/25) Jouderian Nobre: Otimizacao do script e melhoria nos logs
+# Versao 4 (25/02/25) Jouderian Nobre: Passa a validar se a execução tem privilégios administrativos
 #--------------------------------------------------------------------------------------------------------
 
+. "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
+
 Clear-Host
+
+if (-not (testaAcessoAdmin)){
+  Write-Host "Este script deve ser executado com permissões administrativas." -ForegroundColor Red
+  exit
+}
 
 # Declarando variaveis
 $indice = 0
 $bufferLog = @()
 $inicio = Get-Date
-$arquivoLog = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\computadoresRemovidosAD_$($inicio.ToString('yyMMdd_hhmmss')).txt"
+$arquivoLog = "C:\ScriptsRotinas\removerComputadoresAD\computadoresRemovidosAD_$($inicio.ToString('yyMMdd_hhmmss')).txt"
 
 Write-Host "`n`n`n`n`n"
 Write-Host "$($inicio.ToString('dd/MM/yy HH:mm:ss')) - Abrindo lista de computadores para remover do AD..."
@@ -20,7 +28,7 @@ Write-Host "$($inicio.ToString('dd/MM/yy HH:mm:ss')) - Abrindo lista de computad
 Import-Module ActiveDirectory
 
 # Importando a lista de computadores a serem removidos do AD
-$computadoresAD = Import-Csv -Delimiter:";" -Path "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\removerComputadoresAD.csv"
+$computadoresAD = Import-Csv -Delimiter:";" -Path "C:\ScriptsRotinas\removerComputadoresAD\removerComputadoresAD.csv"
 $total = $computadoresAD.Count
 
 foreach ($computador in $computadoresAD){

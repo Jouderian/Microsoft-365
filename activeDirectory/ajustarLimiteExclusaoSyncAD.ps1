@@ -53,6 +53,7 @@ try {
   Write-Host "Erro ao iniciar sincronização: $($_.Exception.Message)" -ForegroundColor Red
 }
 
+Write-Host "`nAguarde a conclusão do processo de sincronização. O tempo pode variar dependendo do volume de alterações e do ambiente."  -ForegroundColor White
 Read-Host "`nApos a conclusao do sincrismo pressiona [ENTER]"
 
 # Restaura o limite original

@@ -6,11 +6,17 @@
 # Versao 4 (20/03/25) Jouderian Nobre: Incluindo a ultima alteração da maquina no AD
 # Versao 5 (29/06/25) Jouderian Nobre: Otimizacao do script e melhoria nos logs
 # Versao 5 (31/07/25) Jouderian Nobre: Ajuste periodo de expiracao para licenca maternidade (180 dias + 10 dias de tolerancia)
+# Versao 6 (25/02/25) Jouderian Nobre: Passa a validar se a execução tem privilégios administrativos
 #--------------------------------------------------------------------------------------------------------
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
 Clear-Host
+
+if (-not (testaAcessoAdmin)){
+  Write-Host "Este script deve ser executado com permissões administrativas." -ForegroundColor Red
+  exit
+}
 
 # Declarando variaveis
 $indice = 0
@@ -42,7 +48,7 @@ $computadoresAD = Get-ADComputer `
 $total = $computadoresAD.Count
 
 Write-Host "$(Get-Date -Format 'dd-MM-yy HH:mm:ss') | Gravando Arquivo..."
-Out-File -FilePath $arquivo -InputObject "Nome;ultimoAcesso;ultimaModificacao;sistemaOperacional;versaoSO;IPv4;IPv6;DNSHostName;OU;arquivado;situacao" -Encoding UTF8
+Out-File -FilePath $arquivo -InputObject "Nome;ultimoAcesso;ultimaModificacao;sistemaOperacional;versaoSO;IPv4;IPv6;DNSHostName;nomeDistinto;arquivado;situacao" -Encoding UTF8
 
 foreach ($computador in $computadoresAD){
   $indice++
@@ -60,7 +66,7 @@ foreach ($computador in $computadoresAD){
   $infoComputador += "$($computador.IPv4Address);" #IPv4
   $infoComputador += "$($computador.IPv6Address);" #IPv6
   $infoComputador += "$($computador.DNSHostName);" #DNS Host Name
-  $infoComputador += "$($computador.DistinguishedName);" #OU
+  $infoComputador += "$($computador.DistinguishedName);" #nomeDistinto
   $infoComputador += "$(if($computador.DistinguishedName.IndexOf(',OU=Archived') -ne -1){'SIM'} else {'Nao'});" #Arquivado
   $infoComputador += "$(if($ultimaComunicacao -cle $periodo){'Expirado'} else {'Normal'});" #Situacao
 

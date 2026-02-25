@@ -8,11 +8,17 @@
 # Versao 6 (17/03/25) Jouderian Nobre: Incluir o campo POBox para identificar sincronismo com o M365
 # Versao 7 (09/05/25) Jouderian Nobre: Incluir o campo descricao
 # Versao 8 (05/06/25) Jouderian Nobre: Otimizando o script
+# Versao 9 (25/02/25) Jouderian Nobre: Passa a validar se a execução tem privilégios administrativos
 #--------------------------------------------------------------------------------------------------------
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
 Clear-Host
+
+if (-not (testaAcessoAdmin)){
+  Write-Host "Este script deve ser executado com permissões administrativas." -ForegroundColor Red
+  exit
+}
 
 # Declarando variaveis
 $indice = 0
