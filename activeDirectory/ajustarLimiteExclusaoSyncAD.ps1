@@ -12,8 +12,11 @@ Import-Module ADSync
 
 Clear-Host
 
+Write-Host "Este script deve ser executado com permissoes administrativas e no computador com o modulo ADSync instalado" -ForegroundColor Yellow
+Read-Host "Pressione [ENTER] para continuar ou [CTRL+C] para cancelar"
+
 if (-not (testaAcessoAdmin)){
-  Write-Host "Este script deve ser executado com permissões administrativas." -ForegroundColor Red
+  Write-Host "`nEste script deve ser executado com permissões administrativas." -ForegroundColor Red
   exit
 }
 
