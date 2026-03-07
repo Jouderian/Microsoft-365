@@ -19,7 +19,7 @@ if (-not (testaAcessoAdmin)){
 $indice = 0
 $bufferLog = @()
 $inicio = Get-Date
-$arquivoLog = "C:\ScriptsRotinas\removerComputadoresAD\computadoresRemovidosAD_$($inicio.ToString('yyMMdd_hhmmss')).txt"
+$arquivoLog = "C:\ScriptsRotinas\computadoresAD\computadoresRemovidosAD_$($inicio.ToString('yyMMdd_hhmmss')).txt"
 
 Write-Host "`n`n`n`n`n"
 Write-Host "$($inicio.ToString('dd/MM/yy HH:mm:ss')) - Abrindo lista de computadores para remover do AD..."
@@ -28,9 +28,10 @@ Write-Host "$($inicio.ToString('dd/MM/yy HH:mm:ss')) - Abrindo lista de computad
 Import-Module ActiveDirectory
 
 # Importando a lista de computadores a serem removidos do AD
-$computadoresAD = Import-Csv -Delimiter:";" -Path "C:\ScriptsRotinas\removerComputadoresAD\removerComputadoresAD.csv"
+$computadoresAD = Import-Csv -Delimiter:";" -Path "C:\ScriptsRotinas\computadoresAD\removerComputadoresAD.csv"
 $total = $computadoresAD.Count
 
+Write-Host "$($inicio.ToString('dd/MM/yy HH:mm:ss')) - Removedo $total computadores do AD"
 foreach ($computador in $computadoresAD){
   $indice++
   Write-Progress -Activity "Removendo computadores do AD" -Status "Progresso: $indice de $total removidos" -PercentComplete ($indice / $total * 100)
