@@ -23,7 +23,7 @@ $indice = 0
 $buffer = @()
 $inicio = Get-Date
 $periodo = $inicio.AddDays(-190) # licenca maternidade
-$arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\computadoresAD.csv"
+$arquivo = "C:\ScriptsRotinas\computadoresAD\computadoresAD.csv"
 
 Write-Host "`n`n`n`n`n"
 Write-Host "$($inicio.ToString('dd/MM/yy HH:mm:ss')) | Consultado computadores no AD..."
