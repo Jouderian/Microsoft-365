@@ -29,7 +29,7 @@ $camposCaixa = @(
 )
 
 gravaLOG -arquivo $logs -texto "$("=" * 62) $($inicio.ToString('dd/MM/yy HH:mm:ss'))"
-gravaLOG -arquivo $logs -texto "Iniciando a exportacao de caixas postais do Microsoft 365..."
+gravaLOG -arquivo $logs -texto "Conectando ao Microsoft 365..."
 
 # Validacoes
 VerificaModulo -arquivoLogs $logs -NomeModulo "Microsoft.Graph" -MensagemErro "O modulo Microsoft Graph e necessario e nao esta instalado no sistema."
