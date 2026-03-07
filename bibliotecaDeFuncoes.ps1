@@ -9,6 +9,7 @@
 # Versao: 6 (12/07/25) Jouderian: Inclusao da licenca Teams Premium na funcao ObterDescricaoLicenca
 # Versao: 7 (06/10/25) Jouderian: Ajuste no retorno da funcao VerificaModulo
 # Versao: 8 (20/02/25) Jouderian: Funcao para testar se o acesso tem elevacao de administrador
+# Versao: 9 (02/03/26) Jouderian: Funcao para remover acentos de um texto
 #--------------------------------------------------------------------------------------------------------
 
 function removeQuebraDeLinha{
@@ -98,7 +99,7 @@ function VerificaModulo {
 
 function ObterDescricaoLicenca {
   param ([string]$SkuPartNumber)
-  switch ($SkuPartNumber) {
+  switch ($SkuPartNumber){
 # Licencas Exchange
     "EXCHANGEDESKLESS" { return "Online Kiosk" }
     "EXCHANGESTANDARD" { return "Online Plan1" }
@@ -132,4 +133,25 @@ function ObterDescricaoLicenca {
 function testaAcessoAdmin {
     $p  = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
     return $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
+function removerAcentos {
+  param (
+    [parameter(Mandatory=$true)][string]$texto
+  )
+
+  # Normaliza para forma de decomposição (separa letra do acento)
+  $normalized = $Texto.Normalize([System.Text.NormalizationForm]::FormD)
+
+  # Remove os caracteres não espaçadores (acentos)
+  $stringBuilder = New-Object System.Text.StringBuilder
+
+  foreach ($char in $normalized.ToCharArray()){
+    if ([Globalization.CharUnicodeInfo]::GetUnicodeCategory($char) -ne [Globalization.UnicodeCategory]::NonSpacingMark){
+      [void]$stringBuilder.Append($char)
+    }
+  }
+
+  # Retorna para forma normal
+  return $stringBuilder.ToString().Normalize([System.Text.NormalizationForm]::FormC)
 }
