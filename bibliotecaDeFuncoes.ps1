@@ -56,7 +56,7 @@ Function gravaLOG {
     [parameter(Mandatory=$false)][boolean]$erro = $false
   )
 
-  Out-File $arquivo -InputObject "$(if($erro){ "[ERRO] $texto" } else { $texto })" -Append
+  Out-File $arquivo -InputObject "$(if($erro){ "[ERRO] $texto" } else { $texto })" -Append -Encoding UTF8
   Write-Host "$(if($erro){ "[ERRO] $texto" } else { $texto })"
 }
 
@@ -131,8 +131,8 @@ function ObterDescricaoLicenca {
 }
 
 function testaAcessoAdmin {
-    $p  = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-    return $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+  $p  = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+  return $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
 function removerAcentos {
