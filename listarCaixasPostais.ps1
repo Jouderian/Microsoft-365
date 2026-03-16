@@ -11,6 +11,7 @@
 # Versao 20 (28/05/25) Jouderian Nobre: Portando o script para usar Get-EXOMailbox e melhoria nos logs
 # Versao 21 (03/08/25) Jouderian Nobre: Otimizacao do script para melhorar a performance
 # Versao 22 (18/01/26) Jouderian Nobre: Melhoria na validação das dependencias e remoção do campo "SenhaForte"
+# Versao 23 (15/03/26) Jouderian Nobre: Otimizando a busca de detalhes das caixas postais para reduzir o numero de chamadas ao msGraph
 #--------------------------------------------------------------------------------------------------------
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
@@ -20,12 +21,17 @@ Clear-Host
 # Declarando variaveis
 $indice = 0
 $buffer = @()
+$detalheCredenciais = @{}
 $inicio = Get-Date
 $logs = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaCaixasPostais_$($inicio.ToString('MMMyy')).txt"
 $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaDeCaixasPostais.csv"
 $camposCaixa = @(
   'Id', 'Guid', 'DisplayName', 'UserPrincipalName', 'Office', 'RecipientTypeDetails', 'IsDirSynced',
   'AccountDisabled', 'IsShared', 'LitigationHoldEnabled', 'ArchiveStatus', 'ArchiveGuid', 'Alias'
+)
+$camposDetalhesCaixa = @(
+  'Id', 'UserPrincipalName', 'City', 'State', 'CompanyName', 'Department', 'JobTitle', 'PostalCode',
+  'StreetAddress', 'PasswordPolicies', 'CreatedDateTime', 'LastPasswordChangeDateTime', 'OnPremisesLastSyncDateTime'
 )
 
 gravaLOG -arquivo $logs -texto "$("=" * 62) $($inicio.ToString('dd/MM/yy HH:mm:ss'))"
@@ -53,12 +59,20 @@ try {
 }
 
 #busca as caixas postais
-gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Pesquisando Relacao de Caixas Postais no ExchangeOnline..."
+gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Pesquisando relacao de caixas postais no ExchangeOnline..."
 $Caixas = Get-EXOMailbox -ResultSize Unlimited -PropertySets All | Select-Object $camposCaixa
 
 $total = $caixas.Count
 
-gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando $($total) caixas postais no arquivo $($arquivo)"
+#buscando detalhes das caixas postais
+gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Buscando detalhes das $($total) caixas postais encontradas..."
+$detalhe = Get-MgUser -All -Property $camposDetalhesCaixa
+Foreach ($caixa in $detalhe){
+  $detalheCredenciais[$caixa.UserPrincipalName.ToLower()] = $caixa
+}
+$detalhe = $null
+
+gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando caixas postais no arquivo $($arquivo)"
 Out-File -FilePath $arquivo -InputObject "Nome,UPN,Cidade,UF,Empresa,Escritorio,Departamento,Cargo,Gerente,CC,nomeCC,Tipo,AD,Desabilitada,SenhaNaoExpira,Compartilhada,Encaminhada,Litigio,usado(GB),Arquivamento,Arquivamento(GB),Criacao,MudancaSenha,ultimoSyncAD,ultimoAcesso,conta,objectId,Licencas,outrasLicencas" -Encoding UTF8
 
 Foreach ($caixa in $caixas){
@@ -66,10 +80,7 @@ Foreach ($caixa in $caixas){
   $indice++
   $licencas = Get-MgUserLicenseDetail -UserId $caixa.UserPrincipalName
   $detalheCaixa = Get-EXOMailboxStatistics -Identity $caixa.Guid -PropertySets All -Properties LastInteractionTime, TotalItemSize
-
-  $detalheCredencial = Get-MgUser `
-    -UserId $caixa.UserPrincipalName `
-    -Property Id, DisplayName, City, State, CompanyName, Department, JobTitle, PostalCode, StreetAddress, PasswordPolicies, CreatedDateTime, LastPasswordChangeDateTime, OnPremisesLastSyncDateTime
+  $detalheCredencial = $detalheCredenciais[$caixa.UserPrincipalName.ToLower()]
 
   $tamanho = [math]::Round((($detalheCaixa.TotalItemSize.Value.ToString()).Split('(')[1].Split(' ')[0].Replace(',','')/1GB),2)
   $tamanhoArquivamento = 0
