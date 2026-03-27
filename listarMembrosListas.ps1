@@ -5,6 +5,7 @@
 # Versao 8 (29/04/25) Jouderian Nobre: Otimizacao do script com uso de funcoes
 # Versao 9 (28/05/25) Jouderian Nobre: Otimizando a logica de exclusao das listas vazias
 # Versao 10 (17/12/25) Jouderian Nobre: Incluindo Grupos de Segurança via Microsoft Graph
+# Versao 11 (26/03/26) Jouderian Nobre: Otimizacao do script para melhorar a performance
 #-------------------------------------------------------------------------------
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
@@ -16,16 +17,19 @@ $indice = 0
 $inicio = Get-Date
 $logs = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listasVazias_$($inicio.ToString('yyMMdd_HHmmss')).txt"
 $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\membrosListasGrupos.csv"
+$buffer = @()
 
-# Conectando ao servico
+Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Conectando ao Exchange Online..."
 VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O módulo Exchange Online Management é necessário e não está instalado no sistema."
-VerificaModulo -NomeModulo "Microsoft.Graph" -MensagemErro "O módulo Microsoft.Graph é necessário e não está instalado no sistema."
 try {
   Connect-ExchangeOnline -ShowBanner:$false
 } catch {
   Write-Host "Erro ao conectar ao Exchange Online: $($_.Exception.Message)" -ForegroundColor Red
   Exit
 }
+
+Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Conectando ao Microsoft Graph..."
+VerificaModulo -NomeModulo "Microsoft.Graph" -MensagemErro "O módulo Microsoft.Graph é necessário e não está instalado no sistema."
 try {
   Connect-MgGraph -Scopes "Group.Read.All","User.Read.All" -ErrorAction Stop
 } catch {
@@ -33,17 +37,17 @@ try {
   Exit
 }
 
-Write-Host "Inicio: $inicio"
-Write-Host "Pesquisando Listas de Distribuicao e Grupos de Segurança..."
+Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Pesquisando Listas de Distribuicao e Grupos de Segurança..."
 $Listas = Get-DistributionGroup -ResultSize Unlimited
+Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - $($Listas.Count) Listas de Distribuicao encontradas."
 
-Write-Host "Pesquisando Grupos de Segurança..."
+Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Pesquisando Grupos de Segurança..."
 $GruposSeguranca = Get-MgGroup -Filter "securityEnabled eq true" -All
+Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - $($GruposSeguranca.Count) Grupos de Segurança encontrados."
 
 $total = $Listas.Count + $GruposSeguranca.Count
 
 Out-File -FilePath $arquivo -InputObject "idGrupo;nomeGrupo;eMailGrupo;adSync;tipoGrupo;idMembro;membro;tipo;eMailMembro" -Encoding UTF8
-
 Foreach ($Lista in $Listas){
 
   $indice++
@@ -66,11 +70,13 @@ Foreach ($Lista in $Listas){
     }
     continue
   }
-  
+
   Foreach ($Membro in $Membros){
-    Out-File -FilePath $arquivo -InputObject "$($Lista.ExternalDirectoryObjectId);$($Lista.DisplayName);$($Lista.PrimarySMTPAddress);$($Lista.IsDirSynced);$($Lista.RecipientType);$($Membro.ExternalDirectoryObjectId);$($Membro.DisplayName);$($Membro.RecipientType);$($Membro.PrimarySMTPAddress)" -Encoding UTF8 -append
+    $buffer += "$($Lista.ExternalDirectoryObjectId);$($Lista.DisplayName);$($Lista.PrimarySMTPAddress);$($Lista.IsDirSynced);$($Lista.RecipientType);$($Membro.ExternalDirectoryObjectId);$($Membro.DisplayName);$($Membro.RecipientType);$($Membro.PrimarySMTPAddress)"
   }
 
+  Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
+  $buffer = @()
 }
 
 Foreach ($Grupo in $GruposSeguranca){
@@ -95,14 +101,17 @@ Foreach ($Grupo in $GruposSeguranca){
       $tipoMembro = "Other"
       $emailMembro = ""
     }
-    Out-File -FilePath $arquivo -InputObject "$($Grupo.Id);$($Grupo.DisplayName);$($Grupo.Mail);$($Grupo.OnPremisesSyncEnabled);Security;$($Membro.Id);$($Membro.DisplayName);$tipoMembro;$emailMembro" -Encoding UTF8 -Append
+    $buffer += "$($Grupo.Id);$($Grupo.DisplayName);$($Grupo.Mail);$($Grupo.OnPremisesSyncEnabled);Security;$($Membro.Id);$($Membro.DisplayName);$tipoMembro;$emailMembro"
   }
+
+  Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
+  $buffer = @()
 }
 Write-Progress -Activity "Exportando Listas/Grupos" -PercentComplete 100
 
-# Desconectar
+Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Desconectando..."
 Disconnect-ExchangeOnline -Confirm:$false
-Disconnect-MgGraph -Confirm:$false
+Disconnect-MgGraph
 
 $final = Get-Date
 Write-Host "`nInicio: $inicio"
