@@ -1,18 +1,29 @@
-#--------------------------------------------------------------------------------------------------------
-# Autor: Jouderian Nobre
-# Descricao: Biblioteca de funcoes de uso geral
-# Versao: 1 (27/09/24) Jouderian: Criacao do script
-# Versao: 2 (10/10/24) Jouderian: Funcao de gravacao de LOGs
-# Versao: 3 (10/04/25) Jouderian: Funcao de geracao de senha aleatoria
-# Versao: 4 (14/04/25) Jouderian: Funcao de validacao de modulo e obter descricao de licenca
-# Versao: 5 (30/05/25) Jouderian: Melhoria na funcao de validacao de modulo
-# Versao: 6 (12/07/25) Jouderian: Inclusao da licenca Teams Premium na funcao ObterDescricaoLicenca
-# Versao: 7 (06/10/25) Jouderian: Ajuste no retorno da funcao VerificaModulo
-# Versao: 8 (20/02/25) Jouderian: Funcao para testar se o acesso tem elevacao de administrador
-# Versao: 9 (02/03/26) Jouderian: Funcao para remover acentos de um texto
-#--------------------------------------------------------------------------------------------------------
+<# 
+  .SYNOPSIS
+    Biblioteca de funcoes de uso geral para scripts em powerShell.
+  .AUTHOR
+    Jouderian Nobre
+  .VERSION
+    01 (27/09/24) - Criacao do script
+    02 (10/10/24) - Funcao de gravacao de LOGs
+    03 (10/04/25) - Funcao de geracao de senha aleatoria
+    04 (14/04/25) - Funcao de validacao de modulo e obter descricao de licenca
+    05 (30/05/25) - Melhoria na funcao de validacao de modulo
+    06 (12/07/25) - Inclusao da licenca Teams Premium na funcao ObterDescricaoLicenca
+    07 (06/10/25) - Ajuste no retorno da funcao VerificaModulo
+    08 (20/02/25) - Funcao para testar se o acesso tem elevacao de administrador
+    09 (02/03/26) - Funcao para remover acentos de um texto
+    10 (30/03/26) - Funcao para obter o espaco usado e livre em uma unidade de disco
+#>
 
 function removeQuebraDeLinha{
+  <#
+    .SYNOPSIS
+      Remove as quebras de linha de um texto, substituindo-as por espaços.
+    .PARAMETER texto
+      O texto do qual as quebras de linha serão removidas.
+  #>
+
   param (
     [Parameter(Mandatory=$true)][string]$texto
   )
@@ -22,11 +33,23 @@ function removeQuebraDeLinha{
 }
 
 function trataTexto{
+  <#
+    .SYNOPSIS
+      Trata um texto, aplicando várias transformações.
+    .PARAMETER texto
+      O texto a ser tratado.
+    .PARAMETER removeQuebraLinha
+      Indica se deve remover quebras de linha (opcional, padrão: $true).
+    .PARAMETER removeEspacoduplo
+      Indica se deve remover espaços duplos (opcional, padrão: $true).
+    .PARAMETER notacao
+      A notação a ser aplicada ao texto (opcional, padrão: " "): [m]inuscula, [M]aiuscula, [C]amelo.
+  #>
   param (
     [Parameter(Mandatory=$true)][string]$texto,
-    [Parameter(Mandatory=$false)][boolean]$removeQuebraLinha = $true, <# Remove quebra de linha #>
-    [Parameter(Mandatory=$false)][boolean]$removeEspacoduplo = $true, <# Remove espaco duplo #>
-    [Parameter(Mandatory=$false)][string]$notacao = " " <# Escrita de escrita: [m]inuscula, [M]aiuscula, [C]amelo #>
+    [Parameter(Mandatory=$false)][boolean]$removeQuebraLinha = $true,
+    [Parameter(Mandatory=$false)][boolean]$removeEspacoduplo = $true,
+    [Parameter(Mandatory=$false)][string]$notacao = " "
   )
   $textoTratado = $texto.Trim()
 
@@ -50,27 +73,70 @@ function trataTexto{
 }
 
 Function gravaLOG {
+  <#
+    .SYNOPSIS
+      Grava uma mensagem de log em um arquivo e exibe no console.
+    .PARAMETER arquivo
+      O caminho do arquivo onde o log será gravado.
+    .PARAMETER texto
+      A mensagem de log a ser gravada.
+    .PARAMETER erro
+      Indica se a mensagem é um erro (opcional, padrão: $false). Se for um erro, a mensagem será prefixada com "[ERRO]" e exibida em vermelho no console.
+  #>
+
   Param (
+    [Parameter(Mandatory = $true, ValueFromPipeline = $true)][string]$texto,
     [parameter(Mandatory=$true)][string]$arquivo,
-    [parameter(Mandatory=$true)][string]$texto,
-    [parameter(Mandatory=$false)][boolean]$erro = $false
+    [parameter(Mandatory=$false)][boolean]$erro = $false,
+    [ValidateSet('Info', 'Aviso', 'Erro')][string]$tipo = 'Info'
   )
 
-  Out-File $arquivo -InputObject "$(if($erro){ "[ERRO] $texto" } else { $texto })" -Append -Encoding UTF8
-  Write-Host "$(if($erro){ "[ERRO] $texto" } else { $texto })"
+  if($erro){
+    $tipo = 'Erro'
+  }
+
+  $momento = Get-Date -Format 'dd-mm-yy HH:mm:ss'
+  $mensagem = "$momento [$tipo] $texto"
+  
+  switch ($tipo){
+    'Info'  { Write-Host $mensagem -ForegroundColor Green }
+    'Aviso' { Write-Host $mensagem -ForegroundColor Yellow }
+    'Erro'  { Write-Host $mensagem -ForegroundColor Red }
+  }
+
+  Add-Content -Path $arquivo -Value $mensagem -ErrorAction SilentlyContinue
 }
 
 function geraSenhaAleatoria {
+  <#
+    .SYNOPSIS
+      Gera uma senha aleatória com base em um conjunto de caracteres especificado.
+    .PARAMETER tamanho
+      O comprimento da senha a ser gerada (padrão: 16).
+    .PARAMETER chars
+      Os caracteres a serem usados na geração da senha (padrão: letras minúsculas, maiúsculas, números e símbolos).
+  #>
   Param (
     [parameter(Mandatory=$false)][int]$tamanho = 16,
-    [parameter(Mandatory=$false)][string]$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()"
+    [parameter(Mandatory=$false)][string]$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:,.<>?/\~"
   )
   
   $password = -join ((65..90) + (97..122) + (48..57) + (33..47) | Get-Random -Count $tamanho | ForEach-Object {[char]$_})
   return $password
 }
 
-function VerificaModulo {
+function verificaModulo {
+  <#
+    .SYNOPSIS
+      Verifica se um módulo do PowerShell está instalado e, se não estiver, oferece a opção de instalá-lo.
+    .PARAMETER NomeModulo
+      O nome do módulo a ser verificado.
+    .PARAMETER MensagemErro
+      A mensagem de erro a ser exibida se o módulo não estiver instalado.
+    .PARAMETER arquivoLogs
+      (Opcional) O caminho para um arquivo de log onde a mensagem de erro será registrada. Se não for fornecido, a mensagem será exibida no console.
+  #>
+
   param (
     [parameter(Mandatory=$true)][string]$NomeModulo,
     [parameter(Mandatory=$true)][string]$MensagemErro,
@@ -97,8 +163,18 @@ function VerificaModulo {
   }
 }
 
-function ObterDescricaoLicenca {
-  param ([string]$SkuPartNumber)
+function obterDescricaoLicenca {
+  <#
+    .SYNOPSIS
+      Obtém a descrição de uma licença com base em seu número de parte.
+    .PARAMETER SkuPartNumber
+      O número de parte da licença.
+  #>
+
+  param (
+    [string]$SkuPartNumber
+  )
+
   switch ($SkuPartNumber){
 # Licencas Exchange
     "EXCHANGEDESKLESS" { return "Online Kiosk" }
@@ -131,11 +207,24 @@ function ObterDescricaoLicenca {
 }
 
 function testaAcessoAdmin {
+  <#
+    .SYNOPSIS
+      Verifica se o usuário atual tem privilégios de administrador.
+    .OUTPUT
+      Retorna $true se o usuário tiver privilégios de administrador, caso contrário, retorna $false.
+  #>
   $p  = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
   return $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
 function removerAcentos {
+  <#
+    .SYNOPSIS
+      Remove os acentos de um texto, retornando apenas os caracteres sem acentos.
+    .PARAMETER texto
+      O texto do qual os acentos serão removidos.
+  #>
+
   param (
     [parameter(Mandatory=$true)][string]$texto
   )
@@ -154,4 +243,27 @@ function removerAcentos {
 
   # Retorna para forma normal
   return $stringBuilder.ToString().Normalize([System.Text.NormalizationForm]::FormC)
+}
+
+function espacoUsadoDisco {
+  <#
+    .SYNOPSIS
+      Obtém o espaço em disco usado e disponível em uma unidade.
+    .PARAMETER Drive
+      A letra da unidade a ser verificada (padrão: C).
+  #>
+
+  param(
+    [string]$Drive = 'C:'
+  )
+  
+  $disco = Get-Volume -DriveLetter ($Drive[0]) -ErrorAction SilentlyContinue
+  if ($disco){
+    return @{
+      Total = $disco.Size
+      Usado = $disco.Size - $disco.SizeRemaining
+      Livre = $disco.SizeRemaining
+    }
+  }
+  return $null
 }
