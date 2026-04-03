@@ -1,19 +1,24 @@
-#--------------------------------------------------------------------------------------------------------
-# Descricao: Extrair uma listagem com todas as caixas postais do Exchange (Microsoft 365)
-# Versao 01 (03/11/22) Jouderian Nobre
-# :::
-# Versao 14 (08/01/25) Jouderian Nobre: Inclusao da ocupacao da caixa de arquivamento
-# Versao 15 (10/01/25) Jouderian Nobre: Inclusao de novas licencas na relacao
-# Versao 16 (17/01/25) Jouderian Nobre: Remocao da coluna itens da caixa postal
-# Versao 17 (20/02/25) Jouderian Nobre: Inclusao da licenca PowerApps Premium
-# Versao 18 (24/03/25) Jouderian Nobre: Adequacao para usar o MgGraph e seus comandos
-# Versao 19 (14/04/25) Jouderian Nobre: Otimizacao do script com uso de funcoes
-# Versao 20 (28/05/25) Jouderian Nobre: Portando o script para usar Get-EXOMailbox e melhoria nos logs
-# Versao 21 (03/08/25) Jouderian Nobre: Otimizacao do script para melhorar a performance
-# Versao 22 (18/01/26) Jouderian Nobre: Melhoria na validação das dependencias e remoção do campo "SenhaForte"
-# Versao 23 (15/03/26) Jouderian Nobre: Otimizando a busca de detalhes das caixas postais para reduzir o numero de chamadas ao msGraph
-#--------------------------------------------------------------------------------------------------------
-
+<#
+.SYNOPSIS
+  Extrai uma listagem com todas as caixas postais do Exchange (Microsoft 365).
+.DESCRIPTION
+  O script se conecta ao ambiente do Microsoft 365, busca todas as caixas postais existentes e extrai uma série de informações sobre cada caixa postal, como nome, UPN, cidade, empresa, tipo, tamanho utilizado, entre outros. As informações são gravadas em um arquivo CSV para análise posterior.
+.AUTHOR
+  Jouderian Nobre
+.VERSION
+  01 (03/11/22) Jouderian Nobre: Criacao do script
+  :::
+  14 (08/01/25) Jouderian Nobre: Inclusao da ocupacao da caixa de arquivamento
+  15 (10/01/25) Jouderian Nobre: Inclusao de novas licencas na relacao
+  16 (17/01/25) Jouderian Nobre: Remocao da coluna itens da caixa postal
+  17 (20/02/25) Jouderian Nobre: Inclusao da licenca PowerApps Premium
+  18 (24/03/25) Jouderian Nobre: Adequacao para usar o MgGraph e seus comandos
+  19 (14/04/25) Jouderian Nobre: Otimizacao do script com uso de funcoes
+  20 (28/05/25) Jouderian Nobre: Portando o script para usar Get-EXOMailbox e melhoria nos logs
+  21 (03/08/25) Jouderian Nobre: Otimizacao do script para melhorar a performance
+  22 (18/01/26) Jouderian Nobre: Melhoria na validação das dependencias e remoção do campo "SenhaForte"
+  23 (15/03/26) Jouderian Nobre: Otimizando a busca de detalhes das caixas postais para reduzir o numero de chamadas ao msGraph
+#>
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
 Clear-Host
@@ -34,8 +39,8 @@ $camposDetalhesCaixa = @(
   'StreetAddress', 'PasswordPolicies', 'CreatedDateTime', 'LastPasswordChangeDateTime', 'OnPremisesLastSyncDateTime'
 )
 
-gravaLOG -arquivo $logs -texto "$("=" * 62) $($inicio.ToString('dd/MM/yy HH:mm:ss'))"
-gravaLOG -arquivo $logs -texto "Conectando ao Microsoft 365..."
+gravaLOG -texto "$("=" * 62) $($inicio.ToString('dd/MM/yy HH:mm:ss'))" -tipo Aviso -arquivo $logs -mostraTempo:$true
+gravaLOG -texto "Conectando ao Microsoft 365..." -arquivo $logs
 
 # Validacoes
 VerificaModulo -arquivoLogs $logs -NomeModulo "Microsoft.Graph" -MensagemErro "O modulo Microsoft Graph e necessario e nao esta instalado no sistema."
@@ -46,7 +51,7 @@ try {
   Import-Module ExchangeOnlineManagement
   Connect-ExchangeOnline -ShowBanner:$false
 } catch {
-  gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Erro ao conectar ao Exchange Online: $($_.Exception.Message)" -erro:$true
+  gravaLOG -texto "Erro ao conectar ao Exchange Online: $($_.Exception.Message)" -tipo Erro -arquivo $logs -mostraTempo:$true
   Exit
 }
 
@@ -54,25 +59,25 @@ try {
   Import-Module -Name Microsoft.Graph.Users
   Connect-MgGraph -Scopes "User.Read.All", "MailboxSettings.Read", "Directory.Read.All" -NoWelcome
 } catch {
-  gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Erro ao conectar ao Microsoft Graph: $($_.Exception.Message)" -erro:$true
+  gravaLOG -texto "Erro ao conectar ao Microsoft Graph: $($_.Exception.Message)" -tipo Erro -arquivo $logs -mostraTempo:$true
   Exit
 }
 
 #busca as caixas postais
-gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Pesquisando relacao de caixas postais no ExchangeOnline..."
+gravaLOG -texto "Pesquisando relacao de caixas postais no ExchangeOnline..." -tipo Info -arquivo $logs -mostraTempo:$true
 $Caixas = Get-EXOMailbox -ResultSize Unlimited -PropertySets All | Select-Object $camposCaixa
 
 $total = $caixas.Count
 
 #buscando detalhes das caixas postais
-gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Buscando detalhes das $($total) caixas postais encontradas..."
+gravaLOG -texto "Buscando detalhes das $($total) caixas postais encontradas..." -tipo Info -arquivo $logs -mostraTempo:$true
 $detalhe = Get-MgUser -All -Property $camposDetalhesCaixa
 Foreach ($caixa in $detalhe){
   $detalheCredenciais[$caixa.UserPrincipalName.ToLower()] = $caixa
 }
 $detalhe = $null
 
-gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando caixas postais no arquivo $($arquivo)"
+gravaLOG -texto "Gravando caixas postais no arquivo $($arquivo)" -tipo Info -arquivo $logs -mostraTempo:$true
 Out-File -FilePath $arquivo -InputObject "Nome,UPN,Cidade,UF,Empresa,Escritorio,Departamento,Cargo,Gerente,CC,nomeCC,Tipo,AD,Desabilitada,SenhaNaoExpira,Compartilhada,Encaminhada,Litigio,usado(GB),Arquivamento,Arquivamento(GB),Criacao,MudancaSenha,ultimoSyncAD,ultimoAcesso,conta,objectId,Licencas,outrasLicencas" -Encoding UTF8
 
 Foreach ($caixa in $caixas){
@@ -170,7 +175,7 @@ Foreach ($caixa in $caixas){
     $indice % 250 -eq 0 -or
     $indice -eq $total
   ){
-    gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Gravando $($indice) caixas postais. Parcial: $((NEW-TIMESPAN -Start $inicio -End (Get-Date)).ToString())"
+    gravaLOG -texto "Gravando $($indice) caixas postais. Parcial: $((NEW-TIMESPAN -Start $inicio -End (Get-Date)).ToString())" -tipo Info -arquivo $logs -mostraTempo:$true
   }
   if (
     $indice % 500 -eq 0 -or
@@ -183,13 +188,13 @@ Foreach ($caixa in $caixas){
 }  
 
 Write-Progress -Activity "Exportando caixas postais" -PercentComplete 100
-gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Terminada gravacao."
+gravaLOG -texto "Terminada gravacao." -tipo Aviso -arquivo $logs -mostraTempo:$true
 
 # Desconectando dos ambientes
 Disconnect-ExchangeOnline -Confirm:$false
 Disconnect-MgGraph
-gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Ambientes desconectados."
+gravaLOG -texto "Ambientes desconectados." -tipo Info -arquivo $logs -mostraTempo:$true
 
 # Finalizando o script
 $final = Get-Date
-gravaLOG -arquivo $logs -texto "$($final.ToString('dd/MM/yy HH:mm:ss')) - Tempo de duracao: $((NEW-TIMESPAN -Start $inicio -End $final).ToString())"
+gravaLOG -texto "Tempo de duracao: $((NEW-TIMESPAN -Start $inicio -End $final).ToString())" -tipo Aviso -arquivo $logs -mostraTempo:$true
