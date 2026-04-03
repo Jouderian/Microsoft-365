@@ -76,29 +76,32 @@ Function gravaLOG {
   <#
     .SYNOPSIS
       Grava uma mensagem de log em um arquivo e exibe no console.
-    .PARAMETER arquivo
-      O caminho do arquivo onde o log será gravado.
     .PARAMETER texto
       A mensagem de log a ser gravada.
-    .PARAMETER erro
-      Indica se a mensagem é um erro (opcional, padrão: $false). Se for um erro, a mensagem será prefixada com "[ERRO]" e exibida em vermelho no console.
+    .PARAMETER tipo
+      O tipo de mensagem (Info, Aviso, Erro) para formatação e cor
+    .PARAMETER arquivo
+      O caminho do arquivo onde o log será gravado.
+    .PARAMETER mostraTempo
+      Indica se o timestamp deve ser mostrado no console (opcional, padrão: $false).
   #>
 
   Param (
-    [Parameter(Mandatory = $true, ValueFromPipeline = $true)][string]$texto,
+    [Parameter(Mandatory = $true)][string]$texto,
+    [ValidateSet('Passo','Info', 'Aviso', 'Erro')][string]$tipo = 'Info',
     [parameter(Mandatory=$true)][string]$arquivo,
-    [parameter(Mandatory=$false)][boolean]$erro = $false,
-    [ValidateSet('Info', 'Aviso', 'Erro')][string]$tipo = 'Info'
+    [Parameter(Mandatory = $false)][boolean]$mostraTempo = $false
   )
 
-  if($erro){
-    $tipo = 'Erro'
+  if($mostraTempo){
+    $tempo = "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) "
+  } else {
+    $tempo = ""
   }
+  $Mensagem = "$tempo[$tipo] $texto"
 
-  $momento = Get-Date -Format 'dd-mm-yy HH:mm:ss'
-  $mensagem = "$momento [$tipo] $texto"
-  
   switch ($tipo){
+    'Passo' { Write-Host $mensagem -ForegroundColor White }
     'Info'  { Write-Host $mensagem -ForegroundColor Green }
     'Aviso' { Write-Host $mensagem -ForegroundColor Yellow }
     'Erro'  { Write-Host $mensagem -ForegroundColor Red }
@@ -146,7 +149,7 @@ function verificaModulo {
   $modulo = Get-Module -Name $NomeModulo -ListAvailable
   if($Modulo.count -eq 0){
     if($arquivoLogs){
-      gravaLOG -arquivo $arquivoLogs -texto $MensagemErro -erro:$true
+      gravaLOG -texto $MensagemErro -arquivo $arquivoLogs -tipo Erro
     } else {
       Write-Host $MensagemErro -ForegroundColor Red
     }
@@ -169,6 +172,8 @@ function obterDescricaoLicenca {
       Obtém a descrição de uma licença com base em seu número de parte.
     .PARAMETER SkuPartNumber
       O número de parte da licença.
+    .OUTPUT
+      Retorna o apelido da licença correspondente ao código fornecido, ou $null se o código não for reconhecido.
   #>
 
   param (
@@ -223,6 +228,8 @@ function removerAcentos {
       Remove os acentos de um texto, retornando apenas os caracteres sem acentos.
     .PARAMETER texto
       O texto do qual os acentos serão removidos.
+    .OUTPUT
+      Retorna o texto sem acentos.
   #>
 
   param (
@@ -251,6 +258,8 @@ function espacoUsadoDisco {
       Obtém o espaço em disco usado e disponível em uma unidade.
     .PARAMETER Drive
       A letra da unidade a ser verificada (padrão: C).
+    .OUTPUT
+      Retorna um objeto com as propriedades Total, Usado e Livre, representando o espaço total, usado e livre em bytes, respectivamente. Retorna $null se a unidade não for encontrada.
   #>
 
   param(
