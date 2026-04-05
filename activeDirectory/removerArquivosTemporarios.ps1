@@ -18,7 +18,6 @@ $updateCache = @(
 )
 $tempSystem = @(
   "C:\Windows\Temp\*",
-  "C:\Windows\Prefetch",
   "C:\Windows\System32\wbem\Logs\*",
   "C:\Windows\Logs\CBS\*"
 )
@@ -82,14 +81,7 @@ function gravaLOG {
   } else {
     $tempo = ""
   }
-  $logMensagem = "$tempo[$tipo] $Mensagem"
-
-  # Cores diferentes por nível
-  switch ($tipo){
-    'Info'  { Write-Host $logMensagem -ForegroundColor White }
-    'Aviso' { Write-Host $logMensagem -ForegroundColor Yellow }
-    'Erro'  { Write-Host $logMensagem -ForegroundColor Red }
-  }
+  $logMensagem = "$tempo [$tipo] $Mensagem"
 
   # Salvar em arquivo
   Add-Content -Path $arquivoLOG -Value $logMensagem -ErrorAction SilentlyContinue
@@ -166,7 +158,7 @@ gravaLOG "LIMPEZA DE DISCO" -tipo Aviso
 
 # Validar privilégios de administrador
 if (-not (testaAcessoAdmin)){
-  gravaLOG "ATENCAO!!!`nEste script requer permissões de administrador" -tipo Erro
+  Write-Host "ATENCAO!!!`nEste script requer permissões de administrador" -ForegroundColor Red
   exit 1
 }
 

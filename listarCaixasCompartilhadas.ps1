@@ -4,7 +4,7 @@
 # Versao 2 (14/05/25) Jouderian Nobre: Mostra tambem as caixa compartilhadas sem membros
 # Versao 3 (27/02/26) Jouderian Nobre: Adiciona coluna MailboxType ao relatório
 # Versao 4 (27/02/26) Jouderian Nobre: Passa a consultar todas as caixas postais sem filtrar por SharedMailbox
-# Versao 5 (27/02/26) Jouderian Nobre: Filtra resultados para incluir apenas SharedMailbox ou UserMailBox com membros
+# Versao 5 (27/02/26) Jouderian Nobre: Filtra resultados para incluir apenas SharedMailbox ou UserMailbox com membros
 #--------------------------------------------------------------------------------------------------------
 
 Clear-Host

@@ -1,15 +1,20 @@
-#-------------------------------------------------------------------------------
-# Descricao: Faz manutencao nas licencas dos usuarios de uma lista
-# Versao 1 02/06/21 Andre Cardoso
-# Versao 2 (31/01/24) Jouderian Nobre: Remover as licenas de uma lista
-# Versao 3 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
-# Versao 4 (10/01/25) Jouderian Nobre: Ajustes para remover e incluir licenças
-# Versao 5 (26/12/25) Jouderian Nobre: Permitir múltiplas licenças e operações independentes
-# Versao 6 (21/01/26) Jouderian Nobre: Inclusao de validação de modulos e logs
-#-------------------------------------------------------------------------------
-# A fazer:
-#   - Estudar: https://learn.microsoft.com/pt-br/powershell/module/microsoft.graph.users.actions/set-mguserlicense?view=graph-powershell-1.0
-#-------------------------------------------------------------------------------
+<#
+  .SYNOPSIS
+    Faz manutencao nas licencas dos usuarios de uma lista
+  .DESCRIPTION
+    O script se conecta ao ambiente do Microsoft 365, importa as informações gravadas no arquivo CSV e adiciona os membros ao grupo.
+  .AUTHOR
+    Andre Cardoso
+  .CREATED
+    02/06/21
+  .VERSION
+    2 (31/01/24) Jouderian Nobre: Remover as licencas de uma lista
+    3 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+    4 (10/01/25) Jouderian Nobre: Ajustes para remover e incluir licenças
+    5 (26/12/25) Jouderian Nobre: Permitir múltiplas licenças e operações independentes
+    6 (21/01/26) Jouderian Nobre: Inclusao de validação de modulos e logs
+    7 (05/04/26) Jouderian Nobre: Atualizacao da documentacao
+#>
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
@@ -33,8 +38,8 @@ $licencasRemover = @(
 )
   
 $licencasIncluir = @(
-  @{SkuId = "12a0b0ef-3d7c-4456-8f61-aa3817576c8d"}, <# O365 E1 Plus #>
-  @{SkuId = "c2273bd0-dff7-4215-9ef5-2c7bcfb06425"} <# AppsEnterprise #>
+  @{SkuId = "12a0b0ef-3d7c-4456-8f61-aa3817576c8d" }, <# O365 E1 Plus #>
+  @{SkuId = "c2273bd0-dff7-4215-9ef5-2c7bcfb06425" } <# AppsEnterprise #>
   #@{SkuId = "50f60901-3181-4b75-8a2c-4c8e4c1d5a72"} <# M365 F1 #>
   #@{SkuId = "f245ecc8-75af-4f8e-b61f-27d8114de5f3"} <# Business Standard #>
   #@{SkuId = "3b555118-da6a-4418-894f-7df1e2096870"} <# Business Basic #>
@@ -43,53 +48,56 @@ $licencasIncluir = @(
   #@{SkuId = "18181a46-0d4e-45cd-891e-60aabd171b4e"} <# O365 E1 #>
 )
 
-gravaLOG -arquivo $logs -texto "$("=" * 62) $($inicio.ToString('dd/MM/yy HH:mm:ss'))"
-gravaLOG -arquivo $logs -texto "Iniciando a troca do licenciamento de caixas postais do Microsoft 365"
+gravaLOG "$("=" * 62) $($inicio.ToString('dd/MM/yy HH:mm:ss'))" -tipo WRN -arquivo $logs
+gravaLOG "Iniciando a troca do licenciamento de caixas postais do Microsoft 365" -tipo INF -arquivo $logs
 
 # Validacoes
-VerificaModulo -arquivoLogs $logs -NomeModulo "Microsoft.Graph" -MensagemErro "O modulo Microsoft Graph e necessario e nao esta instalado no sistema."
+VerificaModulo -NomeModulo "Microsoft.Graph" -MensagemErro "O modulo Microsoft Graph e necessario e nao esta instalado no sistema." -arquivoLogs $logs
 
 try {
   Import-Module -Name Microsoft.Graph.Users
   Connect-MgGraph -Scopes User.ReadWrite.All, Organization.Read.All -NoWelcome
-} catch {
-  gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Erro ao conectar ao Microsoft Graph: $($_.Exception.Message)" -erro:$true
+}
+catch {
+  gravaLOG "Erro ao conectar ao Microsoft Graph: $($_.Exception.Message)" -tipo ERR -arquivo $logs
   Exit
 }
 
-gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Importando caixas para ajuste"
+gravaLOG "Importando caixas para ajuste" -tipo INF -arquivo $logs -mostraTempo:$true
 $Users = Import-Csv -Delimiter:";" -Path $arquivo
-if ($Users.Count -eq 0){
-  gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Arquivo $arquivo encontra-se vazio" -erro:$true
+if ($Users.Count -eq 0) {
+  gravaLOG "Arquivo $arquivo encontra-se vazio" -tipo ERR -arquivo $logs -mostraTempo:$true
   Exit
 }
 
-gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Ajustando as licencas das $($Users.Count) caixas importadas"
+gravaLOG "Ajustando as licencas das $($Users.Count) caixas importadas" -tipo INF -arquivo $logs -mostraTempo:$true
 $Users | ForEach-Object {
   try {
     $params = @{
       UserId = $_.eMail
     }
-    if ($licencasIncluir.Count -gt 0){
+    if ($licencasIncluir.Count -gt 0) {
       $params.AddLicenses = $licencasIncluir
     }
-    if ($licencasRemover.Count -gt 0){
+    if ($licencasRemover.Count -gt 0) {
       $params.RemoveLicenses = $licencasRemover
     }
-    if ($params.Count -gt 1){
+    if ($params.Count -gt 1) {
       Set-MgUserLicense @params
       $qtdCaixas++
-    } else {
-      Write-Host "Nenhuma operacao de licenca especificada para $($_.eMail)"
     }
-  } catch {
-    gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Problema com a troca da licenca na caixa $($_.eMail): $($_.Exception.Message)" -erro:$true
+    else {
+      gravaLOG "Nenhuma operacao de licenca especificada para $($_.eMail)" -tipo INF -arquivo $logs -mostraTempo:$true
+    }
+  }
+  catch {
+    gravaLOG "Problema com a troca da licenca na caixa $($_.eMail): $($_.Exception.Message)" -tipo ERR -arquivo $logs -mostraTempo:$true
   }
 }
-gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Foi ajsutado o licenciamento de $($qtdCaixas) caixas postais"
+gravaLOG "Foi ajsutado o licenciamento de $($qtdCaixas) caixas postais" -tipo INF -arquivo $logs -mostraTempo:$true
 
 Disconnect-MgGraph
-gravaLOG -arquivo $logs -texto "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Ambientes desconectados."
+gravaLOG "Ambientes desconectados." -tipo INF -arquivo $logs -mostraTempo:$true
 
 $final = Get-Date
-gravaLOG -arquivo $logs -texto "$($final.ToString('dd/MM/yy HH:mm:ss')) - Tempo de duracao: $((NEW-TIMESPAN -Start $inicio -End $final).ToString())"
+gravaLOG "Tempo de duracao: $((NEW-TIMESPAN -Start $inicio -End $final).ToString())" -tipo WRN -arquivo $logs -mostraTempo:$true

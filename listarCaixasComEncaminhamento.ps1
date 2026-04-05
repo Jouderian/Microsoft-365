@@ -1,16 +1,30 @@
-﻿#--------------------------------------------------------------------------------------------------------
-# Descricao: Extrair uma listagem com todas as caixas postais do Microsoft 365 com encaminhamento ativo
-# Versao 01 (16/07/24) - Jouderian Nobre
-#--------------------------------------------------------------------------------------------------------
+﻿<#
+  .SYNOPSIS
+    Extrai uma listagem com todas as caixas postais do Exchange (Microsoft 365).
+  .DESCRIPTION
+    O script se conecta ao ambiente do Microsoft 365, busca todas as caixas postais existentes e extrai uma série de informações sobre cada caixa postal, como nome, UPN, cidade, empresa, tipo, tamanho utilizado, entre outros. As informações são gravadas em um arquivo CSV para análise posterior.
+  .AUTHOR
+    Jouderian Nobre
+  .VERSION
+    01 (16/07/24) Jouderian Nobre: Criacao do script
+    02 (05/04/26) Jouderian Nobre: Atualizacao da documentacao
+  .OUTPUT
+    Arquivo CSV com a relacao de caixas postais
+#>
 
 Clear-Host
 
-$Modules = Get-Module -Name ExchangeOnlineManagement -ListAvailable
-if($Modules.count -eq 0){
-  Write-Host Instale o modulo do ExchangeOnlineManagement usando o comando abaixo:`n  Install-Module ExchangeOnlineManagement -ForegroundColor yellow
+VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O modulo Exchange Online Management e necessario e nao esta instalado no sistema." -arquivoLogs $logs
+
+# Conexoes
+try {
+  Import-Module ExchangeOnlineManagement
+  Connect-ExchangeOnline -ShowBanner:$false
+}
+catch {
+  gravaLOG -texto "Erro ao conectar ao Exchange Online: $($_.Exception.Message)" -tipo Erro -arquivo $logs -mostraTempo:$true
   Exit
 }
-Connect-ExchangeOnline
 
 $inicio = Get-Date
 
@@ -23,9 +37,8 @@ $totalCaixas = $caixas.Count
 $indice = 0
 
 Write-Host "Tipo,Nome,UPN,Destino"
-"Nome,UPN,Cidade,UF,Empresa,Escritorio,Departamento,Cargo,Gerente,CC,nomeCC,Tipo,AD,Desabilitado,SenhaForte,SenhaNaoExpira,Compartilhado,Encaminhada,Litigio,Itens,usado(GB),Arquivamento,Criacao,MudancaSenha,ultimoSyncAD,ultimoAcesso,nomeConta,objectId,Licencas,outrasLicencas"
 
-foreach ($caixa in $caixas){
+foreach ($caixa in $caixas) {
 
   $indice++
   Write-Progress -Activity "Analisando caixas postais" -Status "Progresso: $($indice) de $($totalCaixas)" -PercentComplete ($indice / $totalCaixas * 100)
@@ -35,7 +48,8 @@ foreach ($caixa in $caixas){
 
 Write-Progress -Activity "Analisando caixas postais" -PercentComplete 100
 
+# Finalizando o script
 $final = Get-Date
-Write-Host `nInicio: $inicio
-Write-Host Final: $final
-Write-Host Tempo: (NEW-TIMESPAN -Start $inicio -End $final).ToString()
+Write-Host "`nInicio: $inicio"
+Write-Host "Final: $final"
+Write-Host "Tempo de duracao: $((NEW-TIMESPAN -Start $inicio -End $final).ToString())"

@@ -1,7 +1,12 @@
-#--------------------------------------------------------------------------------------------------------
-# Descricao: Testar o envio de mensagem usando credencial HVE
-# Versao 1 (20/02/25) Jouderian
-#--------------------------------------------------------------------------------------------------------
+<#
+.SYNOPSIS
+  Testar o envio de mensagem usando credencial HVE
+.AUTHOR
+  Jouderian Nobre
+.VERSION
+  01 (20/02/25) - Criacao do script
+  02 (05/04/26) - Atualizacao da documentacao
+#>
 
 param (
   [Parameter(Mandatory = $true)][string]$eMailRemetente,

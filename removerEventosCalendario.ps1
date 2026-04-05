@@ -1,8 +1,15 @@
-﻿#--------------------------------------------------------------------------------------------------------
-# Descricao: Remoção de eventos de uma credencial
-# Versao 01 (06/02/23) Jouderian Nobre:
-# Versao 02 (04/07/23) Jouderian Nobre: Passa a perguntar a caixa postal ao usuário
-#--------------------------------------------------------------------------------------------------------
+﻿<#
+.SYNOPSIS
+  Remove eventos de uma caixa postal
+.DESCRIPTION
+  O script se conecta ao ambiente do Microsoft 365, busca todos os eventos existentes e extrai uma série de informações sobre cada evento, como nome, UPN, cidade, empresa, tipo, tamanho utilizado, entre outros. As informações são gravadas em um arquivo CSV para análise posterior.
+.AUTHOR
+  Jouderian Nobre
+.VERSION
+  01 (06/02/23) - Criacao do script
+  02 (04/07/23) - Passa a perguntar a caixa postal ao usuário
+  03 (05/04/26) - Atualizacao da documentacao
+#>
 
 Clear-Host
 

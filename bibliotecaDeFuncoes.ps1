@@ -14,9 +14,10 @@
     08 (20/02/25) - Funcao para testar se o acesso tem elevacao de administrador
     09 (02/03/26) - Funcao para remover acentos de um texto
     10 (30/03/26) - Funcao para obter o espaco usado e livre em uma unidade de disco
+    11 (05/04/26) - Melhoria na funcao de gravacao de LOGs
 #>
 
-function removeQuebraDeLinha{
+function removeQuebraDeLinha {
   <#
     .SYNOPSIS
       Remove as quebras de linha de um texto, substituindo-as por espaços.
@@ -25,14 +26,14 @@ function removeQuebraDeLinha{
   #>
 
   param (
-    [Parameter(Mandatory=$true)][string]$texto
+    [Parameter(Mandatory = $true)][string]$texto
   )
   $textoTratado = $texto.replace("
 ", ' ').replace('`n', ' ').replace('`r', ' ')
   Return $textoTratado
 }
 
-function trataTexto{
+function trataTexto {
   <#
     .SYNOPSIS
       Trata um texto, aplicando várias transformações.
@@ -46,25 +47,27 @@ function trataTexto{
       A notação a ser aplicada ao texto (opcional, padrão: " "): [m]inuscula, [M]aiuscula, [C]amelo.
   #>
   param (
-    [Parameter(Mandatory=$true)][string]$texto,
-    [Parameter(Mandatory=$false)][boolean]$removeQuebraLinha = $true,
-    [Parameter(Mandatory=$false)][boolean]$removeEspacoduplo = $true,
-    [Parameter(Mandatory=$false)][string]$notacao = " "
+    [Parameter(Mandatory = $true)][string]$texto,
+    [Parameter(Mandatory = $false)][boolean]$removeQuebraLinha = $true,
+    [Parameter(Mandatory = $false)][boolean]$removeEspacoduplo = $true,
+    [Parameter(Mandatory = $false)][string]$notacao = " "
   )
   $textoTratado = $texto.Trim()
 
-  if ($removeQuebraLinha){
+  if ($removeQuebraLinha) {
     $textoTratado = removeQuebraDeLinha -texto $textoTratado
   }
-  if($removeEspacoduplo){
+  if ($removeEspacoduplo) {
     $textoTratado = $textoTratado.replace('  ', ' ')
   }
-  if ($notacao -eq "C"){
+  if ($notacao -eq "C") {
     $textoTratado = (Get-Culture).TextInfo.ToTitleCase($textoTratado.ToLower())
     $textoTratado = $textoTratado.replace(' Da ', ' da ').replace(' De ', ' de ').replace(' Di ', ' di ').replace(' Do ', ' do ').replace(' Du ', ' du ').replace(' Das ', ' das ').replace(' Dos ', ' dos ').replace(' Iii', ' III').replace(' Ii', ' II')
-  } elseif ($notacao -ceq "m"){
+  }
+  elseif ($notacao -ceq "m") {
     $textoTratado = $textoTratado.ToLower()
-  } elseif ($notacao -ceq "M"){
+  }
+  elseif ($notacao -ceq "M") {
     $textoTratado = $textoTratado.ToUpper()
   }
   $textoTratado = $textoTratado.replace(',', ' ')
@@ -88,26 +91,37 @@ Function gravaLOG {
 
   Param (
     [Parameter(Mandatory = $true)][string]$texto,
-    [ValidateSet('Passo','Info', 'Aviso', 'Erro')][string]$tipo = 'Info',
-    [parameter(Mandatory=$true)][string]$arquivo,
+    [ValidateSet('INF', 'OK', 'WRN', 'ERR', 'STP')][string]$tipo = 'INF',
+    [parameter(Mandatory = $true)][string]$arquivo,
     [Parameter(Mandatory = $false)][boolean]$mostraTempo = $false
   )
 
-  if($mostraTempo){
+  $prefix = @{
+    INF = '[ℹ️ INFO ]';
+    OK  = '[✅ OK   ]';
+    WRN = '[⚠️ AVISO]';
+    ERR = '[❌ ERRO ]';
+    STP = '[🔹 PASSO]'
+  }[$tipo]
+
+  $color = @{
+    INF = 'Cyan';
+    OK  = 'Green';
+    WRN = 'Yellow';
+    ERR = 'Red';
+    STP = 'Magenta'
+  }[$tipo]
+
+  if ($mostraTempo) {
     $tempo = "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) "
-  } else {
+  }
+  else {
     $tempo = ""
   }
-  $Mensagem = "$tempo[$tipo] $texto"
+  $mensagem = "$tempo $prefix $texto"
 
-  switch ($tipo){
-    'Passo' { Write-Host $mensagem -ForegroundColor White }
-    'Info'  { Write-Host $mensagem -ForegroundColor Green }
-    'Aviso' { Write-Host $mensagem -ForegroundColor Yellow }
-    'Erro'  { Write-Host $mensagem -ForegroundColor Red }
-  }
-
-  Add-Content -Path $arquivo -Value $mensagem -ErrorAction SilentlyContinue
+  Write-Host $mensagem -ForegroundColor $color
+  Add-Content -Path $arquivo -Value $mensagem
 }
 
 function geraSenhaAleatoria {
@@ -120,11 +134,11 @@ function geraSenhaAleatoria {
       Os caracteres a serem usados na geração da senha (padrão: letras minúsculas, maiúsculas, números e símbolos).
   #>
   Param (
-    [parameter(Mandatory=$false)][int]$tamanho = 16,
-    [parameter(Mandatory=$false)][string]$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:,.<>?/\~"
+    [parameter(Mandatory = $false)][int]$tamanho = 16,
+    [parameter(Mandatory = $false)][string]$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:,.<>?/\~"
   )
   
-  $password = -join ((65..90) + (97..122) + (48..57) + (33..47) | Get-Random -Count $tamanho | ForEach-Object {[char]$_})
+  $password = -join ((65..90) + (97..122) + (48..57) + (33..47) | Get-Random -Count $tamanho | ForEach-Object { [char]$_ })
   return $password
 }
 
@@ -141,20 +155,21 @@ function verificaModulo {
   #>
 
   param (
-    [parameter(Mandatory=$true)][string]$NomeModulo,
-    [parameter(Mandatory=$true)][string]$MensagemErro,
-    [parameter(Mandatory=$false)][string]$arquivoLogs
+    [parameter(Mandatory = $true)][string]$NomeModulo,
+    [parameter(Mandatory = $true)][string]$MensagemErro,
+    [parameter(Mandatory = $false)][string]$arquivoLogs
   )
 
   $modulo = Get-Module -Name $NomeModulo -ListAvailable
-  if($Modulo.count -eq 0){
-    if($arquivoLogs){
+  if ($Modulo.count -eq 0) {
+    if ($arquivoLogs) {
       gravaLOG -texto $MensagemErro -arquivo $arquivoLogs -tipo Erro
-    } else {
+    }
+    else {
       Write-Host $MensagemErro -ForegroundColor Red
     }
     $confirm = Read-Host "O módulo $NomeModulo não está instalado. Deseja instalá-lo? [S]im ou [N]ao"
-    if ($confirm -match "[sS]"){
+    if ($confirm -match "[sS]") {
       Write-Host "Instalando o módulo $NomeModulo..."
       Install-Module -Name $NomeModulo -Repository PSGallery -AllowClobber -Scope CurrentUser
       Write-Host "O módulo $NomeModulo foi instalado com sucesso" -ForegroundColor Magenta
@@ -180,29 +195,29 @@ function obterDescricaoLicenca {
     [string]$SkuPartNumber
   )
 
-  switch ($SkuPartNumber){
-# Licencas Exchange
+  switch ($SkuPartNumber) {
+    # Licencas Exchange
     "EXCHANGEDESKLESS" { return "Online Kiosk" }
     "EXCHANGESTANDARD" { return "Online Plan1" }
     "EXCHANGEENTERPRISE" { return "Online Plan2" }
-# Licencas Business
+    # Licencas Business
     "O365_BUSINESS" { return "AppsBusiness" }
     "O365_BUSINESS_ESSENTIALS" { return "Business Basic" }
     "O365_BUSINESS_PREMIUM" { return "Business Standard" }
     "SPB" { return "Business Premium" }
-# Licencas Enterprise
+    # Licencas Enterprise
     "OFFICESUBSCRIPTION" { return "AppsEnterprise" }
     "M365_F1_COMM" { return "M365 F1" }
     "DESKLESSPACK" { return "O365 F3" }
     "STANDARDPACK" { return "O365  E1" }
     "Office365_E1_Plus" { return "O365 E1 Plus" }
     "ENTERPRISEPACK" { return "O365 E3" }
-# Licencas Power
+    # Licencas Power
     "POWER_BI_PRO" { return "PowerBI Pro" }
     "POWERAPPS_PER_USER" { return "PowerApps Premium" }
     "FLOW_PER_USER" { return "PowerAutomate" }
     "POWERAUTOMATE_ATTENDED_RPA" { return "Automate Premium" }
-# Licencas Diversas
+    # Licencas Diversas
     "Microsoft_365_Copilot" { return "M365 Copilot" }
     "Microsoft_Teams_Premium" { return "Teams Premium" }
     "PROJECT_P1" { return "Project Plan 1" }
@@ -218,7 +233,7 @@ function testaAcessoAdmin {
     .OUTPUT
       Retorna $true se o usuário tiver privilégios de administrador, caso contrário, retorna $false.
   #>
-  $p  = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+  $p = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
   return $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
@@ -233,7 +248,7 @@ function removerAcentos {
   #>
 
   param (
-    [parameter(Mandatory=$true)][string]$texto
+    [parameter(Mandatory = $true)][string]$texto
   )
 
   # Normaliza para forma de decomposição (separa letra do acento)
@@ -242,8 +257,8 @@ function removerAcentos {
   # Remove os caracteres não espaçadores (acentos)
   $stringBuilder = New-Object System.Text.StringBuilder
 
-  foreach ($char in $normalized.ToCharArray()){
-    if ([Globalization.CharUnicodeInfo]::GetUnicodeCategory($char) -ne [Globalization.UnicodeCategory]::NonSpacingMark){
+  foreach ($char in $normalized.ToCharArray()) {
+    if ([Globalization.CharUnicodeInfo]::GetUnicodeCategory($char) -ne [Globalization.UnicodeCategory]::NonSpacingMark) {
       [void]$stringBuilder.Append($char)
     }
   }
@@ -267,7 +282,7 @@ function espacoUsadoDisco {
   )
   
   $disco = Get-Volume -DriveLetter ($Drive[0]) -ErrorAction SilentlyContinue
-  if ($disco){
+  if ($disco) {
     return @{
       Total = $disco.Size
       Usado = $disco.Size - $disco.SizeRemaining

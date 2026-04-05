@@ -1,12 +1,18 @@
-#-------------------------------------------------------------------------------
-# Descricao: Lista a relacao de membros das Listas e Grupos do M365, incluindo Grupos de Segurança
-# Versao 1 (25/01/22) Jouderian Nobre
-# :::
-# Versao 8 (29/04/25) Jouderian Nobre: Otimizacao do script com uso de funcoes
-# Versao 9 (28/05/25) Jouderian Nobre: Otimizando a logica de exclusao das listas vazias
-# Versao 10 (17/12/25) Jouderian Nobre: Incluindo Grupos de Segurança via Microsoft Graph
-# Versao 11 (26/03/26) Jouderian Nobre: Otimizacao do script para melhorar a performance
-#-------------------------------------------------------------------------------
+<#
+  .SYNOPSIS
+    Lista a relacao de membros das Listas e Grupos do M365, incluindo Grupos de Segurança
+  .AUTHOR
+    Jouderian Nobre
+  .VERSION
+    01 (25/01/22) - Criacao do script
+    02 (29/04/25) - Otimizacao do script com uso de funcoes
+    03 (28/05/25) - Otimizando a logica de exclusao das listas vazias
+    04 (17/12/25) - Incluindo Grupos de Segurança via Microsoft Graph
+    05 (26/03/26) - Otimizacao do script para melhorar a performance
+    06 (05/04/26) - Atualizacao da documentacao
+  .OUTPUT
+    Arquivo com lista de membros de um grupo/Lista do EntraID (via Microsoft Graph PowerShell)
+#>
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
@@ -20,10 +26,11 @@ $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\membrosListasGrupos.cs
 $buffer = @()
 
 Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Conectando ao Exchange Online..."
-VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O módulo Exchange Online Management é necessário e não está instalado no sistema."
+VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O módulo Exchange Online Management é necessário e não está instalado no sistema." -arquivoLogs $logs
 try {
   Connect-ExchangeOnline -ShowBanner:$false
-} catch {
+}
+catch {
   Write-Host "Erro ao conectar ao Exchange Online: $($_.Exception.Message)" -ForegroundColor Red
   Exit
 }
@@ -31,8 +38,9 @@ try {
 Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Conectando ao Microsoft Graph..."
 VerificaModulo -NomeModulo "Microsoft.Graph" -MensagemErro "O módulo Microsoft.Graph é necessário e não está instalado no sistema."
 try {
-  Connect-MgGraph -Scopes "Group.Read.All","User.Read.All" -ErrorAction Stop
-} catch {
+  Connect-MgGraph -Scopes "Group.Read.All", "User.Read.All" -ErrorAction Stop
+}
+catch {
   Write-Host "Erro ao conectar ao Microsoft Graph: $($_.Exception.Message)" -ForegroundColor Red
   Exit
 }
@@ -48,15 +56,15 @@ Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - $($GruposSeguranca.Cou
 $total = $Listas.Count + $GruposSeguranca.Count
 
 Out-File -FilePath $arquivo -InputObject "idGrupo;nomeGrupo;eMailGrupo;adSync;tipoGrupo;idMembro;membro;tipo;eMailMembro" -Encoding UTF8
-Foreach ($Lista in $Listas){
+Foreach ($Lista in $Listas) {
 
   $indice++
   Write-Progress -Activity "Exportando Listas/Grupos" -Status "Progresso: $indice/$total - $($Lista.DisplayName)" -PercentComplete (($indice / $total) * 100)
 
   $Membros = Get-DistributionGroupMember -Identity $Lista.ExternalDirectoryObjectId
-  if ($Membros.Length -eq 0){
+  if ($Membros.Length -eq 0) {
 
-    if($Lista.IsDirSynced -eq $true){
+    if ($Lista.IsDirSynced -eq $true) {
       gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Sincronizada AD"
       continue
     }
@@ -65,13 +73,14 @@ Foreach ($Lista in $Listas){
     try {
       Remove-DistributionGroup -Identity $Lista.ExternalDirectoryObjectId -Confirm:$false
       gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Excluida"
-    } catch {
+    }
+    catch {
       gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),ERRO: $($_.Exception.Message)" -erro:$true
     }
     continue
   }
 
-  Foreach ($Membro in $Membros){
+  Foreach ($Membro in $Membros) {
     $buffer += "$($Lista.ExternalDirectoryObjectId);$($Lista.DisplayName);$($Lista.PrimarySMTPAddress);$($Lista.IsDirSynced);$($Lista.RecipientType);$($Membro.ExternalDirectoryObjectId);$($Membro.DisplayName);$($Membro.RecipientType);$($Membro.PrimarySMTPAddress)"
   }
 
@@ -79,24 +88,25 @@ Foreach ($Lista in $Listas){
   $buffer = @()
 }
 
-Foreach ($Grupo in $GruposSeguranca){
+Foreach ($Grupo in $GruposSeguranca) {
 
   $indice++
   Write-Progress -Activity "Exportando Listas/Grupos" -Status "Progresso: $indice/$total - $($Grupo.DisplayName)" -PercentComplete (($indice / $total) * 100)
 
   $Membros = Get-MgGroupMember -GroupId $Grupo.Id -All
-  if ($Membros.Count -eq 0){
+  if ($Membros.Count -eq 0) {
     gravaLOG -arquivo $logs -texto "$($Grupo.DisplayName),$($Grupo.Mail),$($Grupo.Id),Grupo de Segurança vazio"
     continue
   }
   
-  Foreach ($Membro in $Membros){
+  Foreach ($Membro in $Membros) {
     # Obter detalhes do membro (assumindo usuário)
     try {
       $DetalhesMembro = Get-MgUser -UserId $Membro.Id -ErrorAction Stop
       $tipoMembro = "User"
       $emailMembro = $DetalhesMembro.Mail
-    } catch {
+    }
+    catch {
       # Se não for usuário, pode ser grupo ou outro objeto
       $tipoMembro = "Other"
       $emailMembro = ""
