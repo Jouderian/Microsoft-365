@@ -1,7 +1,16 @@
-#--------------------------------------------------------------------------------------------------------
-# Descricao: Liberar uma caixa postal bloqueada no ExchangeOnline
-# Versao 1 (06/10/25) Jouderian Nobre
-#--------------------------------------------------------------------------------------------------------
+<#
+  .SYNOPSIS
+    Libera uma caixa postal bloqueada no Exchange Online
+  .DESCRIPTION
+    O script se conecta ao Exchange Online e remove o bloqueio de envio de uma caixa postal específica, informada interativamente pelo operador.
+  .AUTHOR
+    Jouderian Nobre
+  .VERSION
+    01 (06/10/25) - Criacao do script
+    02 (05/04/26) - Atualizacao da documentacao
+  .OUTPUT
+    Saída no console com o status da operação de liberação.
+#>
 
 Clear-Host
 

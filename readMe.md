@@ -37,3 +37,38 @@ Abaixo você encontra a lista de todos os `scripts` e a descrição da sua princ
 > [!NOTE]
 > **Metodologia de Manutenção**
 > Para mais detalhes sobre as regras de arquitetura *Agent-Flywheel* deste projeto, ou para ver o status dos planos de desenvolvimento e aprovações, consulte o arquivo `.agents/BEADS.md`.
+
+---
+
+## Scripts — Pasta `activeDirectory`
+
+Scripts voltados para gestão de credenciais, grupos, computadores e operações no Active Directory local.
+
+| Script | Descrição |
+|--------|-----------|
+| `ajustarCaixasDivergenciaUPN_SMTP.ps1` | Ajusta as credenciais do AD cujo UPN está divergente do endereço SMTP no atributo `proxyAddresses`. |
+| `ajustarLimiteExclusaoSyncAD.ps1` | Ajusta temporariamente o limite de exclusões do Entra Connect Sync e restaura ao final da operação. |
+| `ajustarPaisCredenciaisAD.ps1` | Ajusta os atributos País, Apelido e Código do País de todas as credenciais ativas no AD. |
+| `copiarSystemStateAD.ps1` | Realiza cópia de segurança (backup) do System State do Active Directory. |
+| `criarCredenciaisAD.ps1` | Cria usuários em massa no AD com base em um arquivo CSV. |
+| `expirarUsuariosAD.ps1` | Expira ou libera credenciais com base em uma planilha de agendamento. |
+| `listaEventosCredencial.ps1` | Localiza eventos de segurança de credenciais no AD (bloqueio, desbloqueio, alteração de senha e mudanças de informações). |
+| `listarComputadoresAD.ps1` | Gera a relação de computadores registrados no Active Directory. |
+| `listarCredenciaisAD.ps1` | Gera um arquivo `.csv` com as principais informações dos usuários do AD. |
+| `listarMembrosGrupoAD.ps1` | Lista os membros de um grupo do Active Directory. |
+| `mudarCredenciais.ps1` | Altera o nome da credencial, domínio e endereço de e-mail de um usuário. |
+| `mudarSenhaUsuariosAD.ps1` | Altera a senha de um usuário específico no AD. |
+| `mudarSenhaUsuariosBloqueadosAD.ps1` | Altera aleatoriamente a senha dos usuários bloqueados no Active Directory. |
+| `removerArquivosTemporarios.ps1` | Script de limpeza de disco otimizado para reduzir espaço utilizado em máquinas Windows. |
+| `removerComputadoresAD.ps1` | Remove computadores do AD com base em uma lista fornecida. |
+| `removerDominioAD.ps1` | Remove um domínio específico das credenciais no AD. |
+| `testarConexaoLDAP.ps1` | Testa a conexão LDAP com um servidor Active Directory. |
+
+---
+
+## Arquivos de Suporte
+
+| Arquivo | Descrição |
+|---------|-----------|
+| `SkuDataComplete.csv` | Tabela de referência com os SKUs e nomes amigáveis das licenças do Microsoft 365, utilizada internamente pela função `ObterDescricaoLicenca` da `bibliotecaDeFuncoes.ps1`. |
+

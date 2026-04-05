@@ -1,7 +1,16 @@
-﻿#--------------------------------------------------------------------------------------------------------
-# Descricao: Importa os membros para uma lista de distribuição
-# Versao 1 (27/08/25) Jouderian Nobre
-#--------------------------------------------------------------------------------------------------------
+<#
+  .SYNOPSIS
+    Importa os membros para uma lista de distribuição
+  .DESCRIPTION
+    O script se conecta ao Exchange Online e adiciona em massa os endereços de e-mail lidos de um arquivo TXT a uma lista de distribuição informada interativamente.
+  .AUTHOR
+    Jouderian Nobre
+  .VERSION
+    01 (27/08/25) - Criacao do script
+    02 (05/04/26) - Atualizacao da documentacao
+  .OUTPUT
+    Saída no console confirmando cada membro adicionado com sucesso ou reportando erros.
+#>
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
@@ -12,13 +21,14 @@ $listaDistribuicao = Read-Host "Informe o eMail da Lista de Distribuicao"
 $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\eMails.txt"
 
 # Validacoes
-VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O modulo Exchange Online Management e necessario e nao esta instalado no sistema."
+. "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
 # Conectar ao Exchange Online
 try {
   Import-Module ExchangeOnlineManagement
   Connect-ExchangeOnline -ShowBanner:$false
-} catch {
+}
+catch {
   Write-Host "Erro ao conectar o Exchange: $($_.Exception.Message)" -ForegroundColor Red
   Exit
 }
@@ -27,14 +37,23 @@ try {
 $membros = Import-Csv -Path $arquivo
 
 # Adicionar cada eMail à lista de distribuição
-foreach ($membro in $membros){
+f
+reach ($membro in $membros) {
   try {
-    Add-DistributionGroupMember -Identity $listaDistribuicao -Member $membro.eMail
+    tryte $listaDistribuicao -Member $membro.eMail
     Write-Host "Adicionado: $($membro.eMail)" -ForegroundColor Green
-  } catch {
-    Write-Host "Erro ao adicionar: $($membro.eMail) - $($_.Exception.Message)" -ForegroundColor Red
   }
+  catchnn
+  Write-Host "Erro ao adicionar: $($membro.eMail) - $($_.Exception.Message)" -ForegroundColor Red
+}
 }
 
 # Desconectar do Exchange Online
-Disconnect-ExchangeOnline -Confirm:$false
+Disconnect-ExchangeOnline -Confirm:$falseect-ExchangeOnline -Confirm:$false
+} catch {
+  Write-Host "Erro ao adicionar: $($membro.eMail) - $($_.Exception.Message)" -ForegroundColor Red
+}
+}
+
+# Desconectar do Exchange Online
+Disconnect-ExchangeOnline -Confirm:$falseect-ExchangiOnlinr -Comfirm:$false:$false

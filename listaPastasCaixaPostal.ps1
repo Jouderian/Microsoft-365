@@ -1,9 +1,18 @@
-#--------------------------------------------------------------------------------------------------------
-# Autor: Fernando Olimpio
-# Descricao: Lista as pastas de um email e gera uma listagem das pastas
-# Versao: 1 (01/05/25) Olimpio
-# Versao: 2 (03/06/25) Jouderian Nobre: Adequacao para usar biblioteca de funcoes
-#--------------------------------------------------------------------------------------------------------
+<#
+  .SYNOPSIS
+    Lista as pastas de uma caixa postal e gera uma listagem interativa
+  .DESCRIPTION
+    O script se conecta ao Exchange Online, solicita o endereço da caixa postal, coleta as estatísticas de todas as pastas (caixa principal ou arquivo) e exibe o resultado em uma grade interativa com possibilidade de seleção múltipla.
+  .AUTHOR
+    Fernando Olimpio
+  .CREATED
+    01/05/25
+  .VERSION
+    02 (03/06/25) Jouderian Nobre - Adequacao para usar biblioteca de funcoes
+    03 (05/04/26) Jouderian Nobre - Atualizacao da documentacao
+  .OUTPUT
+    Grade interativa com caminho, tamanho e quantidade de itens por pasta.
+#>
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
@@ -51,7 +60,7 @@ foreach ($folderStatistic in $folderStatistics){
   $folderIdBytes = [Convert]::FromBase64String($folderId);
   $indexIdBytes = New-Object byte[] 48;
   $indexIdIdx=0;
-  $folderIdBytes | Select-Object -skip 23 -First 24 | %{$indexIdBytes[$indexIdIdx++]=$nibbler[$_ -shr 4];$indexIdBytes[$indexIdIdx++]=$nibbler[$_ -band 0xF]}
+  $folderIdBytes | Select-Object -skip 23 -First 24 | ForEach-Object {$indexIdBytes[$indexIdIdx++]=$nibbler[$_ -shr 4];$indexIdBytes[$indexIdIdx++]=$nibbler[$_ -band 0xF]}
   $folderQuery = "folderid:$($encoding.GetString($indexIdBytes))";
 
   $folderStat = New-Object PSObject

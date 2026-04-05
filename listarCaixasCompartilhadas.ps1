@@ -1,11 +1,20 @@
-#--------------------------------------------------------------------------------------------------------
-# Descricao: Listar somente caixas do tipo SharedMailbox ou quaisquer caixas que tenham permissões de acesso compartilhado no Exchange Online (M365); incluir o tipo da caixa no relatório
-# Versao 1 (13/05/25) Jouderian Nobre
-# Versao 2 (14/05/25) Jouderian Nobre: Mostra tambem as caixa compartilhadas sem membros
-# Versao 3 (27/02/26) Jouderian Nobre: Adiciona coluna MailboxType ao relatório
-# Versao 4 (27/02/26) Jouderian Nobre: Passa a consultar todas as caixas postais sem filtrar por SharedMailbox
-# Versao 5 (27/02/26) Jouderian Nobre: Filtra resultados para incluir apenas SharedMailbox ou UserMailbox com membros
-#--------------------------------------------------------------------------------------------------------
+<#
+  .SYNOPSIS
+    Lista caixas compartilhadas e caixas com delegações de acesso no Exchange Online
+  .DESCRIPTION
+    O script se conecta ao Exchange Online, busca todas as caixas postais e filtra apenas os registros do tipo SharedMailbox ou UserMailbox que possuam membros com permissão explícita de acesso. Inclui caixas compartilhadas sem membros para fins de auditoria.
+  .AUTHOR
+    Jouderian Nobre
+  .VERSION
+    01 (13/05/25) - Criacao do script
+    02 (14/05/25) - Mostra tambem as caixas compartilhadas sem membros
+    03 (27/02/26) - Adiciona coluna MailboxType ao relatorio
+    04 (27/02/26) - Passa a consultar todas as caixas postais sem filtrar por SharedMailbox
+    05 (27/02/26) - Filtra resultados para incluir apenas SharedMailbox ou UserMailbox com membros
+    06 (05/04/26) - Atualizacao da documentacao
+  .OUTPUT
+    Arquivo CSV com a relacao de caixas compartilhadas e seus membros.
+#>
 
 Clear-Host
 
