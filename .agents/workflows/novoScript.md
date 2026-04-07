@@ -78,9 +78,11 @@ catch {
 - Use `Write-Progress` em loops com mais de 50 itens
 - **Não** armazene credenciais, tokens ou senhas em hardcode
 
-## Passo 7 — Atualizar o `readMe.md`
+## Passo 7 — Criar a Documentação e Atualizar o `readMe.md`
 
-Adicione o novo script na tabela correta do arquivo `readMe.md` na raiz do repositório.
+Todo script deve ter seu arquivo correspondente na pasta `docs/` ou `docs/activeDirectory/`.
+1. Crie o arquivo `.md` usando o bloco de detalhes extraído do cabeçalho.
+2. Atualize a tabela pertinente no arquivo `readMe.md` na raiz do repositório, mapeando o script para sua nova documentação. O formato do link deve ser: ``[`nomeDoScript.ps1`](docs/nomeDoScript.md)``.
 
 ## Passo 8 — Atualizar o `BEADS.md`
 
