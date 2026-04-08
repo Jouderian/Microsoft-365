@@ -2,6 +2,16 @@
 
 Este repositório contém uma coleção de utilitários em PowerShell voltados para o gerenciamento, manutenção e extração de relatórios dos serviços de Active Directory, Exchange Online, EntraID (Graph) e Microsoft Teams.
 
+## ⚖️ Licenciamento
+
+Este software e seus códigos associados estão licenciados sob a **PolyForm Noncommercial License 1.0.0**. 
+
+- **Uso Livre**: Você pode utilizar, modificar e distribuir o código para fins **não comerciais** (uso educacional, pessoal, ou de experimentação).
+- **Citação**: É obrigatório manter os avisos de direitos autorais originais e **citar a fonte** caso incorpore o código.
+- **Restrição Comercial**: É **proibido** usar os scripts com finalidades comerciais ou integrá-los de forma corporativa para lucro sem aprovação formal prévia.
+
+Para ver os termos na íntegra, consulte o arquivo `LICENSE` na raiz do repositório.
+
 ## Resumo dos Scripts
 
 Abaixo você encontra a lista de todos os `scripts` e a descrição da sua principal função:
@@ -28,7 +38,7 @@ Abaixo você encontra a lista de todos os `scripts` e a descrição da sua princ
 | [`mudarLicencas.ps1`](docs/mudarLicencas.md) | Faz a manutenção ou permuta em massa nas licenças dos usuários oriundos de num arquivo csv. |
 | [`removerDispositivos.ps1`](docs/removerDispositivos.md) | Remove do EntraID os dispositivos sem uso e obsoletos há mais de 190 dias. |
 | [`removerEventosCalendario.ps1`](docs/removerEventosCalendario.md) | Procura e retira eventos de reuniões problemáticas no calendário de uma caixa postal. |
-| `sincroniza_AD_M365.PS1` | Força imediatamente o ciclo de sincronismo Delta entre o Active Directory local e a nuvem. |
+| [`sincroniza_AD_M365.ps1`](docs/sincroniza_AD_M365.md) | Força imediatamente o ciclo de sincronismo Delta entre o Active Directory local e a nuvem. |
 | [`testarEnvioHVE.ps1`](docs/testarEnvioHVE.md) | Testa o envio direto de mensagem usando credencial HVE (High Volume Email) do Exchange Online. |
 | [`validaGPOs.ps1`](docs/validaGPOs.md) | Faz auditoria offline de GPOs aplicadas no AD DS com suporte para validação extra através de RSoP das máquinas. |
 
