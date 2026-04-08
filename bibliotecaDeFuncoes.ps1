@@ -113,12 +113,12 @@ Function gravaLOG {
   }[$tipo]
 
   if ($mostraTempo) {
-    $tempo = "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) "
+    $tempo = "$((Get-Date).ToString('dd/MM/yy HH:mm:ss'))"
   }
   else {
     $tempo = ""
   }
-  $mensagem = "$tempo $prefix $texto"
+  $mensagem = "$prefix $tempo $texto"
 
   Write-Host $mensagem -ForegroundColor $color
   Add-Content -Path $arquivo -Value $mensagem

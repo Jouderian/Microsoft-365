@@ -34,7 +34,6 @@ Todo script deve começar com o bloco de **Comment-Based Help** no seguinte form
   .CREATED
     [dd/mm/aa] (apenas se diferente do autor atual)
   .VERSION
-    01 (dd/mm/aa) - Criacao do script
     02 (dd/mm/aa) - [Descrição do que mudou]
   .OUTPUT
     [Onde o resultado é gravado: arquivo CSV, console, log etc.]
