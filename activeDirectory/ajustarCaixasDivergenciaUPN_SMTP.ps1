@@ -1,8 +1,17 @@
-#--------------------------------------------------------------------------------------------------------
-# Autor: Jouderian Nobre
-# Descricao: Ajusta as credenciais do AD cujo o UPN esta diferente do SMTP no proxyAddresses
-# Versao: 1 (24/06/25) Jouderian Nobre
-#--------------------------------------------------------------------------------------------------------
+<#
+  .SYNOPSIS
+    Ajusta as credenciais do AD cujo o UPN esta diferente do SMTP no proxyAddresses
+  .DESCRIPTION
+    Este script ajusta as credenciais do AD cujo o UPN esta diferente do SMTP no proxyAddresses
+  .AUTHOR
+    Jouderian Nobre
+  .CREATED
+    08/04/26
+  .VERSION
+    1 (08/04/26) - Otimizacao de codigo
+  .OUTPUT
+    Arquivo CSV com os usuarios que tiveram o SMTP ajustado e Log com o resumo da execucao
+#>
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
@@ -11,18 +20,25 @@ Clear-Host
 # Declarando variaveis
 $inicio = Get-Date
 $mensagem = "Ajuste do SMTP conflitante com o UPN em $($inicio.ToString('dd/MM/yy HH:mm'))"
+$arquivoUsuarios = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\usuariosDivergentesUPN_SMTP.csv"
 $logs = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\usuariosDivergentesUPN_SMTP_$((Get-Date).ToString('yymmdd_MMHH')).txt"
 $contadores = @{
-  Total = 0
+  Total       = 0
   Divergentes = 0
 }
 
-gravaLOG -arquivo $logs -texto "$($inicio.ToString('dd/MM/yy HH:mm:ss')) - Iniciando o ajuste dos eMails..."
+gravaLOG "Iniciando o ajuste dos eMails..." -tipo WRN -mostraTempo $true -arquivo $logs
 
-# Validando e conectando ao Microsoft Graph
 VerificaModulo -NomeModulo "ActiveDirectory" -MensagemErro "O módulo Active Directory é necessário e não está instalado no sistema."
+Try {
+  Import-Module ActiveDirectory -ErrorAction Stop
+}
+Catch {
+  gravaLOG "Erro ao conectar ao Active Directory: $($_.Exception.Message)" -tipo ERR -mostraTempo $true -arquivo $logs
+  Exit
+}
 
-gravaLOG -arquivo $logs -texto "$($inicio.ToString('dd/MM/yy HH:mm:ss')) - Buscando usuarios com divergencia entre UPN e SMTP..."
+gravaLOG "Buscando usuarios com divergencia entre UPN e SMTP..." -tipo INF -mostraTempo $true -arquivo $logs
 
 # Busca todas as credenciais habilitadas no AD
 $usuarios = Get-ADUser `
@@ -32,12 +48,12 @@ $usuarios = Get-ADUser `
 $contadores.Total = $usuarios.Count
 
 # Cria arquivo CSV com cabeçalho
-gravaLOG -arquivo $logs -texto "DistinguishedName,UserPrincipalName,proxyAddresses,smtpPrincipal,novosProxies,info"
+Out-File -FilePath $arquivoUsuarios -InputObject "DistinguishedName,UserPrincipalName,proxyAddresses,smtpPrincipal,novosProxies,info" -Encoding UTF8
 
-foreach ($usuario in $usuarios){
+foreach ($usuario in $usuarios) {
 
-  $smtpPrincipal = ($usuario.proxyAddresses | Where-Object { $_ -cmatch "^SMTP:" }) -replace "SMTP:",""
-  if (-not $smtpPrincipal){
+  $smtpPrincipal = ($usuario.proxyAddresses | Where-Object { $_ -cmatch "^SMTP:" }) -replace "SMTP:", ""
+  if (-not $smtpPrincipal) {
     continue
   }
 
@@ -46,20 +62,20 @@ foreach ($usuario in $usuarios){
   $novosProxies = $novosProxies | ForEach-Object { [string]$_ }
   $novosProxies = @($novosProxies)
 
-  if ($usuario.UserPrincipalName -ne $smtpPrincipal){
+  if ($usuario.UserPrincipalName -ne $smtpPrincipal) {
 
     $observacao = "$($usuario.info)`r`n$($mensagem)"
 
-    gravaLOG -arquivo $logs -texto "$($usuario.DistinguishedName -replace ',', '/'),$($usuario.UserPrincipalName),$($usuario.proxyAddresses -join ' / '),$($smtpPrincipal -join ' / '),$($novosProxies -join ' / '),$($observacao)"
+    Out-File -FilePath $arquivoUsuarios -InputObject  "$($usuario.DistinguishedName -replace ',', '/'),$($usuario.UserPrincipalName),$($usuario.proxyAddresses -join ' / '),$($smtpPrincipal -join ' / '),$($novosProxies -join ' / '),$($observacao)" -Encoding UTF8 -append
 
     # Atualiza credencial
     Set-ADUser `
       -Identity $usuario.DistinguishedName `
+      -Country "BR" `
       -Replace @{
-        proxyAddresses = $novosProxies;
-        info = $observacao
-      } `
-      -Country "BR"
+      proxyAddresses = $novosProxies;
+      info           = $observacao
+    }
 
     $contadores.Divergentes++
   }
@@ -67,5 +83,5 @@ foreach ($usuario in $usuarios){
 
 # Grava resumo no log
 $final = Get-Date
-gravaLOG -arquivo $logs -texto "[RESUMO] Total: $($contadores.Total) / Divergencias: $($contadores.Divergentes) => Duracao: $((NEW-TIMESPAN -Start $inicio -End $final).ToString())"
-gravaLOG -arquivo $logs -texto "Arquivo gerado em: $($logs)"
+gravaLOG "[RESUMO] Total: $($contadores.Total) / Divergencias: $($contadores.Divergentes) => Duracao: $((NEW-TIMESPAN -Start $inicio -End $final).ToString())" -tipo WRN -arquivo $logs
+gravaLOG "Arquivo gerado em: $($arquivoUsuarios)" -tipo INF -mostraTempo $true -arquivo $logs

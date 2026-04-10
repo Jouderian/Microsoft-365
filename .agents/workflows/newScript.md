@@ -6,18 +6,18 @@ description: Como criar um novo script PowerShell neste repositório
 
 Siga os passos abaixo sempre que for criar um novo script `.ps1` neste repositório.
 
-## Passo 1 — Verificar o `BEADS.md`
+## Passo 1 — Verificar o Backlog
 
-Antes de qualquer coisa, consulte `.agents/BEADS.md` para:
-- Verificar se o script já está listado no Backlog.
-- Entender decisões de design já documentadas na seção **Decisions**.
-- Registrar a nova ação na seção **Actions** quando o script for concluído.
+Antes de qualquer coisa, consulte o `.agents/todo.md` para:
+- Verificar se o script já está listado (Pendente).
+- Entender decisões de design já documentadas na wiki.
+- Ao concluir a tarefa, remover a menção do pendente e registrar a nova ação em `.agents/todoDone.md`.
 
 ## Passo 2 — Nomear o arquivo
 
 - Use **camelCase** para nomear o arquivo. Ex.: `exportarRelatorioAcessos.ps1`
 - O nome deve descrever claramente a ação executada.
-- **Nunca** crie versões do mesmo arquivo com sufixos como `v2`, `old`, `novo`, `NOVO`. Edite o arquivo original.
+- **Nunca** crie versões do mesmo arquivo com sufixos como `v2`, `old`, `novo`, `NOVO`. Edite o arquivo original no mesmo lugar.
 
 ## Passo 3 — Criar o cabeçalho padrão
 
@@ -63,8 +63,7 @@ VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "..." -arqui
 try {
   Connect-ExchangeOnline -ShowBanner:$false
   gravaLOG "Conectado ao Exchange Online" -tipo OK -arquivo $logs
-}
-catch {
+} catch {
   gravaLOG "Erro ao conectar: $($_.Exception.Message)" -tipo ERR -arquivo $logs
   Exit
 }
@@ -83,8 +82,6 @@ Todo script deve ter seu arquivo correspondente na pasta `docs/` ou `docs/active
 1. Crie o arquivo `.md` usando o bloco de detalhes extraído do cabeçalho.
 2. Atualize a tabela pertinente no arquivo `readMe.md` na raiz do repositório, mapeando o script para sua nova documentação. O formato do link deve ser: ``[`nomeDoScript.ps1`](docs/nomeDoScript.md)``.
 
-## Passo 8 — Atualizar o `BEADS.md`
+## Passo 8 — Atualizar o Ciclo de Vida
 
-Registre o trabalho concluído:
-- Marque o item do Backlog como `[x]` (se havia um)
-- Adicione uma linha na seção **Actions** com a data e o que foi feito
+Registre o trabalho concluído de forma atômica seguindo o `.agents/rules/general.md`. Mova a pendência documentada para o Histórico de Ações Concluídas.
