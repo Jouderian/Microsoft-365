@@ -8,3 +8,5 @@
 - **[x]** Padronizar cabeçalhos `<# .SYNOPSIS #>` em todos os scripts da raiz e pasta `activeDirectory`.
 - **[x]** Documentar todos os scripts no `readMe.md` (raiz e pasta `activeDirectory`).
 - **[x]** Criar estrutura arquitetural para aderir fortemente ao Padrão SDD (abr/2026).
+- **2026-04-10**: [Feature] Criado `importarGruposSeguranca.ps1` usando Spec-Driven Development e Microsoft Graph.
+- **2026-04-10**: [Refactoring] Refatorado `importarMembrosGrupoDeSeguranca.ps1` usando Spec-Driven Development e Microsoft Graph.

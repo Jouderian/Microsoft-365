@@ -14,6 +14,12 @@
     Arquivo com lista de membros de um grupo/Lista do EntraID (via Microsoft Graph PowerShell)
 #>
 
+[CmdletBinding()]
+param (
+    [ValidateSet("ApenasListar", "ListarEApagar")]
+    [string]$Acao = "ApenasListar"
+)
+
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
 Clear-Host
@@ -69,13 +75,17 @@ Foreach ($Lista in $Listas) {
       continue
     }
 
-    # Removendo listas vazias
-    try {
-      Remove-DistributionGroup -Identity $Lista.ExternalDirectoryObjectId -Confirm:$false
-      gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Excluida"
-    }
-    catch {
-      gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),ERRO: $($_.Exception.Message)" -erro:$true
+    if ($Acao -eq "ListarEApagar") {
+      # Removendo listas vazias
+      try {
+        Remove-DistributionGroup -Identity $Lista.ExternalDirectoryObjectId -Confirm:$false
+        gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Excluida"
+      }
+      catch {
+        gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),ERRO: $($_.Exception.Message)" -erro:$true
+      }
+    } else {
+      gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Lista vazia"
     }
     continue
   }
@@ -95,7 +105,16 @@ Foreach ($Grupo in $GruposSeguranca) {
 
   $Membros = Get-MgGroupMember -GroupId $Grupo.Id -All
   if ($Membros.Count -eq 0) {
-    gravaLOG -arquivo $logs -texto "$($Grupo.DisplayName),$($Grupo.Mail),$($Grupo.Id),Grupo de Segurança vazio"
+    if ($Acao -eq "ListarEApagar") {
+      try {
+        Remove-MgGroup -GroupId $Grupo.Id
+        gravaLOG -arquivo $logs -texto "$($Grupo.DisplayName),$($Grupo.Mail),$($Grupo.Id),Grupo de Segurança excluido"
+      } catch {
+        gravaLOG -arquivo $logs -texto "$($Grupo.DisplayName),$($Grupo.Mail),$($Grupo.Id),ERRO: $($_.Exception.Message)" -erro:$true
+      }
+    } else {
+      gravaLOG -arquivo $logs -texto "$($Grupo.DisplayName),$($Grupo.Mail),$($Grupo.Id),Grupo de Segurança vazio"
+    }
     continue
   }
   

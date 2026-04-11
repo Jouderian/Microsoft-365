@@ -20,9 +20,11 @@ Abaixo você encontra a lista de todos os `scripts` e a descrição da sua princ
 |--------|-----------|
 | [`analisarAutoExpansaoCaixaPostal.ps1`](docs/analisarAutoExpansaoCaixaPostal.md) | Audita o Archive e a Auto-Expanding Archive das caixas postais no Exchange Online. |
 | [`analiseConfiguracoesDeSeguranca.ps1`](docs/analiseConfiguracoesDeSeguranca.md) | Executa o script Orca que analisa as configurações de recomendação do Microsoft Defender para M365. |
+| [`apagarListasSemMembros.ps1`](docs/apagarListasSemMembros.md) | Apaga fisicamente Listas de Distribuição e Grupos de Segurança M365 (vazios e sem membros). |
 | [`ativarAutoArquivamento.ps1`](docs/ativarAutoArquivamento.md) | Ativa de forma massiva o autoarquivamento das caixas postais. |
 | [`ativarLitigio.ps1`](docs/ativarLitigio.md) | Script para ativar a retenção de litígio nas caixas postais com licenças: Office 365 E3 e Business Premium. |
 | [`bibliotecaDeFuncoes.ps1`](docs/bibliotecaDeFuncoes.md) | Biblioteca matriz de funções de uso geral para centralizar recursos nos demais scripts. |
+| [`importarGruposSeguranca.ps1`](docs/importarGruposSeguranca.md) | Importa e provisiona Grupos de Segurança puros no Entra ID a partir de um CSV, definindo automaticamente seu proprietário. |
 | [`importarMembrosGrupoDeSeguranca.ps1`](docs/importarMembrosGrupoDeSeguranca.md) | Importa novos membros de um Grupo. |
 | [`importarMembrosListaDeDistribuicao.ps1`](docs/importarMembrosListaDeDistribuicao.md) | Importa novos membros para uma lista de distribuição do Exchange. |
 | [`liberarBloqueioEmail.ps1`](docs/liberarBloqueioEmail.md) | Libera fluxos e status de uma caixa postal bloqueada no Exchange Online. |
