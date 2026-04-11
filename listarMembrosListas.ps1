@@ -1,6 +1,21 @@
 <#
   .SYNOPSIS
-    Lista a relacao de membros das Listas e Grupos do M365, incluindo Grupos de Segurança
+    Lista a relação de membros das Listas de Distribuição e Grupos de Segurança do M365.
+  .DESCRIPTION
+    Conecta ao Exchange Online e ao Microsoft Graph para exportar todos os membros de:
+    - Listas de Distribuição (Exchange Online via Get-DistributionGroup)
+    - Grupos de Segurança sem e-mail (EntraID via Get-MgGroup)
+
+    O script opera em dois modos:
+    - ApenasListar (padrão): exporta membros e registra grupos/listas vazios em log de auditoria.
+    - ListarEApagar: além de exportar, remove grupos e listas vazios (exceto sincronizados com AD).
+
+    Para Grupos de Segurança, os metadados dos membros (displayName, UPN, tipo) são obtidos
+    em uma única chamada ao Graph via -Property, eliminando o anti-padrão N+1.
+  .PARAMETER Acao
+    Define o comportamento para grupos/listas vazios:
+    - ApenasListar: apenas registra no log (padrão).
+    - ListarEApagar: remove do ambiente (irreversível).
   .AUTHOR
     Jouderian Nobre
   .VERSION
@@ -9,18 +24,23 @@
     03 (28/05/25) - Otimizando a logica de exclusao das listas vazias
     04 (17/12/25) - Incluindo Grupos de Segurança via Microsoft Graph
     05 (26/03/26) - Otimizacao do script para melhorar a performance
-    06 (05/04/26) - Atualizacao da documentacao
+    06 (05/04/26) - Inclusão do parametro Acao para listar ou apagar listas vazias
+    07 (11/04/26) - Eliminado Get-MgUser por membro (N+1 → 1 chamada por grupo via -Property) Uso de UPN (userPrincipalName) para membros dos Grupos de Segurança
   .OUTPUT
-    Arquivo com lista de membros de um grupo/Lista do EntraID (via Microsoft Graph PowerShell)
+    membrosListasGrupos.csv — CSV com todos os membros, separado por ponto-e-vírgula.
+    Colunas: idGrupo; nomeGrupo; eMailGrupo; adSync; tipoGrupo; idMembro; membro; tipo; eMailMembro
+    listasVazias_<timestamp>.txt — log de auditoria de grupos/listas vazios ou excluídos.
+  .EXAMPLE
+    .\listarMembrosListas.ps1
+    .\listarMembrosListas.ps1 -Acao ListarEApagar
 #>
 
 [CmdletBinding()]
 param (
-    [ValidateSet("ApenasListar", "ListarEApagar")]
-    [string]$Acao = "ApenasListar"
+  [ValidateSet("ApenasListar", "ListarEApagar")][string]$Acao = "ApenasListar"
 )
 
-. "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
+. "$env:ONEDRIVE\Documentos\WindowsPowerShell\Scripts\PUBLICO\Microsoft-365\bibliotecaDeFuncoes.ps1"
 
 Clear-Host
 
@@ -31,33 +51,33 @@ $logs = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listasVazias_$($inicio.To
 $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\membrosListasGrupos.csv"
 $buffer = @()
 
-Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Conectando ao Exchange Online..."
-VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O módulo Exchange Online Management é necessário e não está instalado no sistema." -arquivoLogs $logs
+gravaLOG "Conectando ao Exchange Online..." -mostraTempo $true -tipo WRN
+VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O módulo Exchange Online Management é necessário e não está instalado no sistema."
 try {
   Connect-ExchangeOnline -ShowBanner:$false
 }
 catch {
-  Write-Host "Erro ao conectar ao Exchange Online: $($_.Exception.Message)" -ForegroundColor Red
+  gravaLOG "Erro ao conectar ao Exchange Online: $($_.Exception.Message)" -mostraTempo $true -tipo ERR
   Exit
 }
 
-Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Conectando ao Microsoft Graph..."
+gravaLOG "Conectando ao Microsoft Graph..." -mostraTempo $true -tipo INF
 VerificaModulo -NomeModulo "Microsoft.Graph" -MensagemErro "O módulo Microsoft.Graph é necessário e não está instalado no sistema."
 try {
-  Connect-MgGraph -Scopes "Group.Read.All", "User.Read.All" -ErrorAction Stop
+  Connect-MgGraph -Scopes "Group.Read.All", "User.Read.All" -ErrorAction Stop -NoWelcome
 }
 catch {
-  Write-Host "Erro ao conectar ao Microsoft Graph: $($_.Exception.Message)" -ForegroundColor Red
+  gravaLOG "Erro ao conectar ao Microsoft Graph: $($_.Exception.Message)" -mostraTempo $true -tipo ERR
   Exit
 }
 
-Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Pesquisando Listas de Distribuicao e Grupos de Segurança..."
+gravaLOG "Pesquisando Listas de Distribuicao e Grupos de Segurança..." -mostraTempo $true -tipo INF
 $Listas = Get-DistributionGroup -ResultSize Unlimited
-Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - $($Listas.Count) Listas de Distribuicao encontradas."
+gravaLOG "$($Listas.Count) Listas de Distribuicao encontradas." -mostraTempo $true -tipo OK
 
-Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Pesquisando Grupos de Segurança..."
+gravaLOG "Pesquisando Grupos de Segurança..." -mostraTempo $true -tipo INF
 $GruposSeguranca = Get-MgGroup -Filter "securityEnabled eq true" -All
-Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - $($GruposSeguranca.Count) Grupos de Segurança encontrados."
+gravaLOG "$($GruposSeguranca.Count) Grupos de Segurança encontrados." -mostraTempo $true -tipo OK
 
 $total = $Listas.Count + $GruposSeguranca.Count
 
@@ -71,7 +91,7 @@ Foreach ($Lista in $Listas) {
   if ($Membros.Length -eq 0) {
 
     if ($Lista.IsDirSynced -eq $true) {
-      gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Sincronizada AD"
+      gravaLOG "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Sincronizada AD" -arquivo $logs
       continue
     }
 
@@ -79,13 +99,14 @@ Foreach ($Lista in $Listas) {
       # Removendo listas vazias
       try {
         Remove-DistributionGroup -Identity $Lista.ExternalDirectoryObjectId -Confirm:$false
-        gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Excluida"
+        gravaLOG "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Excluida" -arquivo $logs
       }
-      catch {
-        gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),ERRO: $($_.Exception.Message)" -erro:$true
+      catch { 
+        gravaLOG "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),ERRO: $($_.Exception.Message)" -arquivo $logs -tipo ERR
       }
-    } else {
-      gravaLOG -arquivo $logs -texto "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Lista vazia"
+    }
+    else {
+      gravaLOG "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Lista vazia" -arquivo $logs
     }
     continue
   }
@@ -103,34 +124,31 @@ Foreach ($Grupo in $GruposSeguranca) {
   $indice++
   Write-Progress -Activity "Exportando Listas/Grupos" -Status "Progresso: $indice/$total - $($Grupo.DisplayName)" -PercentComplete (($indice / $total) * 100)
 
-  $Membros = Get-MgGroupMember -GroupId $Grupo.Id -All
+  # Solicita mail e @odata.type junto com os membros para evitar N chamadas extras de Get-MgUser
+  # @odata.type é retornado automaticamente pelo Graph — não pode ser incluído no $select
+  $Membros = Get-MgGroupMember -GroupId $Grupo.Id -All -Property "id,displayName,userPrincipalName"
   if ($Membros.Count -eq 0) {
     if ($Acao -eq "ListarEApagar") {
       try {
         Remove-MgGroup -GroupId $Grupo.Id
-        gravaLOG -arquivo $logs -texto "$($Grupo.DisplayName),$($Grupo.Mail),$($Grupo.Id),Grupo de Segurança excluido"
-      } catch {
-        gravaLOG -arquivo $logs -texto "$($Grupo.DisplayName),$($Grupo.Mail),$($Grupo.Id),ERRO: $($_.Exception.Message)" -erro:$true
+        gravaLOG "$($Grupo.DisplayName),$($Grupo.Mail),$($Grupo.Id),Grupo de Segurança excluido" -arquivo $logs
       }
-    } else {
-      gravaLOG -arquivo $logs -texto "$($Grupo.DisplayName),$($Grupo.Mail),$($Grupo.Id),Grupo de Segurança vazio"
+      catch {
+        gravaLOG "$($Grupo.DisplayName),$($Grupo.Mail),$($Grupo.Id),ERRO: $($_.Exception.Message)" -arquivo $logs -tipo ERR
+      }
+    }
+    else {
+      gravaLOG "$($Grupo.DisplayName),$($Grupo.Mail),$($Grupo.Id),Grupo de Segurança vazio" -arquivo $logs
     }
     continue
   }
-  
+
   Foreach ($Membro in $Membros) {
-    # Obter detalhes do membro (assumindo usuário)
-    try {
-      $DetalhesMembro = Get-MgUser -UserId $Membro.Id -ErrorAction Stop
-      $tipoMembro = "User"
-      $emailMembro = $DetalhesMembro.Mail
-    }
-    catch {
-      # Se não for usuário, pode ser grupo ou outro objeto
-      $tipoMembro = "Other"
-      $emailMembro = ""
-    }
-    $buffer += "$($Grupo.Id);$($Grupo.DisplayName);$($Grupo.Mail);$($Grupo.OnPremisesSyncEnabled);Security;$($Membro.Id);$($Membro.DisplayName);$tipoMembro;$emailMembro"
+    # Get-MgGroupMember retorna DirectoryObject: apenas Id é propriedade direta.
+    # displayName, mail e @odata.type chegam em AdditionalProperties via -Property.
+    $odataType = $Membro.AdditionalProperties['@odata.type']
+    $tipo = if ($odataType -eq '#microsoft.graph.user') { 'User' } else { 'Other' }
+    $buffer += "$($Grupo.Id);$($Grupo.DisplayName);$($Grupo.Mail);$($Grupo.OnPremisesSyncEnabled);Security;$($Membro.Id);$($Membro.AdditionalProperties['displayName']);$tipo;$($Membro.AdditionalProperties['userPrincipalName'])"
   }
 
   Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
@@ -138,11 +156,9 @@ Foreach ($Grupo in $GruposSeguranca) {
 }
 Write-Progress -Activity "Exportando Listas/Grupos" -PercentComplete 100
 
-Write-Host "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) - Desconectando..."
+gravaLOG "Desconectando..." -tipo INF -mostraTempo $true
 Disconnect-ExchangeOnline -Confirm:$false
 Disconnect-MgGraph
 
 $final = Get-Date
-Write-Host "`nInicio: $inicio"
-Write-Host "Final: $final"
-Write-Host "Tempo: $((NEW-TIMESPAN -Start $inicio -End $final).ToString())"
+gravaLOG "Duração total: $((NEW-TIMESPAN -Start $inicio -End $final).ToString())" -tipo WRN
