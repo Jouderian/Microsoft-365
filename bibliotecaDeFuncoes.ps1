@@ -82,26 +82,27 @@ Function gravaLOG {
     .PARAMETER texto
       A mensagem de log a ser gravada.
     .PARAMETER tipo
-      O tipo de mensagem (Info, Aviso, Erro) para formatação e cor
+      Se informado, o tipo de mensagem (Info, Aviso, Erro) para formatação e cor
     .PARAMETER arquivo
-      O caminho do arquivo onde o log será gravado.
+      Se informado, o caminho do arquivo onde o log será gravado.
     .PARAMETER mostraTempo
       Indica se o timestamp deve ser mostrado no console (opcional, padrão: $false).
   #>
 
   Param (
     [Parameter(Mandatory = $true)][string]$texto,
-    [ValidateSet('INF', 'OK', 'WRN', 'ERR', 'STP')][string]$tipo = 'INF',
-    [parameter(Mandatory = $true)][string]$arquivo,
-    [Parameter(Mandatory = $false)][boolean]$mostraTempo = $false
+    [parameter(Mandatory = $false)][string]$arquivo,
+    [Parameter(Mandatory = $false)][boolean]$mostraTempo = $false,
+    [ValidateSet('INF', 'OK', 'WRN', 'ERR', 'STP')][string]$tipo
   )
 
-  $prefix = @{
-    INF = '[ℹ️ INFO ]';
-    OK  = '[✅ OK   ]';
-    WRN = '[⚠️ AVISO]';
-    ERR = '[❌ ERRO ]';
-    STP = '[🔹 PASSO]'
+  $prefixo = @{
+    INF = '[ℹ️ INFO ] ';
+    OK  = '[✅ OK   ] ';
+    WRN = '[⚠️ AVISO] ';
+    ERR = '[❌ ERRO ] ';
+    STP = '[🔹 PASSO] ';
+    ''  = ''
   }[$tipo]
 
   $color = @{
@@ -109,19 +110,23 @@ Function gravaLOG {
     OK  = 'Green';
     WRN = 'Yellow';
     ERR = 'Red';
-    STP = 'Magenta'
+    STP = 'Magenta';
+    ''  = 'White'
   }[$tipo]
 
+  # -or não pode ser usado aqui: em PowerShell retorna booleano. Fallback explícito:
+  if (-not $color) { $color = 'White' }
+
+  $tempo = ""
   if ($mostraTempo) {
-    $tempo = "$((Get-Date).ToString('dd/MM/yy HH:mm:ss'))"
+    $tempo = "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) "
   }
-  else {
-    $tempo = ""
-  }
-  $mensagem = "$prefix $tempo $texto"
+  $mensagem = "$prefixo$tempo$texto"
 
   Write-Host $mensagem -ForegroundColor $color
-  Add-Content -Path $arquivo -Value $mensagem
+  if ($arquivo) {
+    Add-Content -Path $arquivo -Value $mensagem
+  }
 }
 
 function geraSenhaAleatoria {
