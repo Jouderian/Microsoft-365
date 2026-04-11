@@ -13,8 +13,8 @@ A nova especificação requer:
 - Os módulos necessários são `Microsoft.Graph.Authentication`, `Microsoft.Graph.Groups` e `Microsoft.Graph.Users`.
 
 ## Critérios de Aceitação
-- [ ] Autenticar eficientemente iterando pelas colunas via `import-csv`.
-- [ ] Buscar adequadamente o **ID do Grupo** na API do Graph usando o texto da coluna `nomeGrupo`.
-- [ ] Buscar o **ID do Usuário** (Membro) através de `eMailUsuario`.
-- [ ] Persistir o vínculo membro com `New-MgGroupMember`.
-- [ ] Evitar abortos em caso de membros ou grupos não listados (aproveitar Try/Catch em alto nível na iteração).
+- [X] Autenticar eficientemente iterando pelas colunas via `import-csv`.
+- [X] Buscar adequadamente o **ID do Grupo** na API do Graph usando o texto da coluna `nomeGrupo`.
+- [X] Buscar o **ID do Usuário** (Membro) através de `eMailUsuario`.
+- [X] Persistir o vínculo membro com `New-MgGroupMember`.
+- [X] Evitar abortos em caso de membros ou grupos não listados (aproveitar Try/Catch em alto nível na iteração).

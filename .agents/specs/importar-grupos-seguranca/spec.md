@@ -14,8 +14,8 @@ A rotina tem como foco criar novos Grupos de Segurança no M365 (via infraestrut
   3. `eMailProprietário` (A referida UPN do responsável que gere e aprova os recursos alocados ao grupo)
 
 ## Critérios de Aceitação
-- [ ] O script consegue autenticar com sucesso usando `Connect-MgGraph`.
-- [ ] O script mapeia internamente o `eMailProprietário` para resgatar o UserID do AD do Graph.
-- [ ] O script processa a lista gerando Security Groups desabilitados para Mail `(-MailEnabled $false -SecurityEnabled $true)`.
-- [ ] O script designa com sucesso o usuário identificado como Proprietário do recém-criado Grupo.
-- [ ] Se houver erros operacionais (ex: Owner não encontrado), deve persistir a mensagem em um log auditável.
+- [X] O script consegue autenticar com sucesso usando `Connect-MgGraph`.
+- [X] O script mapeia internamente o `eMailProprietário` para resgatar o UserID do AD do Graph.
+- [X] O script processa a lista gerando Security Groups desabilitados para Mail `(-MailEnabled $false -SecurityEnabled $true)`.
+- [X] O script designa com sucesso o usuário identificado como Proprietário do recém-criado Grupo.
+- [X] Se houver erros operacionais (ex: Owner não encontrado), deve persistir a mensagem em um log auditável.

@@ -10,6 +10,6 @@ Refatoraremos as lógicas de extração e limpeza de membros das Listas de Distr
 2. Fornecer uma trilha limpa de manutenção delegável providenciando uma ferramenta direcionada unicamente para exclusão (SSG e DLs vazias) com alto ganho de I/O.
 
 ## Critérios de Aceite
-- [ ] O script `listarMembrosListas.ps1` deve assumir "ApenasListar" por padrão, parando de apagar DLs vazias.
-- [ ] O script `listarMembrosListas.ps1` quando invocado com `ListarEApagar` deve remover DLs vazias *e também Grupos de Segurança vazios*.
-- [ ] O novo script `apagarListasSemMembros.ps1` conecta ao Exchange e MsGraph, rastreia e remove Listas e Grupos de Segurança sem impacto local (exceto logs), reportando "Excluída".
+- [X] O script `listarMembrosListas.ps1` deve assumir "ApenasListar" por padrão, parando de apagar DLs vazias.
+- [X] O script `listarMembrosListas.ps1` quando invocado com `ListarEApagar` deve remover DLs vazias *e também Grupos de Segurança vazios*.
+- [X] O novo script `apagarListasSemMembros.ps1` conecta ao Exchange e MsGraph, rastreia e remove Listas e Grupos de Segurança sem impacto local (exceto logs), reportando "Excluída".
