@@ -12,6 +12,11 @@
 
     Para Grupos de Segurança, os metadados dos membros (displayName, UPN, tipo) são obtidos
     em uma única chamada ao Graph via -Property, eliminando o anti-padrão N+1.
+
+    Para Listas de Distribuição, os membros são obtidos via Get-DistributionGroupMember (fonte
+    completa, inclui Mail Contacts externos). Os membros com ExternalDirectoryObjectId têm o UPN
+    enriquecido via Graph em lote (Get-MgUser -Filter "id in (...)", uma chamada por lista).
+    Mail Contacts puros (sem ExternalDirectoryObjectId) usam PrimarySMTPAddress como fallback.
   .PARAMETER Acao
     Define o comportamento para grupos/listas vazios:
     - ApenasListar: apenas registra no log (padrão).
@@ -25,7 +30,10 @@
     04 (17/12/25) - Incluindo Grupos de Segurança via Microsoft Graph
     05 (26/03/26) - Otimizacao do script para melhorar a performance
     06 (05/04/26) - Inclusão do parametro Acao para listar ou apagar listas vazias
-    07 (11/04/26) - Eliminado Get-MgUser por membro (N+1 → 1 chamada por grupo via -Property) Uso de UPN (userPrincipalName) para membros dos Grupos de Segurança
+    07 (11/04/26) - Eliminado Get-MgUser por membro (N+1 → 1 chamada por grupo via -Property) Uso de
+                    UPN (userPrincipalName) para membros dos Grupos de Segurança
+    08 (12/04/26) - Enriquecimento híbrido de UPN para membros de DLs: Graph em lote para membros
+                    com EntraID, fallback PrimarySMTPAddress para Mail Contacts externos
   .OUTPUT
     membrosListasGrupos.csv — CSV com todos os membros, separado por ponto-e-vírgula.
     Colunas: idGrupo; nomeGrupo; eMailGrupo; adSync; tipoGrupo; idMembro; membro; tipo; eMailMembro
@@ -111,8 +119,34 @@ Foreach ($Lista in $Listas) {
     continue
   }
 
+  # Separa membros com e sem representação no Entra ID
+  $membrosComID = $Membros | Where-Object { $_.ExternalDirectoryObjectId }
+
+  # Enriquece UPN via Graph em lote — uma chamada por lista, não por membro
+  # O filtro 'id in (...)' do Graph suporta até 15 IDs por requisição
+  $upnMap = @{}
+  if ($membrosComID) {
+    $ids = @($membrosComID | ForEach-Object { $_.ExternalDirectoryObjectId })
+    $tamanhLote = 15
+    for ($i = 0; $i -lt $ids.Count; $i += $tamanhLote) {
+      $lote = $ids[$i..([Math]::Min($i + $tamanhLote - 1, $ids.Count - 1))]
+      $filtro = "id in ('" + ($lote -join "','") + "')"
+      $usuarios = Get-MgUser -Filter $filtro -Property "id,userPrincipalName" -ConsistencyLevel eventual -ErrorAction SilentlyContinue
+      foreach ($u in $usuarios) {
+        $upnMap[$u.Id] = $u.UserPrincipalName
+      }
+    }
+  }
+
   Foreach ($Membro in $Membros) {
-    $buffer += "$($Lista.ExternalDirectoryObjectId);$($Lista.DisplayName);$($Lista.PrimarySMTPAddress);$($Lista.IsDirSynced);$($Lista.RecipientType);$($Membro.ExternalDirectoryObjectId);$($Membro.DisplayName);$($Membro.RecipientType);$($Membro.PrimarySMTPAddress)"
+    # Usa UPN do Entra ID quando disponível; fallback para PrimarySMTPAddress (Mail Contacts externos)
+    $eMail = if ($Membro.ExternalDirectoryObjectId -and $upnMap.ContainsKey($Membro.ExternalDirectoryObjectId)) {
+      $upnMap[$Membro.ExternalDirectoryObjectId]
+    }
+    else {
+      $Membro.PrimarySMTPAddress
+    }
+    $buffer += "$($Lista.ExternalDirectoryObjectId);$($Lista.DisplayName);$($Lista.PrimarySMTPAddress);$($Lista.IsDirSynced);$($Lista.RecipientType);$($Membro.ExternalDirectoryObjectId);$($Membro.DisplayName);$($Membro.RecipientType);$eMail"
   }
 
   Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
