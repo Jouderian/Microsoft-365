@@ -16,6 +16,8 @@
     10 (30/03/26) - Funcao para obter o espaco usado e livre em uma unidade de disco
     11 (05/04/26) - Melhoria na funcao de gravacao de LOGs
 #>
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
 
 function removeQuebraDeLinha {
   <#
@@ -54,20 +56,18 @@ function trataTexto {
   )
   $textoTratado = $texto.Trim()
 
-  if ($removeQuebraLinha) {
+  if ($removeQuebraLinha){
     $textoTratado = removeQuebraDeLinha -texto $textoTratado
   }
-  if ($removeEspacoduplo) {
+  if ($removeEspacoduplo){
     $textoTratado = $textoTratado.replace('  ', ' ')
   }
-  if ($notacao -eq "C") {
+  if ($notacao -eq "C"){
     $textoTratado = (Get-Culture).TextInfo.ToTitleCase($textoTratado.ToLower())
     $textoTratado = $textoTratado.replace(' Da ', ' da ').replace(' De ', ' de ').replace(' Di ', ' di ').replace(' Do ', ' do ').replace(' Du ', ' du ').replace(' Das ', ' das ').replace(' Dos ', ' dos ').replace(' Iii', ' III').replace(' Ii', ' II')
-  }
-  elseif ($notacao -ceq "m") {
+  } elseif ($notacao -ceq "m"){
     $textoTratado = $textoTratado.ToLower()
-  }
-  elseif ($notacao -ceq "M") {
+  } elseif ($notacao -ceq "M"){
     $textoTratado = $textoTratado.ToUpper()
   }
   $textoTratado = $textoTratado.replace(',', ' ')
@@ -91,17 +91,18 @@ Function gravaLOG {
 
   Param (
     [Parameter(Mandatory = $true)][string]$texto,
-    [parameter(Mandatory = $false)][string]$arquivo,
-    [Parameter(Mandatory = $false)][boolean]$mostraTempo = $false,
+    [parameter(Mandatory = $false)]
+    [string]$arquivo,
+    [boolean]$mostraTempo = $false,
     [ValidateSet('INF', 'OK', 'WRN', 'ERR', 'STP')][string]$tipo
   )
 
   $prefixo = @{
-    INF = '[ℹ️ INFO ] ';
-    OK  = '[✅ OK   ] ';
-    WRN = '[⚠️ AVISO] ';
-    ERR = '[❌ ERRO ] ';
-    STP = '[🔹 PASSO] ';
+    INF = '[INFO ] ';
+    OK  = '[OK   ] ';
+    WRN = '[AVISO] ';
+    ERR = '[ERRO ] ';
+    STP = '[PASSO] ';
     ''  = ''
   }[$tipo]
 
@@ -115,17 +116,17 @@ Function gravaLOG {
   }[$tipo]
 
   # -or não pode ser usado aqui: em PowerShell retorna booleano. Fallback explícito:
-  if (-not $color) { $color = 'White' }
+  if (-not $color){ $color = 'White' }
 
   $tempo = ""
-  if ($mostraTempo) {
+  if ($mostraTempo){
     $tempo = "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) "
   }
   $mensagem = "$prefixo$tempo$texto"
 
   Write-Host $mensagem -ForegroundColor $color
   if ($arquivo) {
-    Add-Content -Path $arquivo -Value $mensagem
+    Add-Content -Path $arquivo -Value $mensagem -Encoding UTF8
   }
 }
 
@@ -140,7 +141,7 @@ function geraSenhaAleatoria {
   #>
   Param (
     [parameter(Mandatory = $false)][int]$tamanho = 16,
-    [parameter(Mandatory = $false)][string]$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:,.<>?/\~"
+    [parameter(Mandatory = $false)][string]$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?@#$%^&*(.)[-]{+}|;:,<=>/_\~"
   )
   
   $password = -join ((65..90) + (97..122) + (48..57) + (33..47) | Get-Random -Count $tamanho | ForEach-Object { [char]$_ })
@@ -166,15 +167,14 @@ function verificaModulo {
   )
 
   $modulo = Get-Module -Name $NomeModulo -ListAvailable
-  if ($Modulo.count -eq 0) {
+  if ($Modulo.count -eq 0){
     if ($arquivoLogs) {
       gravaLOG -texto $MensagemErro -arquivo $arquivoLogs -tipo Erro
-    }
-    else {
+    } else {
       Write-Host $MensagemErro -ForegroundColor Red
     }
     $confirm = Read-Host "O módulo $NomeModulo não está instalado. Deseja instalá-lo? [S]im ou [N]ao"
-    if ($confirm -match "[sS]") {
+    if ($confirm -match "[sS]"){
       Write-Host "Instalando o módulo $NomeModulo..."
       Install-Module -Name $NomeModulo -Repository PSGallery -AllowClobber -Scope CurrentUser
       Write-Host "O módulo $NomeModulo foi instalado com sucesso" -ForegroundColor Magenta
@@ -200,7 +200,7 @@ function obterDescricaoLicenca {
     [string]$SkuPartNumber
   )
 
-  switch ($SkuPartNumber) {
+  switch ($SkuPartNumber){
     # Licencas Exchange
     "EXCHANGEDESKLESS" { return "Online Kiosk" }
     "EXCHANGESTANDARD" { return "Online Plan1" }
@@ -262,7 +262,7 @@ function removerAcentos {
   # Remove os caracteres não espaçadores (acentos)
   $stringBuilder = New-Object System.Text.StringBuilder
 
-  foreach ($char in $normalized.ToCharArray()) {
+  foreach ($char in $normalized.ToCharArray()){
     if ([Globalization.CharUnicodeInfo]::GetUnicodeCategory($char) -ne [Globalization.UnicodeCategory]::NonSpacingMark) {
       [void]$stringBuilder.Append($char)
     }

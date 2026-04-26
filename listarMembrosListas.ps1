@@ -63,8 +63,7 @@ gravaLOG "Conectando ao Exchange Online..." -mostraTempo $true -tipo WRN
 VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O módulo Exchange Online Management é necessário e não está instalado no sistema."
 try {
   Connect-ExchangeOnline -ShowBanner:$false
-}
-catch {
+} catch {
   gravaLOG "Erro ao conectar ao Exchange Online: $($_.Exception.Message)" -mostraTempo $true -tipo ERR
   Exit
 }
@@ -73,8 +72,7 @@ gravaLOG "Conectando ao Microsoft Graph..." -mostraTempo $true -tipo INF
 VerificaModulo -NomeModulo "Microsoft.Graph" -MensagemErro "O módulo Microsoft.Graph é necessário e não está instalado no sistema."
 try {
   Connect-MgGraph -Scopes "Group.Read.All", "User.Read.All" -ErrorAction Stop -NoWelcome
-}
-catch {
+} catch {
   gravaLOG "Erro ao conectar ao Microsoft Graph: $($_.Exception.Message)" -mostraTempo $true -tipo ERR
   Exit
 }
@@ -96,25 +94,23 @@ Foreach ($Lista in $Listas) {
   Write-Progress -Activity "Exportando Listas/Grupos" -Status "Progresso: $indice/$total - $($Lista.DisplayName)" -PercentComplete (($indice / $total) * 100)
 
   $Membros = Get-DistributionGroupMember -Identity $Lista.ExternalDirectoryObjectId
-  if ($Membros.Length -eq 0) {
+  if ($Membros.Length -eq 0){
 
-    if ($Lista.IsDirSynced -eq $true) {
-      gravaLOG "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Sincronizada AD" -arquivo $logs
+    if ($Lista.IsDirSynced -eq $true){
+      gravaLOG "$($Lista.DisplayName);$($Lista.PrimarySmtpAddress);$($Lista.ExternalDirectoryObjectId);Sincronizada AD" -arquivo $logs
       continue
     }
 
-    if ($Acao -eq "ListarEApagar") {
+    if ($Acao -eq "ListarEApagar"){
       # Removendo listas vazias
       try {
         Remove-DistributionGroup -Identity $Lista.ExternalDirectoryObjectId -Confirm:$false
-        gravaLOG "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Excluida" -arquivo $logs
+        gravaLOG "$($Lista.DisplayName);$($Lista.PrimarySmtpAddress);$($Lista.ExternalDirectoryObjectId);Excluida" -arquivo $logs
+      } catch { 
+        gravaLOG "$($Lista.DisplayName);$($Lista.PrimarySmtpAddress);$($Lista.ExternalDirectoryObjectId);ERRO: $($_.Exception.Message)" -arquivo $logs -tipo ERR
       }
-      catch { 
-        gravaLOG "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),ERRO: $($_.Exception.Message)" -arquivo $logs -tipo ERR
-      }
-    }
-    else {
-      gravaLOG "$($Lista),$($Lista.PrimarySmtpAddress),$($Lista.ExternalDirectoryObjectId),Lista vazia" -arquivo $logs
+    } else {
+      gravaLOG "$($Lista.DisplayName);$($Lista.PrimarySmtpAddress);$($Lista.ExternalDirectoryObjectId);Lista vazia" -arquivo $logs
     }
     continue
   }
@@ -125,25 +121,24 @@ Foreach ($Lista in $Listas) {
   # Enriquece UPN via Graph em lote — uma chamada por lista, não por membro
   # O filtro 'id in (...)' do Graph suporta até 15 IDs por requisição
   $upnMap = @{}
-  if ($membrosComID) {
+  if ($membrosComID){
     $ids = @($membrosComID | ForEach-Object { $_.ExternalDirectoryObjectId })
     $tamanhLote = 15
-    for ($i = 0; $i -lt $ids.Count; $i += $tamanhLote) {
+    for ($i = 0; $i -lt $ids.Count; $i += $tamanhLote){
       $lote = $ids[$i..([Math]::Min($i + $tamanhLote - 1, $ids.Count - 1))]
       $filtro = "id in ('" + ($lote -join "','") + "')"
       $usuarios = Get-MgUser -Filter $filtro -Property "id,userPrincipalName" -ConsistencyLevel eventual -ErrorAction SilentlyContinue
-      foreach ($u in $usuarios) {
+      foreach ($u in $usuarios){
         $upnMap[$u.Id] = $u.UserPrincipalName
       }
     }
   }
 
-  Foreach ($Membro in $Membros) {
+  Foreach ($Membro in $Membros){
     # Usa UPN do Entra ID quando disponível; fallback para PrimarySMTPAddress (Mail Contacts externos)
     $eMail = if ($Membro.ExternalDirectoryObjectId -and $upnMap.ContainsKey($Membro.ExternalDirectoryObjectId)) {
       $upnMap[$Membro.ExternalDirectoryObjectId]
-    }
-    else {
+    } else {
       $Membro.PrimarySMTPAddress
     }
     $buffer += "$($Lista.ExternalDirectoryObjectId);$($Lista.DisplayName);$($Lista.PrimarySMTPAddress);$($Lista.IsDirSynced);$($Lista.RecipientType);$($Membro.ExternalDirectoryObjectId);$($Membro.DisplayName);$($Membro.RecipientType);$eMail"
@@ -153,7 +148,7 @@ Foreach ($Lista in $Listas) {
   $buffer = @()
 }
 
-Foreach ($Grupo in $GruposSeguranca) {
+Foreach ($Grupo in $GruposSeguranca){
 
   $indice++
   Write-Progress -Activity "Exportando Listas/Grupos" -Status "Progresso: $indice/$total - $($Grupo.DisplayName)" -PercentComplete (($indice / $total) * 100)
@@ -161,23 +156,26 @@ Foreach ($Grupo in $GruposSeguranca) {
   # Solicita mail e @odata.type junto com os membros para evitar N chamadas extras de Get-MgUser
   # @odata.type é retornado automaticamente pelo Graph — não pode ser incluído no $select
   $Membros = Get-MgGroupMember -GroupId $Grupo.Id -All -Property "id,displayName,userPrincipalName"
-  if ($Membros.Count -eq 0) {
-    if ($Acao -eq "ListarEApagar") {
+  if ($Membros.Count -eq 0){
+    if ($Grupo.OnPremisesSyncEnabled -eq $true){
+      gravaLOG "$($Grupo.DisplayName);$($Grupo.Mail);$($Grupo.Id);Sincronizado AD — ignorado" -arquivo $logs
+      continue
+    }
+
+    if ($Acao -eq "ListarEApagar"){
       try {
         Remove-MgGroup -GroupId $Grupo.Id
-        gravaLOG "$($Grupo.DisplayName),$($Grupo.Mail),$($Grupo.Id),Grupo de Segurança excluido" -arquivo $logs
+        gravaLOG "$($Grupo.DisplayName);$($Grupo.Mail);$($Grupo.Id);Grupo de Segurança excluido" -arquivo $logs
+      } catch {
+        gravaLOG "$($Grupo.DisplayName);$($Grupo.Mail);$($Grupo.Id);ERRO: $($_.Exception.Message)" -arquivo $logs -tipo ERR
       }
-      catch {
-        gravaLOG "$($Grupo.DisplayName),$($Grupo.Mail),$($Grupo.Id),ERRO: $($_.Exception.Message)" -arquivo $logs -tipo ERR
-      }
-    }
-    else {
-      gravaLOG "$($Grupo.DisplayName),$($Grupo.Mail),$($Grupo.Id),Grupo de Segurança vazio" -arquivo $logs
+    } else {
+      gravaLOG "$($Grupo.DisplayName);$($Grupo.Mail);$($Grupo.Id);Grupo de Segurança vazio" -arquivo $logs
     }
     continue
   }
 
-  Foreach ($Membro in $Membros) {
+  Foreach ($Membro in $Membros){
     # Get-MgGroupMember retorna DirectoryObject: apenas Id é propriedade direta.
     # displayName, mail e @odata.type chegam em AdditionalProperties via -Property.
     $odataType = $Membro.AdditionalProperties['@odata.type']

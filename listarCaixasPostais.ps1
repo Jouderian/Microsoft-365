@@ -20,6 +20,7 @@
   23 (15/03/26) - Otimizando a busca de detalhes das caixas postais para reduzir o numero de chamadas ao msGraph
   24 (05/04/26) - Atualizacao da documentacao
 #>
+
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
 Clear-Host
@@ -40,8 +41,8 @@ $camposDetalhesCaixa = @(
   'StreetAddress', 'PasswordPolicies', 'CreatedDateTime', 'LastPasswordChangeDateTime', 'OnPremisesLastSyncDateTime'
 )
 
-gravaLOG -texto "$("=" * 62) $($inicio.ToString('dd/MM/yy HH:mm:ss'))" -tipo WRN -arquivo $logs -mostraTempo:$true
-gravaLOG -texto "Conectando ao Microsoft 365..." -arquivo $logs
+gravaLOG "$("=" * 62) $($inicio.ToString('dd/MM/yy HH:mm:ss'))" -tipo WRN -arquivo $logs
+gravaLOG "Conectando ao Microsoft 365..." -tipo INF -arquivo $logs
 
 # Validacoes
 VerificaModulo -NomeModulo "Microsoft.Graph" -MensagemErro "O modulo Microsoft Graph e necessario e nao esta instalado no sistema." -arquivoLogs $logs
@@ -51,8 +52,7 @@ VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O modulo Ex
 try {
   Import-Module ExchangeOnlineManagement
   Connect-ExchangeOnline -ShowBanner:$false
-}
-catch {
+} catch {
   gravaLOG -texto "Erro ao conectar ao Exchange Online: $($_.Exception.Message)" -tipo ERR -arquivo $logs -mostraTempo:$true
   Exit
 }
@@ -60,8 +60,7 @@ catch {
 try {
   Import-Module -Name Microsoft.Graph.Users
   Connect-MgGraph -Scopes "User.Read.All", "MailboxSettings.Read", "Directory.Read.All" -NoWelcome
-}
-catch {
+} catch {
   gravaLOG -texto "Erro ao conectar ao Microsoft Graph: $($_.Exception.Message)" -tipo ERR -arquivo $logs -mostraTempo:$true
   Exit
 }
@@ -75,7 +74,7 @@ $total = $caixas.Count
 #buscando detalhes das caixas postais
 gravaLOG -texto "Buscando detalhes das $($total) caixas postais encontradas..." -tipo INF -arquivo $logs -mostraTempo:$true
 $detalhe = Get-MgUser -All -Property $camposDetalhesCaixa
-Foreach ($caixa in $detalhe) {
+Foreach ($caixa in $detalhe){
   $detalheCredenciais[$caixa.UserPrincipalName.ToLower()] = $caixa
 }
 $detalhe = $null
@@ -83,7 +82,7 @@ $detalhe = $null
 gravaLOG -texto "Gravando caixas postais no arquivo $($arquivo)" -tipo INF -arquivo $logs -mostraTempo:$true
 Out-File -FilePath $arquivo -InputObject "Nome,UPN,Cidade,UF,Empresa,Escritorio,Departamento,Cargo,Gerente,CC,nomeCC,Tipo,AD,Desabilitada,SenhaNaoExpira,Compartilhada,Encaminhada,Litigio,usado(GB),Arquivamento,Arquivamento(GB),Criacao,MudancaSenha,ultimoSyncAD,ultimoAcesso,conta,objectId,Licencas,outrasLicencas" -Encoding UTF8
 
-Foreach ($caixa in $caixas) {
+Foreach ($caixa in $caixas){
 
   $indice++
   $licencas = Get-MgUserLicenseDetail -UserId $caixa.UserPrincipalName
@@ -93,21 +92,22 @@ Foreach ($caixa in $caixas) {
   $tamanho = [math]::Round((($detalheCaixa.TotalItemSize.Value.ToString()).Split('(')[1].Split(' ')[0].Replace(',', '') / 1GB), 2)
   $tamanhoArquivamento = 0
 
-  if ($caixa.ArchiveStatus -eq 'Active') {
-    $detalheArquivo = Get-EXOMailboxStatistics -Identity $caixa.Guid  -Archive -PropertySets All -Properties TotalItemSize
-    $tamanhoArquivamento = [math]::Round((($detalheArquivo.TotalItemSize.Value.ToString()).Split('(')[1].Split(' ')[0].Replace(',', '') / 1GB), 2)
+  if ($caixa.ArchiveStatus -eq 'Active'){
+    $detalheArquivo = Get-EXOMailboxStatistics -Identity $caixa.Guid -Archive -PropertySets All -Properties TotalItemSize
+    if ($null -ne $detalheArquivo -and $null -ne $detalheArquivo.TotalItemSize){
+      $tamanhoArquivamento = [math]::Round((($detalheArquivo.TotalItemSize.Value.ToString()).Split('(')[1].Split(' ')[0].Replace(',', '') / 1GB), 2)
+    }
   }
 
   $encaminhamento = "true"
-  if ($null -eq $caixa.ForwardingAddress) {
+  if ($null -eq $caixa.ForwardingAddress){
     $encaminhamento = "false"
   }
 
   try {
-    $gerente = Get-MgUserManager -UserId $caixa.UserPrincipalName
+    $gerente = Get-MgUserManager -UserId $caixa.UserPrincipalName -ErrorAction Stop
     $gerente = $gerente.AdditionalProperties.displayName
-  }
-  catch {
+  } catch {
     $gerente = ""
   }
 
@@ -136,18 +136,16 @@ Foreach ($caixa in $caixas) {
   $infoCaixa += "$($detalheCredencial.lastPasswordChangeDateTime.ToString('dd/MM/yy HH:mm'))," # MudancaSenha
 
   $momento = $detalheCredencial.onPremisesLastSyncDateTime # ultimoSyncAD
-  if ($null -eq $momento) {
+  if ($null -eq $momento){
     $infoCaixa += ","
-  }
-  else {
+  } else {
     $infoCaixa += "$($momento.ToString('dd/MM/yy HH:mm')),"
   }
 
   $momento = $detalheCaixa.LastInteractionTime # ultimoAcesso
-  if ($null -eq $momento) {
+  if ($null -eq $momento){
     $infoCaixa += ","
-  }
-  else {
+  } else {
     $infoCaixa += "$($momento.ToString('dd/MM/yy HH:mm')),"
   }
 
@@ -157,12 +155,11 @@ Foreach ($caixa in $caixas) {
   $licencaPaga = ""
   $outrasLicencas = ""
 
-  Foreach ($licenca in $licencas) {
+  Foreach ($licenca in $licencas){
     $nomeLicenca = ObterDescricaoLicenca -SkuPartNumber $licenca.SkuPartNumber
     if ($null -eq $nomeLicenca) {
       $outrasLicencas += "+$($licenca.SkuPartNumber)"
-    }
-    else {
+    } else {
       $licencaPaga += "+$($nomeLicenca)"
     }
   }
@@ -171,37 +168,28 @@ Foreach ($caixa in $caixas) {
 
   $buffer += $infoCaixa
 
-  if (
-    $indice % 50 -eq 0 -or
-    $indice -eq $total
-  ) {
+  if ($indice % 50 -eq 0 -or $indice -eq $total){
     Write-Progress -Activity "Exportando caixas postais" -Status "Progresso: $indice de $total extraidas" -PercentComplete (($indice / $total) * 100)
   }
 
-  if (
-    $indice % 250 -eq 0 -or
-    $indice -eq $total
-  ) {
-    gravaLOG -texto "Gravando $($indice) caixas postais. Parcial: $((NEW-TIMESPAN -Start $inicio -End (Get-Date)).ToString())" -tipo INF -arquivo $logs -mostraTempo:$true
+  if ($indice % 250 -eq 0 -or $indice -eq $total){
+    gravaLOG "Gravando $($indice) caixas postais. Parcial: $((NEW-TIMESPAN -Start $inicio -End (Get-Date)).ToString())" -tipo STP -arquivo $logs -mostraTempo:$true
   }
-  if (
-    $indice % 500 -eq 0 -or
-    $indice -eq $total
-  ) {
+
+  if ($indice % 500 -eq 0 -or $indice -eq $total){
     Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
     $buffer = @()
   }
-
-}  
+}
 
 Write-Progress -Activity "Exportando caixas postais" -PercentComplete 100
-gravaLOG -texto "Terminada gravacao." -tipo Aviso -arquivo $logs -mostraTempo:$true
+gravaLOG "Terminada gravacao." -tipo INF -arquivo $logs -mostraTempo:$true
 
 # Desconectando dos ambientes
 Disconnect-ExchangeOnline -Confirm:$false
 Disconnect-MgGraph
-gravaLOG -texto "Ambientes desconectados." -tipo INF -arquivo $logs -mostraTempo:$true
+gravaLOG "Ambientes desconectados." -tipo INF -arquivo $logs -mostraTempo:$true
 
 # Finalizando o script
 $final = Get-Date
-gravaLOG -texto "Tempo de duracao: $((NEW-TIMESPAN -Start $inicio -End $final).ToString())" -tipo WRN -arquivo $logs -mostraTempo:$true
+gravaLOG "Tempo de duracao: $((NEW-TIMESPAN -Start $inicio -End $final).ToString())" -tipo WRN -arquivo $logs -mostraTempo:$true

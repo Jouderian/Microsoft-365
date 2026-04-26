@@ -78,8 +78,8 @@ if ($Grupo.OnPremisesSyncEnabled -eq $true) {
 ```
 
 **Critérios de aceitação:**
-- [ ] Grupos de Segurança com `OnPremisesSyncEnabled = True` **não são removidos** em nenhum cenário
-- [ ] Log de auditoria registra grupos AD-sync ignorados com motivo explícito
+- [x] Grupos de Segurança com `OnPremisesSyncEnabled = True` **não são removidos** em nenhum cenário
+- [x] Log de auditoria registra grupos AD-sync ignorados com motivo explícito
 
 ---
 
@@ -115,7 +115,7 @@ Mapear os valores de `RecipientType` do Exchange para os equivalentes padronizad
 | ID | Título | Prioridade | Status |
 |----|--------|------------|--------|
 | P1 | Migrar membros de DLs para Graph (UPN unificado) | Alta | ✅ Implementado |
-| P2 | Proteção de Grupos AD-sync no `ListarEApagar` | Alta | Pendente |
+| P2 | Proteção de Grupos AD-sync no `ListarEApagar` | Alta | ✅ Implementado |
 | P3 | Renomear cabeçalho `eMailMembro` → `upnMembro` | Baixa | ❌ Descartado |
 | P3 | Subtipo normalizado para Grupos de Segurança | Baixa | Pendente |
 | P4 | Normalizar coluna `tipoMembro` para DLs | Backlog | Pendente |

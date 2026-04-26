@@ -18,7 +18,7 @@ $Users = Import-Csv -Delimiter:";" -Path $arquivo
 
 $Users | ForEach-Object {
   Write-Host $_.nomecompleto "=>" $_.contaAD
- 
+
   $senha = ConvertTo-SecureString -AsPlainText $_.Senha -force
   $nomeExibicao = $_.Nome + " " + $_.sobreNome
   New-ADUser $nomeExibicao `
