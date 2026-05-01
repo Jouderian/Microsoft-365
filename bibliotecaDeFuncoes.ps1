@@ -15,6 +15,7 @@
     09 (02/03/26) - Funcao para remover acentos de um texto
     10 (30/03/26) - Funcao para obter o espaco usado e livre em uma unidade de disco
     11 (05/04/26) - Melhoria na funcao de gravacao de LOGs
+    12 (20/04/26) - Prefixos de log alterados para texto puro (sem emojis) e encoding UTF-8 com BOM
 #>
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
@@ -125,7 +126,7 @@ Function gravaLOG {
   $mensagem = "$prefixo$tempo$texto"
 
   Write-Host $mensagem -ForegroundColor $color
-  if ($arquivo) {
+  if ($arquivo){
     Add-Content -Path $arquivo -Value $mensagem -Encoding UTF8
   }
 }
@@ -168,7 +169,7 @@ function verificaModulo {
 
   $modulo = Get-Module -Name $NomeModulo -ListAvailable
   if ($Modulo.count -eq 0){
-    if ($arquivoLogs) {
+    if ($arquivoLogs){
       gravaLOG -texto $MensagemErro -arquivo $arquivoLogs -tipo Erro
     } else {
       Write-Host $MensagemErro -ForegroundColor Red

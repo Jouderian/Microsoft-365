@@ -10,8 +10,9 @@
   02 (28/10/24) - Melhoria no processamento e registro de acoes
   03 (29/12/24) - Passa a ler a variavel do Windows para local do arquivo
   04 (27/01/26) - Passa a analisar todas as caixas postais e ativa das que nao possuem
+  05 (01/05/26) - Expansao para incluir caixas compartilhadas e melhora na validacao de status
 .OUTPUTS
-  Arquivo CSV com a relacao de caixas postais
+  Arquivo de log com a relacao de acoes executadas
 #>
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
@@ -33,53 +34,55 @@ try {
   Import-Module ExchangeOnlineManagement
   Connect-ExchangeOnline -ShowBanner:$false
   gravaLOG "Conectado ao Exchange Online" -tipo OK -arquivo $logs
-}
-catch {
+} catch {
   gravaLOG "ao conectar ao Exchange Online: $($_.Exception.Message)" -tipo ERR -arquivo $logs
   Exit
 }
 
-gravaLOG "Buscando caixas postais de usuario..." -tipo STP -arquivo $logs -mostraTempo:$true
-$caixasPostais = Get-Mailbox -Filter "RecipientTypeDetails -eq 'UserMailbox'" -ResultSize Unlimited
+gravaLOG "Buscando caixas postais ativas (Usuario e Compartilhadas)..." -tipo STP -arquivo $logs -mostraTempo:$true
+$caixasPostais = Get-Mailbox -Filter "(RecipientTypeDetails -eq 'UserMailbox' -or RecipientTypeDetails -eq 'SharedMailbox') -and AccountDisabled -eq `$false" -ResultSize Unlimited
 
 $totalCaixasPostais = $caixasPostais.Count
-gravaLOG "Total de caixas postais encontradas: $totalCaixasPostais" -tipo STP -arquivo $logs -mostraTempo:$true
+gravaLOG "Total de caixas postais encontradas: $totalCaixasPostais" -tipo OK -arquivo $logs -mostraTempo:$true
 
 $ativadasComSucesso = 0
 $comErro = 0
 $jaPossui = 0
 
-Foreach ($caixaPostal in $caixasPostais) {
+Foreach ($caixaPostal in $caixasPostais){
   $indice++
   Write-Progress -Activity "Ativando autoarquivamento" -Status "Progresso: $indice de $totalCaixasPostais processadas" -PercentComplete (($indice / $totalCaixasPostais) * 100)
 
   try {
-    # Verifica se o arquivo nao esta ativo OU se nao tem auto-expansao
+    # Verifica se o arquivo nao esta ativo (ArchiveGuid eh zerado) OU se nao tem auto-expansao
+    $arquivoNaoAtivo = (
+      $caixaPostal.ArchiveGuid -eq [Guid]::Empty -or
+      $caixaPostal.ArchiveGuid -eq "00000000-0000-0000-0000-000000000000"
+    )
+
     if (
-      $caixaPostal.ArchiveStatus -eq 'None' -or
+      $arquivoNaoAtivo -or
       $caixaPostal.AutoExpandingArchiveEnabled -eq $false
-    ) {
-      gravaLOG "$indice/$totalCaixasPostais - $($caixaPostal.DisplayName) ($($caixaPostal.PrimarySmtpAddress)) - Status Arquivo: $($caixaPostal.ArchiveStatus) / AutoExpansao: $($caixaPostal.AutoExpandingArchiveEnabled)" -tipo STP -arquivo $logs
+    ){
+      gravaLOG "$indice/$totalCaixasPostais - $($caixaPostal.DisplayName) ($($caixaPostal.PrimarySmtpAddress)) [$($caixaPostal.RecipientTypeDetails)] - Arquivo Ativo: $(!$arquivoNaoAtivo) / AutoExpansao: $($caixaPostal.AutoExpandingArchiveEnabled)" -tipo INF -arquivo $logs
 
       # Ativa o arquivo se nao estiver ativo
-      if ($caixaPostal.ArchiveStatus -eq 'None') {
+      if ($arquivoNaoAtivo){
         Enable-Mailbox -Identity $caixaPostal.PrimarySmtpAddress -Archive -WarningAction SilentlyContinue -ErrorAction Stop
-        gravaLOG "  Arquivamento ativado" -tipo OK -arquivo $logs
+        gravaLOG "  Arquivamento ativado" -tipo STP -arquivo $logs
       }
 
       # Ativa o auto-expandindo arquivo se nao estiver ativo (quando limite de 100GB eh atingido, expande)
-      if ($caixaPostal.AutoExpandingArchiveEnabled -eq $false) {
+      if ($caixaPostal.AutoExpandingArchiveEnabled -eq $false){
         Enable-Mailbox -Identity $caixaPostal.PrimarySmtpAddress -AutoExpandingArchive -WarningAction SilentlyContinue -ErrorAction Stop
         gravaLOG "  Arquivamento auto-expandindo ativado" -tipo STP -arquivo $logs
       }
 
       $ativadasComSucesso++
-    }
-    else {
+    } else {
       $jaPossui++
     }
-  }
-  catch {
+  } catch {
     gravaLOG "$($_.Exception.Message)" -tipo ERR -mostraTempo:$true -arquivo $logs
     $comErro++
   }

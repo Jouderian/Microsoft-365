@@ -10,3 +10,4 @@
 - **[x]** Criar estrutura arquitetural para aderir fortemente ao Padrão SDD (abr/2026).
 - **2026-04-10**: [Feature] Criado `importarGruposSeguranca.ps1` usando Spec-Driven Development e Microsoft Graph.
 - **2026-04-10**: [Refactoring] Refatorado `importarMembrosGrupoDeSeguranca.ps1` usando Spec-Driven Development e Microsoft Graph.
+- **2026-05-01**: [Feature] Expansão do script `ativarAutoArquivamento.ps1` para incluir `SharedMailbox`, ignorar contas desabilitadas e melhorar validação via `ArchiveGuid`.

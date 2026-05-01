@@ -1,14 +1,14 @@
-﻿# ativarAutoArquivamento.ps1
+# ativarAutoArquivamento.ps1
 
 > **Sinopse**: Ativa o autoarquivamento das caixas postais
 
 ## Descrição
-O script se conecta ao ambiente do Microsoft 365, busca todas as caixas postais existentes e ativa o autoarquivamento das caixas postais que nao possuem.
+O script se conecta ao ambiente do Microsoft 365, busca todas as caixas postais (Usuários e Compartilhadas) existentes e ativa o autoarquivamento das caixas que ainda não possuem o recurso habilitado.
 
 ## Detalhes
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: 04 (27/01/26) - Passa a analisar todas as caixas postais e ativa das que nao possuem
-- **Saída**: Arquivo CSV com a relacao de caixas postais
+- **Versão Atual**: 05 (01/05/26) - Expansão para incluir caixas compartilhadas e melhora na validação de status
+- **Saída**: Arquivo de log com o histórico das ações. Exemplo: `autoArquivamento_MAI26.txt`
 
 ## Módulos / Dependências
 - ExchangeOnlineManagement

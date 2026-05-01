@@ -1,13 +1,13 @@
 ﻿<#
   .SYNOPSIS
-   Script para ativar o litigio nas caixas postais com licenças: Office 365 E3 e Business Premium
+    Script para ativar o litigio nas caixas postais com licenças: Office 365 E3 e Business Premium
   .AUTHOR
-   Jouderian Nobre
+    Jouderian Nobre
   .VERSION
-   1 (23/06/23) - Criacao do script
-   2 (29/12/24) - Passa a ler a variavel do Windows para local do arquivo
-   3 (28/06/25) - Adequando ao uso da biblioteca de funcoes
-   4 (05/04/26) - Atualizacao da documentacao
+    1 (23/06/23) - Criacao do script
+    2 (29/12/24) - Passa a ler a variavel do Windows para local do arquivo
+    3 (28/06/25) - Adequando ao uso da biblioteca de funcoes
+    4 (05/04/26) - Atualizacao da documentacao
 #>
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
@@ -22,15 +22,13 @@ $arquivoEntrada = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\credenciaisLiti
 # Validacoes
 VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O modulo Exchange Online Management e necessario e nao esta instalado no sistema." -arquivoLogs $logs
 
-gravaLOG "Inicio: $inicio" -tipo WRN -arquivo $logs -mostraTempo:$true
-gravaLOG "Importando relação de caixas postais..." -tipo INF -arquivo $logs
+gravaLOG "Importando relação de caixas postais..." -tipo INF -mostraTempo:$true -arquivo $logs
 
 try {
   Import-Module ExchangeOnlineManagement -ErrorAction Stop
   Connect-ExchangeOnline -ShowBanner:$false
   gravaLOG "Conectado ao Exchange Online" -tipo OK -arquivo $logs -mostraTempo:$true
-}
-catch {
+} catch {
   gravaLOG "Erro ao conectar ao Exchange Online: $($_.Exception.Message)" -tipo ERR -arquivo $logs -mostraTempo:$true
   Exit
 }

@@ -29,7 +29,7 @@ git push origin main
 ```
 
 > [!CAUTION]
-> **Nunca** execute `git push` sem a autorização expressa do usuário. Esta é uma regra inegociável definida em `.agents/rules/rules.md`.
+> **Nunca** execute `git push` sem a autorização expressa do usuário. Esta é uma regra inegociável definida em `.agents/rules/general.md`.
 
 ## Checklist Rápido
 
