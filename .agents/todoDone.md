@@ -11,3 +11,5 @@
 - **2026-04-10**: [Feature] Criado `importarGruposSeguranca.ps1` usando Spec-Driven Development e Microsoft Graph.
 - **2026-04-10**: [Refactoring] Refatorado `importarMembrosGrupoDeSeguranca.ps1` usando Spec-Driven Development e Microsoft Graph.
 - **2026-05-01**: [Feature] Expansão do script `ativarAutoArquivamento.ps1` para incluir `SharedMailbox`, ignorar contas desabilitadas e melhorar validação via `ArchiveGuid`.
+- **2026-05-08**: [Feature] Adicionada limpeza de cache do Teams e parâmetro `-NaoFecharTeams` no script `removerArquivosTemporarios.ps1`.
+
