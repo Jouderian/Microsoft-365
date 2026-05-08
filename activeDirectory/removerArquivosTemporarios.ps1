@@ -117,10 +117,12 @@ function gravaLOG {
   # Salvar em arquivo
   Add-Content -Path $arquivoLOG -Value $logMensagem -ErrorAction SilentlyContinue
 
-  if ($script:MostrarLogTerminal) {
-    if ($tipo -eq 'Aviso') { Write-Host $logMensagem -ForegroundColor Yellow }
-    elseif ($tipo -eq 'Erro') { Write-Host $logMensagem -ForegroundColor Red }
-    else { Write-Host $logMensagem -ForegroundColor White }
+  if ($script:MostrarLogTerminal){
+    if ($tipo -eq 'Aviso'){ 
+      Write-Host $logMensagem -ForegroundColor Yellow
+    } elseif ($tipo -eq 'Erro'){
+      Write-Host $logMensagem -ForegroundColor Red
+    } else { Write-Host $logMensagem -ForegroundColor White }
   }
 }
 
@@ -195,7 +197,7 @@ function excluirArquivos {
 #============================================================== SCRIPT PRINCIPAL
 clear-host
 
-Write-Host "Log será salvo em: $arquivoLOG`n" -ForegroundColor Yellow
+Write-Host "Log sera salvo em: $arquivoLOG`n" -ForegroundColor Yellow
 
 gravaLOG "Limpeza de disco iniciada..." -tipo Aviso -mostraTempo:$true
 

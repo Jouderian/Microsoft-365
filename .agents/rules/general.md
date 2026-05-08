@@ -46,5 +46,6 @@ description: Resumo curto do conteúdo do arquivo
   Novos escopos podem ser adicionados conforme o projeto evoluir.
 - **Autorização para Push:** É **obrigatório** solicitar a autorização expressa do usuário antes de realizar qualquer envio para o repositório remoto (`git push`).
 - **Pré-requisito do Commit/Push:** Antes de solicitar a autorização para atualizar o repositório, você deve apresentar claramente ao usuário:
-  1. A lista exata dos arquivos que foram modificados e estão sendo incluídos na atualização.
-  2. A exata mensagem de *commit* que será utilizada.
+  1. Atualizar as documentações.
+  2. A lista exata dos arquivos que foram modificados e estão sendo incluídos na atualização.
+  3. A exata mensagem de *commit* que será utilizada.

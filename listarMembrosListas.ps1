@@ -1,4 +1,4 @@
-<#
+﻿<#
   .SYNOPSIS
     Lista a relação de membros das Listas de Distribuição e Grupos de Segurança do M365.
   .DESCRIPTION
@@ -88,7 +88,7 @@ gravaLOG "$($GruposSeguranca.Count) Grupos de Segurança encontrados." -mostraTe
 $total = $Listas.Count + $GruposSeguranca.Count
 
 Out-File -FilePath $arquivo -InputObject "idGrupo;nomeGrupo;eMailGrupo;adSync;tipoGrupo;idMembro;membro;tipo;eMailMembro" -Encoding UTF8
-Foreach ($Lista in $Listas) {
+Foreach ($Lista in $Listas){
 
   $indice++
   Write-Progress -Activity "Exportando Listas/Grupos" -Status "Progresso: $indice/$total - $($Lista.DisplayName)" -PercentComplete (($indice / $total) * 100)
@@ -180,7 +180,9 @@ Foreach ($Grupo in $GruposSeguranca){
     # displayName, mail e @odata.type chegam em AdditionalProperties via -Property.
     $odataType = $Membro.AdditionalProperties['@odata.type']
     $tipo = if ($odataType -eq '#microsoft.graph.user') { 'User' } else { 'Other' }
-    $buffer += "$($Grupo.Id);$($Grupo.DisplayName);$($Grupo.Mail);$($Grupo.OnPremisesSyncEnabled);Security;$($Membro.Id);$($Membro.AdditionalProperties['displayName']);$tipo;$($Membro.AdditionalProperties['userPrincipalName'])"
+    $nome = $Membro.AdditionalProperties['displayName']
+    $upn = $Membro.AdditionalProperties['userPrincipalName']
+    $buffer += "$($Grupo.Id);$($Grupo.DisplayName);$($Grupo.Mail);$($Grupo.OnPremisesSyncEnabled);Security;$($Membro.Id);$nome;$tipo;$upn"
   }
 
   Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
