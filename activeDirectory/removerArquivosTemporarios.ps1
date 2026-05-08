@@ -9,6 +9,7 @@
     O alcance da limpeza inclui:
     - Pastas temporárias de usuário e nativas de sistema logado
     - Arquivos de cache de todos os navegadores (Google Chrome, Microsoft Edge, Mozilla Firefox)
+    - Arquivos de cache e temporários do Microsoft Teams (Classic e New Teams)
     - Banco de dados corrompidos ou cheios de miniaturas (Thumbnails) e ícones do File Explorer
     - Históricos e resíduos de instalação ou cache de atualização do Windows Update
     - Limpeza persistente da Lixeira (Recycle Bin)
@@ -21,13 +22,21 @@
     do PowerShell usando cores informativas. Se omisso, restringe os logs puramente ao arquivo log
     gerado no $env:TEMP.
 
+  .PARAMETER NaoFecharTeams
+    Impede o fechamento forçado dos processos do Microsoft Teams antes da limpeza de cache. 
+    Arquivos em uso pelo aplicativo serão ignorados durante a deleção.
+
   .EXAMPLE
     .\removerArquivosTemporarios.ps1
-    # Inicializa de forma silenciosa. O andamento fica salvo no arquivo de log (ex: Limpeza_Disco.log no %TEMP%).
+    # Inicializa de forma silenciosa e, por padrão, fecha o Microsoft Teams para garantir a limpeza completa.
 
   .EXAMPLE
     .\removerArquivosTemporarios.ps1 -MostrarLogTerminal
     # Executa a rotina exibindo instantaneamente todo o progresso no painel com identificação de erros, avisos e sucesso.
+
+  .EXAMPLE
+    .\removerArquivosTemporarios.ps1 -MostrarLogTerminal -NaoFecharTeams
+    # Executa exibindo log no terminal, mas mantém o Teams aberto, ignorando eventuais arquivos bloqueados.
 
   .NOTES
     Contexto de Execução: Requer estritamente "Executar como Administrador" (Elevação UAC).
@@ -38,22 +47,26 @@
   .COLABORADOR
     Jouderian Nobre
 
+  .CREATEDATE
+    27/03/25
+
   .VERSION
-    1 (27/03/25) - Criacao do script
     2 (30/03/24) - Ajustes para melhorar a performance, inclusão de mais diretorios e tratamento de erros
-    3 (13/04/26) - Alteração para limpar temporários de todos os usuários da máquina e implementação
-                   de contingência (Timeout via Job) para WinUpdate e suporte a param -MostrarLogTerminal
+    3 (13/04/26) - Passa a limpar arquivos em todos os usuários, adiciona contingência (Timeout via Job) para WinUpdate e suporte ao parâmetro -MostrarLogTerminal
+    4 (08/05/26) - Passa a limpar cache do Teams e adiciona parâmetro -NaoFecharTeams para inverter comportamento padrão
 #>
 
 [CmdletBinding()]
 param (
-  [switch]$MostrarLogTerminal
+  [switch]$MostrarLogTerminal,
+  [switch]$NaoFecharTeams
 )
 
 #===================================================================== VARIAVEIS
 $temporariosUsuario = @()
 $temporariosCache = @()
 $temporariosNavegador = @()
+$temporariosTeams = @()
 $arquivoLOG = "$env:TEMP\Limpeza_Disco.log"
 
 $updateCache = @(
@@ -108,8 +121,7 @@ function gravaLOG {
 
   if ($mostraTempo) {
     $tempo = "$((Get-Date).ToString('dd/MM/yy HH:mm:ss')) "
-  }
-  else {
+  } else {
     $tempo = ""
   }
   $logMensagem = "$tempo [$tipo] $Mensagem"
@@ -168,10 +180,10 @@ function excluirArquivos {
 
   $grupoAdmin = ([System.Security.Principal.SecurityIdentifier]"S-1-5-32-544").Translate([System.Security.Principal.NTAccount]).Value
 
-  Foreach ($caminho in $Arquivos) {
+  Foreach ($caminho in $Arquivos){
     $itens = Get-ChildItem -Path $caminho -ErrorAction SilentlyContinue
 
-    if (-not $itens) {
+    if (-not $itens){
       gravaLOG "Nenhum item encontrado em $caminho" -tipo Aviso
       continue
     }
@@ -179,16 +191,14 @@ function excluirArquivos {
     try {
       takeown /A /R /D Y /F $caminho | Out-Null
       icacls $caminho /grant "$($grupoAdmin):F" /T /C | Out-Null
-    }
-    catch {
+    } catch {
       gravaLOG "  [ERRO] Erro ao ajustar permissoes em $($caminho): $_" -tipo Erro
     }
 
     try {
       Remove-Item $caminho -Recurse -Force -ErrorAction SilentlyContinue
       gravaLOG "  [OK] $($Mensagem): '$caminho' excluido com sucesso" -tipo Info
-    }
-    catch {
+    } catch {
       gravaLOG "  [ERRO] Erro ao excluir '$caminho': $_" -tipo Erro
     }
   }
@@ -196,6 +206,12 @@ function excluirArquivos {
 
 #============================================================== SCRIPT PRINCIPAL
 clear-host
+
+# Validar privilégios de administrador
+if (-not (testaAcessoAdmin)){
+  Write-Host "ATENCAO!!!`nEste script requer permissões de administrador" -ForegroundColor Red
+  exit 1
+}
 
 Write-Host "Log sera salvo em: $arquivoLOG`n" -ForegroundColor Yellow
 
@@ -206,8 +222,9 @@ $perfisUsuarios = Get-ChildItem -Path "C:\Users" -Directory -ErrorAction Silentl
   $_.Name -notin @("Public", "Default", "Default User", "All Users", "Publico") 
 }
 
-foreach ($perfil in $perfisUsuarios) {
+foreach ($perfil in $perfisUsuarios){
   $localAppData = "$($perfil.FullName)\AppData\Local"
+  $roamingAppData = "$($perfil.FullName)\AppData\Roaming"
 
   gravaLOG "Identificamos o perfil de usuario: $($perfil.Name)" -tipo Info
 
@@ -229,41 +246,59 @@ foreach ($perfil in $perfisUsuarios) {
     "$localAppData\Microsoft\Edge\User Data\Default\Cache\*",
     "$localAppData\Mozilla\Firefox\Profiles\*\cache2\*"
   )
-}
 
-# Validar privilégios de administrador
-if (-not (testaAcessoAdmin)) {
-  Write-Host "ATENCAO!!!`nEste script requer permissões de administrador" -ForegroundColor Red
-  exit 1
+  $temporariosTeams += @(
+    "$roamingAppData\Microsoft\Teams\Cache\*",
+    "$roamingAppData\Microsoft\Teams\Code Cache\*",
+    "$roamingAppData\Microsoft\Teams\blob_storage\*",
+    "$roamingAppData\Microsoft\Teams\databases\*",
+    "$roamingAppData\Microsoft\Teams\GPUCache\*",
+    "$roamingAppData\Microsoft\Teams\IndexedDB\*",
+    "$roamingAppData\Microsoft\Teams\Local Storage\*",
+    "$roamingAppData\Microsoft\Teams\tmp\*",
+    "$localAppData\Packages\MSTeams_8wekyb3d8bbwe\LocalCache\Microsoft\MSTeams\EBWebView\WV2Profile_tfw\Cache\*",
+    "$localAppData\Packages\MSTeams_8wekyb3d8bbwe\LocalCache\Microsoft\MSTeams\EBWebView\WV2Profile_tfw\Code Cache\*",
+    "$localAppData\Packages\MSTeams_8wekyb3d8bbwe\LocalCache\Microsoft\MSTeams\EBWebView\WV2Profile_tfw\GPUCache\*"
+  )
 }
 
 # Mostrar espaÃ§o em disco antes
 $discoAntes = espacoUsadoDisco
-if ($discoAntes) {
+if ($discoAntes){
   $usadoGB = $discoAntes.Usado
   $livreGB = $discoAntes.Livre
   gravaLOG "Espaco em disco ANTES: $usadoGB GB usado / $livreGB GB disponivel" -tipo Info
 }
 
-gravaLOG "[1/7] Iniciando limpeza de temporários dos usuários" -tipo Aviso
+gravaLOG "[1/8] Iniciando limpeza de temporários dos usuários" -tipo Aviso
 excluirArquivos $temporariosUsuario -Mensagem "Temporários dos usuários"
 
-gravaLOG "[2/7] Iniciando limpeza de temporários do sistema" -tipo Aviso
+gravaLOG "[2/8] Iniciando limpeza de temporários do sistema" -tipo Aviso
 excluirArquivos $tempSystem -Mensagem "Temporários do sistema"
 
-gravaLOG "[3/7] Iniciando limpeza dos LOGs" -tipo Aviso
+gravaLOG "[3/8] Iniciando limpeza dos LOGs" -tipo Aviso
 excluirArquivos $arquivosLOGs -Mensagem "LOGs do sistema"
 
-gravaLOG "[4/7] Iniciando limpeza de cache de miniaturas" -tipo Aviso
+gravaLOG "[4/8] Iniciando limpeza de cache de miniaturas" -tipo Aviso
 Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
 Start-Sleep -Milliseconds 700
 excluirArquivos $temporariosCache -Mensagem "Cache de miniaturas e de ícones"
 Start-Process explorer -ErrorAction SilentlyContinue
 
-gravaLOG "[5/7] Iniciando limpeza de cache de navegadores" -tipo Aviso
+gravaLOG "[5/8] Iniciando limpeza de cache de navegadores" -tipo Aviso
 excluirArquivos $temporariosNavegador -Mensagem "Cache de navegadores"
 
-gravaLOG "[6/7] Iniciando limpeza de cache do Windows Update" -tipo Aviso
+gravaLOG "[6/8] Iniciando limpeza de cache do Microsoft Teams" -tipo Aviso
+if (-not $NaoFecharTeams){
+  gravaLOG "Encerrando processos do Microsoft Teams para limpeza profunda..." -tipo Aviso
+  Stop-Process -Name msteams, ms-teams, Teams -Force -ErrorAction SilentlyContinue
+  Start-Sleep -Milliseconds 700
+} else {
+  gravaLOG "Parametro -NaoFecharTeams identificado. O Microsoft Teams sera mantido aberto (arquivos em uso podem ser ignorados)." -tipo Aviso
+}
+excluirArquivos $temporariosTeams -Mensagem "Cache do Microsoft Teams"
+
+gravaLOG "[7/8] Iniciando limpeza de cache do Windows Update" -tipo Aviso
 $job = Start-Job -ScriptBlock {
   Stop-Service wuauserv -Force -ErrorAction SilentlyContinue
   Stop-Service bits -Force -ErrorAction SilentlyContinue
@@ -278,18 +313,17 @@ Start-Service wuauserv -ErrorAction SilentlyContinue
 Start-Sleep -Milliseconds 700
 Start-Service bits -ErrorAction SilentlyContinue
 
-gravaLOG "[7/7] Iniciando limpeza da lixeira" -tipo Aviso
+gravaLOG "[8/8] Iniciando limpeza da lixeira" -tipo Aviso
 try {
   Clear-RecycleBin -Force -ErrorAction Stop
   gravaLOG "  [OK] Lixeira esvaziada com sucesso" -tipo Info
-}
-catch {
+} catch {
   gravaLOG "  [ERRO] Erro ao limpar lixeira: $_" -tipo Erro
 }
 
 # Mostrar espaço em disco depois
 $discoDepois = espacoUsadoDisco
-if ($discoDepois -and $discoAntes) {
+if ($discoDepois -and $discoAntes){
   $usadoGBdepois = $discoDepois.Usado
   $livreGBdepois = $discoDepois.Livre
   $liberadoGB = ($discoDepois.Livre - $discoAntes.Livre)
