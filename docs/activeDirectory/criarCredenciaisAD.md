@@ -1,4 +1,4 @@
-﻿# criarCredenciaisAD.ps1
+# criarCredenciaisAD.ps1
 
 > **Sinopse**: Criar usuarios no AD com base em um aquivo CSV
 
@@ -6,7 +6,7 @@
 Script de utilidade em PowerShell.
 
 ## Detalhes
-- **Autor**: Desconhecido
+- **Autor**: Jouderian Nobre
 - **Versão Atual**: N/A
 - **Saída**: N/A
 

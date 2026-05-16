@@ -1,4 +1,4 @@
-﻿# removerDominioAD.ps1
+# removerDominioAD.ps1
 
 > **Sinopse**: Remove um dominio especifico das credenciais no AD
 
@@ -6,7 +6,7 @@
 Script de utilidade em PowerShell.
 
 ## Detalhes
-- **Autor**: Desconhecido
+- **Autor**: Jouderian Nobre
 - **Versão Atual**: N/A
 - **Saída**: N/A
 

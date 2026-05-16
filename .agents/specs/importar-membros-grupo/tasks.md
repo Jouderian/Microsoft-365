@@ -1,3 +1,7 @@
+---
+description: Checklist de tarefas para refatoração do importarMembrosGrupoDeSeguranca.ps1
+---
+
 # Tasks: Importar Membros do Grupo de Segurança
 
 - [x] Definir a especificação funcional.

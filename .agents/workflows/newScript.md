@@ -32,7 +32,7 @@ Todo script deve começar com o bloco de **Comment-Based Help** no seguinte form
   .AUTHOR
     [Nome do Autor]
   .CREATED
-    [dd/mm/aa] (apenas se diferente do autor atual)
+    [dd/mm/aa]
   .VERSION
     02 (dd/mm/aa) - [Descrição do que mudou]
   .OUTPUT

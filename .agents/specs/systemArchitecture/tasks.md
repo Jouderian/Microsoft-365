@@ -1,3 +1,11 @@
-# Tarefas de Arquitetura de Sistemas
+---
+description: Checklist de tarefas pendentes e backlog técnico de arquitetura
+---
 
-Fases técnicas e de rollouts de infraestrutura. (Atualmente não há beads ou fases de infraestrutura correndo em background; as tarefas de desenvolvimento de rotinas de script ficam na raiz no `todo.md`).
+# Tasks: Arquitetura do Sistema
+
+- [x] Estabelecer fluxo de desenvolvimento guiado por spec (SDD)
+- [x] Padronizar referências a arquivos no repositório (ADR 001)
+- [ ] Refatorar a `bibliotecaDeFuncoes.ps1` isolando a lógica em módulos menores se aplicável
+- [ ] Centralizar e uniformizar todos os outputs e logs para o mesmo padrão em todos os scripts
+- [ ] Mapear as dependências cruzadas entre scripts e biblioteca core

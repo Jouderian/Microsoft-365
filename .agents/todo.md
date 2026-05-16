@@ -1,3 +1,7 @@
+---
+description: Backlog persistente do projeto — tarefas pendentes e ideias de melhoria
+---
+
 # Backlog (Pendente)
 
 Tarefas sob demanda, ideias de novas automações e melhorias pendentes:

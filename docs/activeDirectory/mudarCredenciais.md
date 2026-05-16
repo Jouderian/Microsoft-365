@@ -1,4 +1,4 @@
-﻿# mudarCredenciais.ps1
+# mudarCredenciais.ps1
 
 > **Sinopse**: Muda o nome da credencial, dominio e email
 
@@ -6,7 +6,7 @@
 Script de utilidade em PowerShell.
 
 ## Detalhes
-- **Autor**: Desconhecido
+- **Autor**: Jouderian Nobre
 - **Versão Atual**: N/A
 - **Saída**: N/A
 

@@ -1,4 +1,4 @@
-﻿# copiarSystemStateAD.ps1
+# copiarSystemStateAD.ps1
 
 > **Sinopse**: Copia de Segurança do AD
 
@@ -6,7 +6,7 @@
 Script de utilidade em PowerShell.
 
 ## Detalhes
-- **Autor**: Desconhecido
+- **Autor**: Jouderian Nobre
 - **Versão Atual**: N/A
 - **Saída**: N/A
 

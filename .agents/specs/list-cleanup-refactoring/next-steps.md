@@ -1,3 +1,7 @@
+---
+description: Próximos passos e melhorias pendentes identificadas para listarMembrosListas.ps1
+---
+
 # Spec: Próximos Passos — listarMembrosListas.ps1
 
 ## Contexto

@@ -1,4 +1,4 @@
-﻿# removerComputadoresAD.ps1
+# removerComputadoresAD.ps1
 
 > **Sinopse**: Remove os computadores do AD baseado em uma listagem
 
@@ -6,7 +6,7 @@
 Script de utilidade em PowerShell.
 
 ## Detalhes
-- **Autor**: Desconhecido
+- **Autor**: Jouderian Nobre
 - **Versão Atual**: N/A
 - **Saída**: N/A
 

@@ -1,3 +1,7 @@
+---
+description: Requisitos para migração do script de importação de membros de grupo para Microsoft Graph
+---
+
 # Spec: Importar Membros do Grupo de Segurança (Graph)
 
 ## O que é

@@ -1,3 +1,7 @@
+---
+description: Plano técnico para criação de Grupos de Segurança via Microsoft Graph
+---
+
 # Plan: Importar Grupos de Segurança (Graph)
 
 ## Como

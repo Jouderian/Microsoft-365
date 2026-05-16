@@ -1,14 +1,14 @@
-﻿# bibliotecaDeFuncoes.ps1
+# bibliotecaDeFuncoes.ps1
 
-> **Sinopse**: Biblioteca de funcoes de uso geral para scripts em powerShell.
+> **Sinopse**: Biblioteca de funções de uso geral para centralizar recursos nos demais scripts em PowerShell.
 
-## ðŸ“– DescriÃ§Ã£o
-Script de utilidade em PowerShell.
+## Descrição
+Script de utilidade em PowerShell que exporta diversas funções fundamentais utilizadas por praticamente todos os scripts do repositório, como a função de registro de logs (`gravaLOG`), validação de módulos (`VerificaModulo`) e tratamento de strings (`removerAcentos`, `trataTexto`).
 
-## âš™ï¸ Detalhes
+## Detalhes
 - **Autor**: Jouderian Nobre
-- **VersÃ£o Atual**: 11 (05/04/26) - Melhoria na funcao de gravacao de LOGs
-- **SaÃ­da**: N/A
+- **Versão Atual**: 11 (05/04/26) - Melhoria na função de gravação de LOGs
+- **Saída**: N/A
 
-## ðŸ“¦ MÃ³dulos / DependÃªncias
-- Nenhum mÃ³dulo explÃ­cito
+## Módulos / Dependências
+- Nenhum módulo explícito

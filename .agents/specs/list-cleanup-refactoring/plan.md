@@ -1,3 +1,7 @@
+---
+description: Plano técnico para refatoração do listarMembrosListas.ps1 e criação do apagarListasSemMembros.ps1
+---
+
 # Plano de Implementação: Refatoração de Listas e Grupos
 
 ## Arquitetura

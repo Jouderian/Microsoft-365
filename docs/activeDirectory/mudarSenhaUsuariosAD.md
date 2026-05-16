@@ -1,4 +1,4 @@
-﻿# mudarSenhaUsuariosAD.ps1
+# mudarSenhaUsuariosAD.ps1
 
 > **Sinopse**: Sem sinopse.
 
@@ -6,7 +6,7 @@
 Script de utilidade em PowerShell.
 
 ## Detalhes
-- **Autor**: Desconhecido
+- **Autor**: Jouderian Nobre
 - **Versão Atual**: N/A
 - **Saída**: N/A
 

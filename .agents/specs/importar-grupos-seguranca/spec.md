@@ -1,3 +1,7 @@
+---
+description: Requisitos e critérios de aceitação para importação de Grupos de Segurança via Graph
+---
+
 # Spec: Importar Grupos de Segurança (Graph)
 
 ## O que é

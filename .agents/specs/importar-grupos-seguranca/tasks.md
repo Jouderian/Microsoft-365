@@ -1,3 +1,7 @@
+---
+description: Checklist de tarefas para implementação da importação de Grupos de Segurança
+---
+
 # Tasks: Importar Grupos de Segurança (Graph)
 
 - [X] Incluir escopos precisos `-Scopes "Group.ReadWrite.All", "Directory.Read.All"` no connect.

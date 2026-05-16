@@ -1,4 +1,4 @@
-﻿# expirarUsuariosAD.ps1
+# expirarUsuariosAD.ps1
 
 > **Sinopse**: Expira ou libera credenciais baseado em uma planilha com o agendamento
 
@@ -6,7 +6,7 @@
 Script de utilidade em PowerShell.
 
 ## Detalhes
-- **Autor**: Desconhecido
+- **Autor**: Jouderian Nobre
 - **Versão Atual**: N/A
 - **Saída**: N/A
 

@@ -1,4 +1,4 @@
-﻿# listarComputadoresAD.ps1
+# listarComputadoresAD.ps1
 
 > **Sinopse**: Relacao de computadores do AD
 
@@ -6,7 +6,7 @@
 Script de utilidade em PowerShell.
 
 ## Detalhes
-- **Autor**: Desconhecido
+- **Autor**: Jouderian Nobre
 - **Versão Atual**: N/A
 - **Saída**: N/A
 

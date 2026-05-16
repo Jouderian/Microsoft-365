@@ -1,4 +1,4 @@
-﻿# ajustarLimiteExclusaoSyncAD.ps1
+# ajustarLimiteExclusaoSyncAD.ps1
 
 > **Sinopse**: Ajusta temporariamente o limite de exclusões do entraConnectSync e restaura ao final.
 
@@ -6,7 +6,7 @@
 Script de utilidade em PowerShell.
 
 ## Detalhes
-- **Autor**: Desconhecido
+- **Autor**: Jouderian Nobre
 - **Versão Atual**: N/A
 - **Saída**: N/A
 

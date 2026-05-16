@@ -1,4 +1,4 @@
-﻿# mudarSenhaUsuariosBloqueadosAD.ps1
+# mudarSenhaUsuariosBloqueadosAD.ps1
 
 > **Sinopse**: Muda aleatoriamente a senha dos usuarios bloqueados no Active Directory
 
@@ -6,7 +6,7 @@
 Script de utilidade em PowerShell.
 
 ## Detalhes
-- **Autor**: Desconhecido
+- **Autor**: Jouderian Nobre
 - **Versão Atual**: N/A
 - **Saída**: N/A
 

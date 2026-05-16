@@ -1,11 +1,36 @@
-# System Architecture Plan
+---
+description: Plano mestre de arquitetura para automações M365 e Active Directory
+---
 
-Fonte de verdade técnica para Execução e Estado do Sistema.
+# Master Plan: Fonte de verdade técnica para Execução e Estado do Sistema.
 
-## 1. Executable (Ambiente e Execução)
-*   **Modelos de Execução:** Os scripts dependem do módulo Microsoft 365, Teams (ExchangeOnlineManagement, MicrosoftTeams) e ActiveDirectory em Windows PowerShell 5.1/7+.
-*   **Agentes:** Consultam primeiro as normas em `.agents/rules/general.md` e `.agents/rules/codeStandards.md`.
-*   **Workflow:** Para criar um novo script, siga `.agents/workflows/newScript.md`.
+## Visão Geral e Intento
+Este projeto abriga uma gama de scripts em PowerShell que cuidam da governança de um ambiente de AD ou M365
 
-## 2. State (Estado Atual)
-**Verde (Estável):** Repositório totalmente documentado sob a governança SDD. Todos os scripts possuem cabeçalho padronizado, o `readMe.md` cobre a raiz e a pasta `activeDirectory`, e o workflow de criação modular é o padrão.
+## Objetivos Arquiteturais (Onde queremos chegar)
+As intenções a longo prazo deste repositório usando a metodologia Agent Flywheel são:
+1. **Segurança e Idempotência:** Garantir que todos os scripts possam falhar graciosamente, registrando o erro centralizadamente sem expor dados e que rodá-los várias vezes no mesmo estado traga o mesmo resultado (idempotência).
+2. **Centralização por Referência Core:** Direcionar o peso do código repetitivos e conversão complexa para a bibliotecas core (`bibliotecaDeFuncoes.ps1` e equivalentes) e deixar os scripts de caso de uso apenas como executores orquestrados que chamam funções limpas com dependência única.
+
+## Documentação do Fluxo Identificado
+
+### 1. Executable (Ambiente e Execução)
+1. **Modelos de Execução:** Os scripts dependem nativamente do Windows PowerShell 5.1/7+.
+2. **Módulos Oficiais Utilizados:** 
+   - `ExchangeOnlineManagement` (Gestão de caixas e mail flow)
+   - `Microsoft.Graph.Authentication`, `Microsoft.Graph.Groups`, `Microsoft.Graph.Users` (Identidade cloud)
+   - `ActiveDirectory` (Identidade on-premise)
+   - `MicrosoftTeams` (Limpezas de cache/config)
+3. **Padrão de Autenticação:** Autenticação Interativa (Delegated) como padrão para execução via administrador local.
+4. **Padrão de Logging:** Utilização da função `gravaLOG` (via `bibliotecaDeFuncoes.ps1`) com saída centralizada e retenção em formato textual.
+5. **Agentes:** Consultam primeiro as normas em `.agents/rules/general.md` e `.agents/rules/codeStandards.md`.
+6. **Workflow:** Para criar um novo script, siga `.agents/workflows/newScript.md`.
+
+### 2. Estrutura de Diretórios
+- `/`: Scripts que interagem nativamente com Microsoft 365 (Exchange, Graph, Teams).
+- `/activeDirectory`: Scripts que interagem unicamente com o AD DS on-premise local.
+- `/docs`: Documentação legível de cada script mapeado, separada pelo mesmo contexto raiz/AD.
+- `/.agents`: Core de metadados, regras, workflows e especificações guiadas por SDD.
+
+### Próximos Passos (Veja .agents/todo.md e tasks.md)
+O rastreio do que deve ser tocado está catalogado em `.agents/todo.md` e guiado pela priorização matemática documentada ou delegada pelos agentes. Adicionalmente, as tarefas mais profundas de arquitetura constam em `tasks.md`.

@@ -1,3 +1,7 @@
+---
+description: Requisitos para refatoração da extração e limpeza de listas e grupos no M365
+---
+
 # Especificação: Refatoração da Extração e Limpeza de Listas e Grupos
 
 ## O Quê

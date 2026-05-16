@@ -1,3 +1,7 @@
+---
+description: Checklist de tarefas para a refatoração de listas e grupos
+---
+
 # Tasks: Refatoração e Limpeza de Listas
 
 1. [x] Atualizar script `listarMembrosListas.ps1` adicionando parâmetro.

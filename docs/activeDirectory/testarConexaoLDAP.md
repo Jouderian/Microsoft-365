@@ -1,4 +1,4 @@
-﻿# testarConexaoLDAP.ps1
+# testarConexaoLDAP.ps1
 
 > **Sinopse**: Testar a conexão LDAP com um servidor Active Directory
 
@@ -6,7 +6,7 @@
 Script de utilidade em PowerShell.
 
 ## Detalhes
-- **Autor**: Desconhecido
+- **Autor**: Jouderian Nobre
 - **Versão Atual**: N/A
 - **Saída**: N/A
 

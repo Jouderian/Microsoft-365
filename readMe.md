@@ -34,21 +34,19 @@ Abaixo você encontra a lista de todos os `scripts` e a descrição da sua princ
 | [`listarCaixasComEncaminhamento.ps1`](docs/listarCaixasComEncaminhamento.md) | Extrai uma listagem de todas as caixas postais focando em identificar endereços externos de encaminhamento em uso. |
 | [`listarCaixasCompartilhadas.ps1`](docs/listarCaixasCompartilhadas.md) | Lista somente caixas do tipo SharedMailbox ou quaisquer caixas que tenham permissão de acesso compartilhado e delegados (Full Access/Send As). |
 | [`listarCaixasPostais.ps1`](docs/listarCaixasPostais.md) | Extrai um inventário mestre de todas as caixas postais (inclui atributos do AD, licenças, métricas de armazenamento de arquivo/primário, gerentes, last sign-in). |
-| [`listarCaixasPostaisNOVO.ps1`](docs/listarCaixasPostaisNOVO.md) | Inventário de mailboxes otimizado para Windows PowerShell 5.1 priorizando chamadas no Graph Reports (maior velocidade em tenants enormes). |
 | [`listarMembrosDeUmaLista.ps1`](docs/listarMembrosDeUmaLista.md) | Mostra os usuários contidos em um grupo ou Lista do EntraID (via Microsoft Graph PowerShell). |
 | [`listarMembrosListas.ps1`](docs/listarMembrosListas.md) | Exporta a relação cruzando os membros das Listas do Exchange e de Grupos do M365, incluindo Grupos de Segurança. |
 | [`mudarLicencas.ps1`](docs/mudarLicencas.md) | Faz a manutenção ou permuta em massa nas licenças dos usuários oriundos de num arquivo csv. |
 | [`removerDispositivos.ps1`](docs/removerDispositivos.md) | Remove do EntraID os dispositivos sem uso e obsoletos há mais de 190 dias. |
 | [`removerEventosCalendario.ps1`](docs/removerEventosCalendario.md) | Procura e retira eventos de reuniões problemáticas no calendário de uma caixa postal. |
-| [`sincroniza_AD_M365.ps1`](docs/sincroniza_AD_M365.md) | Força imediatamente o ciclo de sincronismo Delta entre o Active Directory local e a nuvem. |
+| [`sincronizaAdM365.ps1`](docs/sincronizaAdM365.md) | Força imediatamente o ciclo de sincronismo Delta entre o Active Directory local e a nuvem. |
 | [`testarEnvioHVE.ps1`](docs/testarEnvioHVE.md) | Testa o envio direto de mensagem usando credencial HVE (High Volume Email) do Exchange Online. |
-| [`validaGPOs.ps1`](docs/validaGPOs.md) | Faz auditoria offline de GPOs aplicadas no AD DS com suporte para validação extra através de RSoP das máquinas. |
 
 ---
 
 > [!NOTE]
 > **Metodologia de Manutenção**
-> Para mais detalhes sobre as regras de arquitetura *Agent-Flywheel* deste projeto, ou para ver o status dos planos de desenvolvimento e aprovações, consulte o arquivo `.agents/BEADS.md`.
+> Para mais detalhes sobre as regras de arquitetura *Agent-Flywheel* deste projeto, ou para ver o status dos planos de desenvolvimento e aprovações, consulte o plano mestre de arquitetura em `.agents/specs/systemArchitecture/plan.md`.
 
 ---
 
@@ -75,6 +73,7 @@ Scripts voltados para gestão de credenciais, grupos, computadores e operações
 | [`removerComputadoresAD.ps1`](docs/activeDirectory/removerComputadoresAD.md) | Remove computadores do AD com base em uma lista fornecida. |
 | [`removerDominioAD.ps1`](docs/activeDirectory/removerDominioAD.md) | Remove um domínio específico das credenciais no AD. |
 | [`testarConexaoLDAP.ps1`](docs/activeDirectory/testarConexaoLDAP.md) | Testa a conexão LDAP com um servidor Active Directory. |
+| [`validaGPOs.ps1`](docs/activeDirectory/validaGPOs.md) | Faz auditoria offline de GPOs aplicadas no AD DS com suporte para validação extra através de RSoP das máquinas. |
 
 ---
 

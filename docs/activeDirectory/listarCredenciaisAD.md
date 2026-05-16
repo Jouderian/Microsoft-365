@@ -1,4 +1,4 @@
-﻿# listarCredenciaisAD.ps1
+# listarCredenciaisAD.ps1
 
 > **Sinopse**: Script para gerar um arquivo .csv com as principais informcoes dos usuarios do AD.
 
@@ -6,7 +6,7 @@
 Script de utilidade em PowerShell.
 
 ## Detalhes
-- **Autor**: Desconhecido
+- **Autor**: Jouderian Nobre
 - **Versão Atual**: N/A
 - **Saída**: N/A
 

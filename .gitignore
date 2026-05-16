@@ -1,0 +1,19 @@
+# Logs e Saídas
+*.log
+*.txt
+*Output*.csv
+*.csv
+
+# Sistema Operacional
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Editores e Ferramentas
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.gemini/

@@ -1,4 +1,4 @@
-﻿# ajustarCaixasDivergenciaUPN_SMTP.ps1
+# ajustarCaixasDivergenciaUPN_SMTP.ps1
 
 > **Sinopse**: Ajusta as credenciais do AD cujo o UPN esta diferente do SMTP no proxyAddresses
 
@@ -6,7 +6,7 @@
 Script de utilidade em PowerShell.
 
 ## Detalhes
-- **Autor**: Desconhecido
+- **Autor**: Jouderian Nobre
 - **Versão Atual**: N/A
 - **Saída**: N/A
 

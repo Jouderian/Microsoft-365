@@ -1,3 +1,7 @@
+---
+description: Plano técnico para refatoração do script de importação de membros usando Graph
+---
+
 # Plan: Importar Membros do Grupo de Segurança (Graph)
 
 ## Como

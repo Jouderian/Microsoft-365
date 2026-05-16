@@ -93,9 +93,9 @@ Function gravaLOG {
   Param (
     [Parameter(Mandatory = $true)][string]$texto,
     [parameter(Mandatory = $false)]
-    [string]$arquivo,
-    [boolean]$mostraTempo = $false,
-    [ValidateSet('INF', 'OK', 'WRN', 'ERR', 'STP')][string]$tipo
+      [string]$arquivo,
+      [boolean]$mostraTempo = $false,
+      [ValidateSet('INF', 'OK', 'WRN', 'ERR', 'STP')][string]$tipo
   )
 
   $prefixo = @{
