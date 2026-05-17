@@ -1,28 +1,53 @@
 <#
-.SYNOPSIS
-  Limpa cache de TODAS as versoes comuns de Microsoft Teams (classico, novo) e Outlook (classico e novo do Windows 11) para o usuario atual, fechando os apps, apagando caches e reabrindo em seguida.
-
-.NOTES
-  - Nao requer privilégios administrativos.
-  - Executar na sessao do próprio usuario.
+  .SYNOPSIS
+    Limpa o cache das aplicacoes Microsoft Teams e Microsoft Outlook para o usuario atual.
+  .DESCRIPTION
+    Este script fecha com seguranca os processos das aplicacoes Microsoft Teams e Microsoft Outlook,
+    remove os arquivos e pastas temporarios e de cache e reabre as aplicacoes.
+    Oferece flexibilidade permitindo rodar para ambas as aplicacoes por padrao, ou restringindo a
+    apenas uma delas via parametros.
+  .AUTHOR
+    Felipe Aquino
+  .CREATED
+    17/03/26
+  .VERSION
+    02 (19/03/26) Jouderian Nobre: Melhorada para abranger Teams clássico, novo Teams e variações
+    03 (17/05/26) Jouderian Nobre: Unificacao completa do codigo
+  .PARAMETER
+    -somenteTeams: Limpa apenas o cache do Microsoft Teams.
+    -somenteOutlook: Limpa apenas o cache do Microsoft Outlook.
 #>
 
-# Funcoes utilitarias
+param(
+  [switch]$somenteTeams,
+  [switch]$somenteOutlook
+)
+
+# ---------------- Controle de Execucao ----------------
+$limparTeams = $true
+$limparOutlook = $true
+
+if ($somenteTeams -or $somenteOutlook) {
+  $limparTeams = $somenteTeams
+  $limparOutlook = $somenteOutlook
+}
+
+# ---------------- Funcoes Utilitarias ----------------
 function Write-Log {
   param(
-    [string]$Message,
-    [string]$Level = "INFO"
+    [string]$message,
+    [string]$level = "INFO"
   )
-  $timestamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
-  Write-Host "[$timestamp][$Level] $Message"
+  $timestamp = (Get-Date).ToString("dd-MM-yy HH:mm:ss")
+  Write-Host "[$timestamp][$level] $message"
 }
 
 function Stop-ProcessSafe {
   param(
-    [string[]]$Names
+    [string[]]$names
   )
 
-  foreach ($name in $Names){
+  foreach ($name in $names){
     try {
       $procs = Get-Process -Name $name -ErrorAction SilentlyContinue
       if ($procs) {
@@ -39,25 +64,27 @@ function Stop-ProcessSafe {
 
 function Remove-PathSafe {
   param(
-    [string]$Path,
-    [switch]$Recurse = $true
+    [string]$path,
+    [switch]$recurse = $true
   )
 
   try {
-    if (Test-Path -LiteralPath $Path){
-      Write-Log "Removendo: $Path" "INFO"
-      if ($Recurse){
-        Remove-Item -LiteralPath $Path -Recurse -Force -ErrorAction SilentlyContinue
+    if (Test-Path -LiteralPath $path){
+      Write-Log "Removendo: $path" "INFO"
+      if ($recurse){
+        Remove-Item -LiteralPath $path -Recurse -Force -ErrorAction SilentlyContinue
       } else {
-        Remove-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
       }
     } else {
-      Write-Log "Caminho nao encontrado, ignorando: $Path" "DEBUG"
+      Write-Log "Caminho nao encontrado, ignorando: $path" "DEBUG"
     }
   } catch {
-    Write-Log "Erro ao remover ${Path}: $($_.Exception.Message)" "WARN"
+    Write-Log "Erro ao remover ${path}: $($_.Exception.Message)" "WARN"
   }
 }
+
+# ---------------- Funcoes de Limpeza ----------------
 
 # Teams classico (cache principal em %APPDATA%\Microsoft\Teams)
 function Clear-TeamsClassicRoamingCache {
@@ -77,7 +104,8 @@ function Clear-TeamsClassicRoamingCache {
     "Code Cache",
     "BrowserMetrics",
     "skylib\contacts",
-    "skylib\presence"
+    "skylib\presence",
+    "Application Cache\Cache"
   )
 
   foreach ($rel in $pathsToClear){
@@ -122,7 +150,8 @@ function Clear-TeamsNewMsixCache {
     "LocalState",
     "Cache",
     "Blob_storage",
-    "IndexedDB"
+    "IndexedDB",
+    "TempState" # Adicionado de limparCacheTeams.ps1
   )
 
   foreach ($rel in $pathsToClear){
@@ -136,8 +165,8 @@ function Clear-OutlookCache {
   Write-Log "=== Limpando cache do Outlook (classico / novo) ==="
 
   $classicRoamCache = Join-Path $env:LOCALAPPDATA "Microsoft\Outlook\RoamCache"
-  $newOutlookPkg    = Join-Path $env:LOCALAPPDATA "Packages\Microsoft.OutlookForWindows_8wekyb3d8bbwe"
-  $newOutlookOlk    = Join-Path $env:LOCALAPPDATA "Microsoft\olk"
+  $newOutlookPkg = Join-Path $env:LOCALAPPDATA "Packages\Microsoft.OutlookForWindows_8wekyb3d8bbwe"
+  $newOutlookOlk = Join-Path $env:LOCALAPPDATA "Microsoft\olk"
 
   $limpouAlgo = $false
 
@@ -182,12 +211,12 @@ function Clear-OutlookCache {
     $limpouAlgo = $true
   }
 
-  if (-not $limpouAlgo) {
+  if (-not $limpouAlgo){
     Write-Log "Nenhuma estrutura de cache encontrada para Outlook (novo ou classico). Talvez o app ainda nao tenha sido aberto neste perfil." "WARN"
   }
 }
 
-# Reabrir aplicativos
+# ---------------- Funcoes de Inicializacao ----------------
 function Start-TeamsSafe {
   Write-Log "=== Reabrindo Microsoft Teams ==="
 
@@ -199,7 +228,7 @@ function Start-TeamsSafe {
     Write-Log "Teams iniciado via protocolo ms-teams:" "INFO"
     $started = $true
   } catch {
-    Write-Log "Falha ao iniciar Teams via ms-Teams:. Tentando via Update.exe padrao do Teams classico..." "WARN"
+    Write-Log "Falha ao iniciar Teams via ms-teams:. Tentando via Update.exe padrao do Teams classico..." "WARN"
   }
 
   if (-not $started){
@@ -214,6 +243,31 @@ function Start-TeamsSafe {
       }
     } else {
       Write-Log "Update.exe do Teams nao encontrado em $updateExe" "WARN"
+    }
+  }
+
+  if (-not $started){
+    # Tentativa alternativa via explorer shell
+    try {
+      Start-Process "explorer.exe" "shell:AppsFolder\MSTeams_8wekyb3d8bbwe!MSTeams" -ErrorAction Stop
+      Write-Log "Teams iniciado via explorer shell" "INFO"
+      $started = $true
+    } catch {
+      Write-Log "Erro ao iniciar Teams via explorer shell: $($_.Exception.Message)" "WARN"
+    }
+  }
+
+  if (-not $started){
+    # Tentativa via Teams.exe classico diretamente
+    $classicTeamsExe = "$env:LOCALAPPDATA\Microsoft\Teams\current\Teams.exe"
+    if (Test-Path $classicTeamsExe){
+      try {
+        Start-Process $classicTeamsExe -ErrorAction Stop
+        Write-Log "Teams classico iniciado via executavel direto" "INFO"
+        $started = $true
+      } catch {
+        Write-Log "Erro ao iniciar Teams classico via executavel: $($_.Exception.Message)" "ERROR"
+      }
     }
   }
 
@@ -259,40 +313,56 @@ function Start-OutlookSafe {
   }
 }
 
-# Execucao principal
+# ---------------- Execucao Principal ----------------
 
-Write-Log "==== INICIO DA LIMPEZA DE CACHE TEAMS/OUTLOOK ===="
+Write-Log "==== INICIO DA LIMPEZA DE CACHE ===="
 
-# 1. Fechar Teams e Outlook (varias variacoes de processo)
-Write-Log "Fechando Teams e Outlook..." "INFO"
-Stop-ProcessSafe -Names @(
-  # Teams
-  "ms-teams", # novo Teams (ms-teams.exe)
-  "MSTeams",  # algumas builds
-  "teams",    # Teams classico (Teams.exe)
+# 1. Fechar Aplicativos Condicionalmente
+if ($limparTeams) {
+  Write-Log "Fechando processos do Teams..." "INFO"
+  Stop-ProcessSafe -names @(
+    "ms-teams",        # novo Teams (ms-teams.exe)
+    "MSTeams",         # algumas builds
+    "teams",           # Teams classico (Teams.exe)
+    "msteams",         # algumas builds
+    "Microsoft.Teams"  # novo Teams (MSIX)
+  )
+}
 
-  # Outlook novo & Mail app
-  "olk",
-  "HxOutlook",
-  "HxTsr",
-  "HxMail",
+if ($limparOutlook) {
+  Write-Log "Fechando processos do Outlook..." "INFO"
+  Stop-ProcessSafe -names @(
+    "olk",
+    "HxOutlook",
+    "HxTsr",
+    "HxMail",
+    "outlook"
+  )
+}
 
-  # Outlook classico
-  "outlook"
-)
+# Aguardar finalizacao completa dos processos
+Start-Sleep -Seconds 2
 
-# 2. Limpar caches do Teams (todas as variantes)
-Clear-TeamsClassicRoamingCache
-Clear-TeamsLocalElectronCache
-Clear-TeamsNewMsixCache
+# 2. Limpar Caches Condicionalmente
+if ($limparTeams){
+  Clear-TeamsClassicRoamingCache
+  Clear-TeamsLocalElectronCache
+  Clear-TeamsNewMsixCache
+}
 
-# 3. Limpar caches do Outlook (novo/classico)
-Clear-OutlookCache
+if ($limparOutlook){
+  Clear-OutlookCache
+}
 
 Write-Log "Limpeza de cache concluida." "INFO"
 
-# 4. Reabrir aplicativos
-Start-TeamsSafe
-Start-OutlookSafe
+# 3. Reabrir Aplicativos Condicionalmente
+if ($limparTeams){
+  Start-TeamsSafe
+}
 
-Write-Log "==== FIM DA LIMPEZA DE CACHE TEAMS/OUTLOOK ===="
+if ($limparOutlook){
+  Start-OutlookSafe
+}
+
+Write-Log "==== FIM DA LIMPEZA DE CACHE ===="

@@ -19,3 +19,5 @@ description: Histórico de tarefas concluídas do projeto
 - **[x]** 2026-05-16: [Padronização] Auditoria completa do projeto e correção de arquivos markdown, wiki e workflows.
 - **[x]** 2026-05-17: [Refactoring] Refatorado e evoluído o script `validaGPOs.ps1` com especificação SDD: remoção de RSoP (Opção A), independência absoluta de logs coloridos locais persistentes, padronização camelCase, lazy loading de amostras e cabeçalho Felipe Aquino (05/04/26).
 - **[x]** 2026-05-17: [Refactoring] Ajuste de logs persistentes no `validaGPOs.ps1` para usar escopo de script local (`$script:logExecutionPath`) em vez de variável global (`$global:logExecutionPath`), isolando a execução e otimizando o isolamento do PowerShell.
+- **[x]** 2026-05-17: [Refactoring] Unificação dos scripts de limpeza de cache em um único script parametrizado limparCacheTeamsOutlook.ps1 e remoção dos arquivos legados limpaCacheTeamsOutlook.ps1 e limparCacheTeams.ps1.
+
