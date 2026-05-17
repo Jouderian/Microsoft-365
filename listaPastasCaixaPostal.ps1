@@ -8,8 +8,8 @@
   .CREATED
     01/05/25
   .VERSION
-    02 (03/06/25) Jouderian Nobre - Adequacao para usar biblioteca de funcoes
-    03 (05/04/26) Jouderian Nobre - Atualizacao da documentacao
+    02 (03/06/25) - Jouderian Nobre: Adequacao para usar biblioteca de funcoes
+    03 (05/04/26) - Jouderian Nobre: Atualizacao da documentacao
   .OUTPUT
     Grade interativa com caminho, tamanho e quantidade de itens por pasta.
 #>
@@ -43,7 +43,7 @@ try {
 }
 
 # Colectando as estatisticas das pastas
-if($tipo -eq "P"){
+if ($tipo -eq "P"){
   $folderStatistics = Get-MailboxFolderStatistics $caixaPostal
 } elseif ($tipo -eq "A"){
   $folderStatistics = Get-MailboxFolderStatistics $caixaPostal -Archive
@@ -55,12 +55,12 @@ foreach ($folderStatistic in $folderStatistics){
   $foldersize = $folderStatistic.Foldersize;
   $folderitems = $folderStatistic.ItemsInFolder;
 
-  $encoding= [System.Text.Encoding]::GetEncoding("us-ascii")
-  $nibbler= $encoding.GetBytes("0123456789ABCDEF");
+  $encoding = [System.Text.Encoding]::GetEncoding("us-ascii")
+  $nibbler = $encoding.GetBytes("0123456789ABCDEF");
   $folderIdBytes = [Convert]::FromBase64String($folderId);
   $indexIdBytes = New-Object byte[] 48;
-  $indexIdIdx=0;
-  $folderIdBytes | Select-Object -skip 23 -First 24 | ForEach-Object {$indexIdBytes[$indexIdIdx++]=$nibbler[$_ -shr 4];$indexIdBytes[$indexIdIdx++]=$nibbler[$_ -band 0xF]}
+  $indexIdIdx = 0;
+  $folderIdBytes | Select-Object -skip 23 -First 24 | ForEach-Object { $indexIdBytes[$indexIdIdx++] = $nibbler[$_ -shr 4]; $indexIdBytes[$indexIdIdx++] = $nibbler[$_ -band 0xF] }
   $folderQuery = "folderid:$($encoding.GetString($indexIdBytes))";
 
   $folderStat = New-Object PSObject

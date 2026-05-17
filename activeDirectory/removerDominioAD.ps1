@@ -1,14 +1,21 @@
-#--------------------------------------------------------------------------------------------------------
-# Autor: Jouderian Nobre
-# Descricao: Remove um dominio especifico das credenciais no AD
-# Versao: 1 (31/05/25) Jouderian
-#--------------------------------------------------------------------------------------------------------
+<#
+  .SYNOPSIS
+    Remove um dominio especifico das credenciais no AD
+  .DESCRIPTION
+    Remove um domínio específico das credenciais de usuários no Active Directory. Ele busca usuários com e-mail do domínio informado, atualiza o UPN e o e-mail para um novo domínio (ex: donaMaria.onMicrosoft.com), altera o DisplayName do usuário inativo, desabilita a conta, redefine a senha para um valor aleatório, remove o usuário de todos os grupos do AD (exceto Domain Users) e cancela as reuniões futuras agendadas pelo usuário no Exchange Online.
+  .AUTHOR
+    Jouderian Nobre
+  .CREATED
+    31/05/25
+  .OUTPUT
+    Exibe no console o status das alterações (se em modo simulação) e gera um arquivo de log detalhado em C:\ScriptsRotinas\remocaoDominio\.
+#>
 
 Param(
   [Parameter(Mandatory = $false)]
-    [string]$dominio = "seuZe.com.br",  # Dominio a ser removido
-    [string]$novoUPN = "donaMaria.onMicrosoft.com",  # Novo dominio UPN
-    [switch]$WhatIf  # Permite simular a execucao sem fazer alteracoes
+  [string]$dominio = "seuZe.com.br",  # Dominio a ser removido
+  [string]$novoUPN = "donaMaria.onMicrosoft.com",  # Novo dominio UPN
+  [switch]$WhatIf  # Permite simular a execucao sem fazer alteracoes
 )
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
@@ -20,9 +27,9 @@ $inicio = Get-Date
 $mensagem = "Remocao dominio $($dominio) em $($inicio.ToString('dd/MM/yy HH:mm'))"
 $logs = "C:\ScriptsRotinas\remocaoDominio\removerDominioEmails_$((Get-Date).ToString('MMMyy')).txt"
 $contadores = @{
-  Total = 0
+  Total     = 0
   Alterados = 0
-  Erros = 0
+  Erros     = 0
 }
 
 # Iniciando coleta de credenciais
@@ -42,11 +49,11 @@ foreach ($usuario in $usuarios){
 
     # Remove eMails com o dominio
     $novosProxies = $proxiesAtuais | Where-Object { $_ -notlike "*@$dominio" }
-    if(-not $novosProxies){
+    if (-not $novosProxies){
       $novosProxies = ""
     }
 
-    if($usuarioAD.POBox -eq 'O365' -or $usuarioAD.POBox -eq 'NOGAL'){
+    if ($usuarioAD.POBox -eq 'O365' -or $usuarioAD.POBox -eq 'NOGAL'){
       $caixaPostal = "NOGAL"
     }
 
@@ -62,15 +69,15 @@ foreach ($usuario in $usuarios){
       -EmailAddress $novoEmail `
       -POBox $caixaPostal `
       -Replace @{
-        proxyAddresses = $novosProxies;
-        info = $mensagem
-      } `
+      proxyAddresses = $novosProxies;
+      info           = $mensagem
+    } `
       -Enabled $false `
       -Country "BR"
 
     try {
       #Remover TODOS os grupos do AD, exceto o grupo padrao "Domain Users"
-      Get-ADPrincipalGroupMembership -Identity $usuario.SamAccountName | Where-Object {($_.name -notmatch 'Domain Users')} | ForEach-Object {Remove-ADPrincipalGroupMembership -Identity $Usuario -MemberOf $_ -Confirm:$False}
+      Get-ADPrincipalGroupMembership -Identity $usuario.SamAccountName | Where-Object { ($_.name -notmatch 'Domain Users') } | ForEach-Object { Remove-ADPrincipalGroupMembership -Identity $Usuario -MemberOf $_ -Confirm:$False }
     } catch {
       gravaLOG -arquivo $logs -texto "Removendo os grupos do $($usuario.SamAccountName) no AD: $($_.Exception.Message)" -erro:$true
       $contadores.Erros++

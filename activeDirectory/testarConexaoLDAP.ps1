@@ -1,15 +1,23 @@
-﻿#--------------------------------------------------------------------------------------------------------
-# Autor: Vanderson Hay
-# Descricao: Testar a conexão LDAP com um servidor Active Directory
-# Versao: 1 (27/06/25) Vanderson Hay
-# Versao: 2 (01/07/25) Jouderian Nobre: Melhoria para solicitar as informações do usuário e tratar erros
-#--------------------------------------------------------------------------------------------------------
+<#
+  .SYNOPSIS
+    Testar a conexão LDAP com um servidor Active Directory
+  .DESCRIPTION
+    Testa a conexão e autenticação LDAP/LDAPS com um servidor do Active Directory. O script valida a conectividade de rede nas portas LDAP padrão (389) e segura (636) e tenta autenticar as credenciais informadas pelo usuário de forma interativa.
+  .AUTHOR
+    Vanderson Hay
+  .CREATED
+    27/06/25
+  .VERSION
+    02 (01/07/25) - Jouderian Nobre: Melhoria para solicitar as informações do usuário e tratar erros
+  .OUTPUT
+    Informa se foi possível conectar ao servidor LDAP e autenticar o usuário com sucesso.
+#>
 
 Clear-Host
 
 # Solicita as informações ao usuário
-$servidor = Read-Host "Informe o nome do dominio:"
-$username = Read-Host "Informe o usuário:"
+$servidor = Read-Host "Informe o nome do dominio (exemplo: jalix.srv):"
+$username = Read-Host "Informe o usuário (exemplo: jnobre):"
 $password = Read-Host "Informe a senha:" -AsSecureString
 
 # Converte a senha segura para texto simples para uso no DirectoryEntry

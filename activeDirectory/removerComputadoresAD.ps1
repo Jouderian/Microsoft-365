@@ -1,10 +1,19 @@
-﻿#--------------------------------------------------------------------------------------------------------
-# Descricao: Remove os computadores do AD baseado em uma listagem
-# Versao 1 (18/03/24) Jouderian Nobre
-# Versao 2 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
-# Versao 3 (30/06/25) Jouderian Nobre: Otimizacao do script e melhoria nos logs
-# Versao 4 (25/02/25) Jouderian Nobre: Passa a validar se a execução tem privilégios administrativos
-#--------------------------------------------------------------------------------------------------------
+<#
+  .SYNOPSIS
+    Remove os computadores do AD baseado em uma listagem CSV
+  .DESCRIPTION
+    Busca e remove contas de computador do Active Directory baseando-se em um arquivo CSV de entrada. O script localiza e remove recursivamente os objetos filhos associados a cada computador antes de excluir a conta de computador propriamente dita, registrando todo o progresso em um arquivo de log local.
+  .AUTHOR
+    Jouderian Nobre
+  .CREATED
+    18/03/24
+  .VERSION
+    02 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
+    03 (30/06/25) Jouderian Nobre: Otimizacao do script e melhoria nos logs
+    04 (25/02/25) Jouderian Nobre: Passa a validar se a execução tem privilégios administrativos
+  .OUTPUT
+    Gera um arquivo de log local com o status de cada computador e objetos filhos processados.
+#>
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
