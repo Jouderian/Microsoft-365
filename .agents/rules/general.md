@@ -3,10 +3,6 @@ trigger: always_on
 ---
 
 ---
-trigger: always_on
----
-
----
 description: Regras gerais do projeto — idioma, formato de documentos, git, SDD, dependências e segurança
 ---
 
@@ -21,7 +17,7 @@ description: Regras gerais do projeto — idioma, formato de documentos, git, SD
 - **Documentação** (specs, plans, tasks, ADRs, README, wiki): **Português do Brasil (pt-BR)**.
 - **Código-fonte** (classes, métodos, propriedades, variáveis, constantes):  **Português do Brasil (pt-BR)**.
 - **Comentários no código**: **Português do Brasil (pt-BR)**.
-- **Nomes de arquivos**: Português do Brasil (pt-BR), sempre em `camelCase` (ex: `registroUsuario.ps1`, `autoServico.ps1`).
+- **Nomes de arquivos**: **Português do Brasil (pt-BR)**, sempre em `camelCase` (ex: `registroUsuario.ps1`, `autoServico.ps1`).
 - **Nomes de diretórios**: **Português do Brasil (pt-BR)**, em `camelCase` (ex: `configuraLista/`, `cicloDeVidaCredenciail/`).
 - **Nomes de arquivos e diretorios de configurações** (./agents): **Inglês**, em `kebab-case` (ex: `.agents/specs/revogar-credenciail-ad/`).
 - **Mensagens de commit**: **Português do Brasil (pt-BR)**.
