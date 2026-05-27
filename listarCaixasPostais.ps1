@@ -19,6 +19,7 @@
   22 (18/01/26) - Melhoria na validação das dependencias e remoção do campo "SenhaForte"
   23 (15/03/26) - Otimizando a busca de detalhes das caixas postais para reduzir o numero de chamadas ao msGraph
   24 (05/04/26) - Atualizacao da documentacao
+  25 (26/05/26) - Otimizacao do script para melhorar a performance
 #>
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
@@ -42,12 +43,12 @@ $camposDetalhesCaixa = @(
 )
 
 gravaLOG "$("=" * 62) $($inicio.ToString('dd/MM/yy HH:mm:ss'))" -tipo WRN -arquivo $logs
-gravaLOG "Conectando ao Microsoft 365..." -tipo INF -arquivo $logs
 
 # Validacoes
 VerificaModulo -NomeModulo "Microsoft.Graph" -MensagemErro "O modulo Microsoft Graph e necessario e nao esta instalado no sistema." -arquivoLogs $logs
 VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O modulo Exchange Online Management e necessario e nao esta instalado no sistema." -arquivoLogs $logs
 
+gravaLOG "Conectando ao Microsoft 365..." -tipo INF -arquivo $logs
 # Conexoes
 try {
   Import-Module ExchangeOnlineManagement
@@ -144,7 +145,7 @@ Foreach ($caixa in $caixas){
 
   $momento = $detalheCaixa.LastInteractionTime # ultimoAcesso
   if ($null -eq $momento){
-    $infoCaixa += ","
+    $infoCaixa += ", "
   } else {
     $infoCaixa += "$($momento.ToString('dd/MM/yy HH:mm')),"
   }
@@ -157,12 +158,13 @@ Foreach ($caixa in $caixas){
 
   Foreach ($licenca in $licencas){
     $nomeLicenca = ObterDescricaoLicenca -SkuPartNumber $licenca.SkuPartNumber
-    if ($null -eq $nomeLicenca) {
+    if ($null -eq $nomeLicenca){
       $outrasLicencas += "+$($licenca.SkuPartNumber)"
     } else {
       $licencaPaga += "+$($nomeLicenca)"
     }
   }
+
   $infoCaixa += [System.String]::Concat('"', $licencaPaga, '",') # Licencas
   $infoCaixa += [System.String]::Concat('"', $outrasLicencas, '"') # outrasLicencas
 
