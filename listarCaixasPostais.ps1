@@ -156,17 +156,34 @@ Foreach ($caixa in $caixas){
   $infoCaixa += "$($caixa.recipientTypeDetails)," # Tipo
   $infoCaixa += "$($caixa.isDirSynced)," # AD
   $infoCaixa += "$($caixa.accountDisabled)," # Desabilitada
-  $infoCaixa += "$($detalheCredencial.passwordPolicies -contains "DisablePasswordExpiration")," # SenhaNaoExpira
+  $senhaNaoExpira = "false"
+  if ($null -ne $detalheCredencial -and $null -ne $detalheCredencial.passwordPolicies){
+    $senhaNaoExpira = ($detalheCredencial.passwordPolicies -contains "DisablePasswordExpiration").ToString()
+  }
+  $infoCaixa += "$senhaNaoExpira," # SenhaNaoExpira
   $infoCaixa += "$($caixa.isShared)," # Compartilhada
   $infoCaixa += "$($encaminhamento)," # Encaminhada
   $infoCaixa += "$($caixa.litigationHoldEnabled)," # Litigio
   $infoCaixa += "$($tamanho)," # usado(GB)
   $infoCaixa += "$($caixa.archiveStatus)," # Arquivamento
   $infoCaixa += "$($tamanhoArquivamento)," # Arquivamento(GB)
-  $infoCaixa += "$($detalheCredencial.createdDateTime.ToString('dd/MM/yy HH:mm'))," # Criacao
-  $infoCaixa += "$($detalheCredencial.lastPasswordChangeDateTime.ToString('dd/MM/yy HH:mm'))," # MudancaSenha
 
-  $momento = $detalheCredencial.onPremisesLastSyncDateTime # ultimoSyncAD
+  $dataCriacao = ""
+  if ($null -ne $detalheCredencial -and $null -ne $detalheCredencial.createdDateTime){
+    $dataCriacao = $detalheCredencial.createdDateTime.ToString('dd/MM/yy HH:mm')
+  }
+  $infoCaixa += "$dataCriacao," # Criacao
+
+  $dataMudancaSenha = ""
+  if ($null -ne $detalheCredencial -and $null -ne $detalheCredencial.lastPasswordChangeDateTime){
+    $dataMudancaSenha = $detalheCredencial.lastPasswordChangeDateTime.ToString('dd/MM/yy HH:mm')
+  }
+  $infoCaixa += "$dataMudancaSenha," # MudancaSenha
+
+  $momento = $null
+  if ($null -ne $detalheCredencial){
+    $momento = $detalheCredencial.onPremisesLastSyncDateTime # ultimoSyncAD
+  }
   if ($null -eq $momento){
     $infoCaixa += ","
   } else {
