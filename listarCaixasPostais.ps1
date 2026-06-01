@@ -167,35 +167,25 @@ Foreach ($caixa in $caixas){
   $infoCaixa += "$($tamanho)," # usado(GB)
   $infoCaixa += "$($caixa.archiveStatus)," # Arquivamento
   $infoCaixa += "$($tamanhoArquivamento)," # Arquivamento(GB)
+  $infoCaixa += "$($detalheCredencial.createdDateTime.ToString('dd/MM/yy HH:mm'))," # Criacao
 
-  $dataCriacao = ""
-  if ($null -ne $detalheCredencial -and $null -ne $detalheCredencial.createdDateTime){
-    $dataCriacao = $detalheCredencial.createdDateTime.ToString('dd/MM/yy HH:mm')
-  }
-  $infoCaixa += "$dataCriacao," # Criacao
-
-  $dataMudancaSenha = ""
+  $momento = ""
   if ($null -ne $detalheCredencial -and $null -ne $detalheCredencial.lastPasswordChangeDateTime){
-    $dataMudancaSenha = $detalheCredencial.lastPasswordChangeDateTime.ToString('dd/MM/yy HH:mm')
+    $momento = $detalheCredencial.lastPasswordChangeDateTime.ToString('dd/MM/yy HH:mm')
   }
-  $infoCaixa += "$dataMudancaSenha," # MudancaSenha
+  $infoCaixa += "$momento," # MudancaSenha
 
-  $momento = $null
-  if ($null -ne $detalheCredencial){
-    $momento = $detalheCredencial.onPremisesLastSyncDateTime # ultimoSyncAD
+  $momento = ""
+  if ($null -ne $detalheCredencial -and $null -ne $detalheCredencial.onPremisesLastSyncDateTime){
+    $momento = $detalheCredencial.onPremisesLastSyncDateTime.ToString('dd/MM/yy HH:mm')
   }
-  if ($null -eq $momento){
-    $infoCaixa += ","
-  } else {
-    $infoCaixa += "$($momento.ToString('dd/MM/yy HH:mm')),"
-  }
+  $infoCaixa += "$momento," # ultimoSyncAD
 
-  $momento = $detalheCaixa.LastInteractionTime # ultimoAcesso
-  if ($null -eq $momento){
-    $infoCaixa += ", "
-  } else {
-    $infoCaixa += "$($momento.ToString('dd/MM/yy HH:mm')),"
+  $momento = ""
+  if ($null -ne $detalheCaixa -and $null -ne $detalheCaixa.LastInteractionTime){
+    $momento = $detalheCaixa.LastInteractionTime.ToString('dd/MM/yy HH:mm')
   }
+  $infoCaixa += "$momento," # ultimoAcesso
 
   $infoCaixa += "$($caixa.Alias)," # conta
   $infoCaixa += "$($caixa.Guid)," # objectId
