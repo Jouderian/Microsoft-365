@@ -27,7 +27,7 @@ Esta lista rastreia a evolução das atividades de implementação e verificaç�
   - [x] Remover permanentemente o arquivo legado [limparCacheTeams.ps1](/limparCacheTeams.ps1).
   - [x] Remover permanentemente o arquivo com nome antigo [limpaCacheTeamsOutlook.ps1](/limpaCacheTeamsOutlook.ps1).
 
-- [ ] **Fase 4: Validação Funcional (Critérios de Aceitação)**
-  - [ ] Testar limpeza completa (sem parâmetros).
-  - [ ] Testar limpeza restrita ao Teams (`-somenteTeams`).
-  - [ ] Testar limpeza restrita ao Outlook (`-somenteOutlook`).
+- [x] **Fase 4: Validação Funcional (Critérios de Aceitação)**
+  - [x] Testar limpeza completa (sem parâmetros).
+  - [x] Testar limpeza restrita ao Teams (`-somenteTeams`).
+  - [x] Testar limpeza restrita ao Outlook (`-somenteOutlook`).

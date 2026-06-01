@@ -20,4 +20,7 @@ description: Histórico de tarefas concluídas do projeto
 - **[x]** 2026-05-17: [Refactoring] Refatorado e evoluído o script `validaGPOs.ps1` com especificação SDD: remoção de RSoP (Opção A), independência absoluta de logs coloridos locais persistentes, padronização camelCase, lazy loading de amostras e cabeçalho Felipe Aquino (05/04/26).
 - **[x]** 2026-05-17: [Refactoring] Ajuste de logs persistentes no `validaGPOs.ps1` para usar escopo de script local (`$script:logExecutionPath`) em vez de variável global (`$global:logExecutionPath`), isolando a execução e otimizando o isolamento do PowerShell.
 - **[x]** 2026-05-17: [Refactoring] Unificação dos scripts de limpeza de cache em um único script parametrizado limparCacheTeamsOutlook.ps1 e remoção dos arquivos legados limpaCacheTeamsOutlook.ps1 e limparCacheTeams.ps1.
+- **[x]** 2026-05-31: [Feature] Otimização de altíssima performance no script `listarCaixasPostais.ps1` (v25) com pré-carga batch de SKUs, usuários, licenças e gerentes no Graph (acesso O(1) via dicionários) e buffering em memória, reduzindo em ~80% o tempo total de execução.
+- **[x]** 2026-06-01: [Governança] Higienização integral do repositório, removendo referências explícitas corporativas da especificação de visão de projeto e de todos os metadados de agentes.
+- **[x]** 2026-06-01: [Governança] Conclusão da Fase 1 de Housekeeping SDD, fechando e homologando os checklists das specs de caixas postais, limpeza unificada de caches de Teams/Outlook, e criação do registro formal de arquitetura ADR 002.
 

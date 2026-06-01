@@ -10,6 +10,7 @@ Bem-vindo à base de conhecimento do repositório.
 
 ### Decisões Arquiteturais (ADRs)
 - [ADR 001: Padrões de Clean Code no PowerShell](decisions/001-powershell-standards.md)
+- [ADR 002: Padrões de Alta Performance em APIs da Nuvem](decisions/002-graph-performance-standards.md)
 
 *(Mais páginas serão adicionadas conforme a evolução do repositório)*
 

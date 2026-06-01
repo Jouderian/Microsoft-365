@@ -4,7 +4,7 @@ description: Especificação fundacional do projeto — define a intenção do p
 
 # Especificação Base: Visão Fundacional do Projeto
 
-> A finalidade deste repositório é concentrar e documentar o ecossistema de scripts operacionais (PowerShell) responsáveis pela gestão de ciclo de vida e identidade da base de colaboradores da **Elfa Medicamentos**.
+> A finalidade deste repositório é concentrar e documentar o ecossistema de scripts operacionais (PowerShell) responsáveis pela gestão de ciclo de vida e identidade da base de colaboradores.
 
 ## Contexto do Projeto: Active Directory e Microsoft 365
 
@@ -20,5 +20,5 @@ Os scripts abrangem funcionalidades como:
 
 ## Restrições Inegociáveis
 - **Segurança de Credenciais**: Nada no modelo de *Hardcoded Secrets* passa em homologação.
-- **Retrocompatibilidade / Progressão Cautelosa**: Os scripts rodam diariamente. Mudanças (especialmente refatores em módulos Core como `M365_Functions_elfa`) não podem quebrar os scripts de origem, a menos que as dependências sejam mapeadas e corrigidas simultaneamente (`tasks.md`).
+- **Retrocompatibilidade / Progressão Cautelosa**: Os scripts rodam diariamente. Mudanças (especialmente refatores em módulos Core como `M365_Functions`) não podem quebrar os scripts de origem, a menos que as dependências sejam mapeadas e corrigidas simultaneamente (`tasks.md`).
 - **Poder de Veto**: Alterações massivas em arquitetura requerem ciência e homologação (aprovação formal nas issues/beads/tasks) pelo dono do processo.
