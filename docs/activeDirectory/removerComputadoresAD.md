@@ -7,8 +7,8 @@ Script de utilidade em PowerShell.
 
 ## Detalhes
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: N/A
-- **Saída**: N/A
+- **Versão Atual**: 04 (25/02/25) Jouderian Nobre: Passa a validar se a execução tem privilégios administrativos
+- **Saída**: Arquivo de log local com o status de cada computador e objetos filhos processados.
 
 ## Módulos / Dependências
 - ActiveDirectory

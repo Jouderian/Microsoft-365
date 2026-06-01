@@ -7,8 +7,8 @@ Script de utilidade em PowerShell.
 
 ## Detalhes
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: N/A
-- **Saída**: N/A
+- **Versão Atual**: 02 (20/02/25) Jouderian Nobre: Passa a validar se a execução tem privilégios administrativos
+- **Saída**: Lista em console ou CSV das contas de computador existentes.
 
 ## Módulos / Dependências
 - ActiveDirectory

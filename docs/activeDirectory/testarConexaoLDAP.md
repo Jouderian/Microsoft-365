@@ -6,9 +6,9 @@
 Script de utilidade em PowerShell.
 
 ## Detalhes
-- **Autor**: Jouderian Nobre
-- **Versão Atual**: N/A
-- **Saída**: N/A
+- **Autor**: Vanderson Hay (Original), Jouderian Nobre (Evolução)
+- **Versão Atual**: 02 (01/07/25) - Jouderian Nobre: Melhoria para solicitar as informações do usuário e tratar erros
+- **Saída**: Informações exibidas no console se foi possível conectar ao servidor LDAP e autenticar o usuário com sucesso.
 
 ## Módulos / Dependências
-- Nenhum módulo explícito
+- **System.DirectoryServices** (usado internamente via .NET)

@@ -7,8 +7,8 @@ Script de utilidade em PowerShell.
 
 ## Detalhes
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: N/A
-- **Saída**: N/A
+- **Versão Atual**: 01 (28/07/25) Jouderian Nobre: Criação do script
+- **Saída**: Exibição no console dos membros do grupo de segurança do AD consultado.
 
 ## Módulos / Dependências
 - Nenhum módulo explícito

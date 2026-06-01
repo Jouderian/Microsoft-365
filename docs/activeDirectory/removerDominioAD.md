@@ -7,8 +7,8 @@ Script de utilidade em PowerShell.
 
 ## Detalhes
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: N/A
-- **Saída**: N/A
+- **Versão Atual**: 01 (31/05/25) Jouderian Nobre: Criação do script
+- **Saída**: Status das alterações no console e arquivo de log em C:\ScriptsRotinas\remocaoDominio\.
 
 ## Módulos / Dependências
 - Nenhum módulo explícito

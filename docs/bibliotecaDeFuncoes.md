@@ -7,7 +7,7 @@ Script de utilidade em PowerShell que exporta diversas funções fundamentais ut
 
 ## Detalhes
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: 11 (05/04/26) - Melhoria na função de gravação de LOGs
+- **Versão Atual**: 12 (20/04/26) - Prefixos de log alterados para texto puro (sem emojis) e encoding UTF-8 com BOM
 - **Saída**: N/A
 
 ## Módulos / Dependências

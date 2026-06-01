@@ -7,8 +7,8 @@ Script de utilidade em PowerShell.
 
 ## Detalhes
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: N/A
-- **Saída**: N/A
+- **Versão Atual**: 03 (20/02/25) Jouderian Nobre: Passa a validar se a execução tem privilégios administrativos
+- **Saída**: Atualização direta das credenciais de país/localidade no AD.
 
 ## Módulos / Dependências
 - Nenhum módulo explícito

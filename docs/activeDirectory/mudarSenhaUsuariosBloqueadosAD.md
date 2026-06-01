@@ -7,8 +7,8 @@ Script de utilidade em PowerShell.
 
 ## Detalhes
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: N/A
-- **Saída**: N/A
+- **Versão Atual**: 01 (10/04/25) Jouderian Nobre: Criação do script
+- **SaÃ­da**: RedefiniÃ§Ã£o de senha com valor aleatÃ³rio e desbloqueio das contas inativas.
 
-## Módulos / Dependências
+## MÃ³dulos / DependÃªncias
 - ActiveDirectory
