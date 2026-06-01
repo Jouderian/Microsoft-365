@@ -8,18 +8,10 @@
 .VERSION
   01 (03/11/22) - Criacao do script
   :::
-  14 (08/01/25) - Inclusao da ocupacao da caixa de arquivamento
-  15 (10/01/25) - Inclusao de novas licencas na relacao
-  16 (17/01/25) - Remocao da coluna itens da caixa postal
-  17 (20/02/25) - Inclusao da licenca PowerApps Premium
-  18 (24/03/25) - Adequacao para usar o MgGraph e seus comandos
-  19 (14/04/25) - Otimizacao do script com uso de funcoes
-  20 (28/05/25) - Portando o script para usar Get-EXOMailbox e melhoria nos logs
-  21 (03/08/25) - Otimizacao do script para melhorar a performance
   22 (18/01/26) - Melhoria na validação das dependencias e remoção do campo "SenhaForte"
   23 (15/03/26) - Otimizando a busca de detalhes das caixas postais para reduzir o numero de chamadas ao msGraph
   24 (05/04/26) - Atualizacao da documentacao
-  25 (26/05/26) - Otimizacao do script para melhorar a performance
+  25 (31/05/26) - Otimizacao de altissima performance com pre-carga unica Graph/Exchange e gerenciamento otimizado de memoria
 #>
 
 . "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
@@ -28,18 +20,22 @@ Clear-Host
 
 # Declarando variaveis
 $indice = 0
-$buffer = @()
+$buffer = [System.Collections.Generic.List[string]]::new()
 $detalheCredenciais = @{}
+$licencasPorUPN = @{}
+$gerentePorUPN = @{}
 $inicio = Get-Date
 $logs = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaCaixasPostais_$($inicio.ToString('MMMyy')).txt"
 $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaDeCaixasPostais.csv"
 $camposCaixa = @(
   'Id', 'Guid', 'DisplayName', 'UserPrincipalName', 'Office', 'RecipientTypeDetails', 'IsDirSynced',
-  'AccountDisabled', 'IsShared', 'LitigationHoldEnabled', 'ArchiveStatus', 'ArchiveGuid', 'Alias'
+  'AccountDisabled', 'IsShared', 'LitigationHoldEnabled', 'ArchiveStatus', 'ArchiveGuid', 'Alias',
+  'ForwardingAddress', 'DeliverToMailboxAndForward'
 )
-$camposDetalhesCaixa = @(
+$propriedadesGraph = @(
   'Id', 'UserPrincipalName', 'City', 'State', 'CompanyName', 'Department', 'JobTitle', 'PostalCode',
-  'StreetAddress', 'PasswordPolicies', 'CreatedDateTime', 'LastPasswordChangeDateTime', 'OnPremisesLastSyncDateTime'
+  'StreetAddress', 'PasswordPolicies', 'CreatedDateTime', 'LastPasswordChangeDateTime', 'OnPremisesLastSyncDateTime',
+  'assignedLicenses'
 )
 
 gravaLOG "$("=" * 62) $($inicio.ToString('dd/MM/yy HH:mm:ss'))" -tipo WRN -arquivo $logs
@@ -68,17 +64,44 @@ try {
 
 #busca as caixas postais
 gravaLOG -texto "Pesquisando relacao de caixas postais no ExchangeOnline..." -tipo INF -arquivo $logs -mostraTempo:$true
-$Caixas = Get-EXOMailbox -ResultSize Unlimited -PropertySets All | Select-Object $camposCaixa
+$Caixas = Get-EXOMailbox -ResultSize Unlimited -Properties $camposCaixa
 
 $total = $caixas.Count
 
-#buscando detalhes das caixas postais
-gravaLOG -texto "Buscando detalhes das $($total) caixas postais encontradas..." -tipo INF -arquivo $logs -mostraTempo:$true
-$detalhe = Get-MgUser -All -Property $camposDetalhesCaixa
-Foreach ($caixa in $detalhe){
-  $detalheCredenciais[$caixa.UserPrincipalName.ToLower()] = $caixa
+# Buscando as assinaturas do tenant para tradução das licenças
+gravaLOG -texto "Buscando relacao de assinaturas contratadas (SKUs) no Graph..." -tipo INF -arquivo $logs -mostraTempo:$true
+$skuMap = @{}
+try {
+  Get-MgSubscribedSku -All | ForEach-Object {
+    $skuMap[$_.SkuId.ToString()] = $_.SkuPartNumber
+  }
+} catch {
+  gravaLOG "Erro ao buscar assinaturas do Graph: $($_.Exception.Message)" -tipo WRN -arquivo $logs
 }
-$detalhe = $null
+
+# Buscando detalhes consolidados das caixas postais (cadastro, licenças e gerentes)
+gravaLOG -texto "Buscando detalhes, licencas e gerentes das $($total) caixas postais encontradas..." -tipo INF -arquivo $logs -mostraTempo:$true
+$detalhes = Get-MgUser -All -Property $propriedadesGraph -ExpandProperty manager
+Foreach ($detalhe in $detalhes){
+  if ($null -ne $detalhe.UserPrincipalName){
+    $upnLower = $detalhe.UserPrincipalName.ToLower()
+    $detalheCredenciais[$upnLower] = $detalhe
+    if ($null -ne $detalhe.AssignedLicenses){
+      $licencasPorUPN[$upnLower] = $detalhe.AssignedLicenses
+    }
+    
+    $nomeGerente = ""
+    if ($null -ne $detalhe.Manager){
+      if ($null -ne $detalhe.Manager.AdditionalProperties -and $detalhe.Manager.AdditionalProperties.ContainsKey('displayName')){
+        $nomeGerente = $detalhe.Manager.AdditionalProperties['displayName']
+      } elseif ($null -ne $detalhe.Manager.DisplayName){
+        $nomeGerente = $detalhe.Manager.DisplayName
+      }
+    }
+    $gerentePorUPN[$upnLower] = $nomeGerente
+  }
+}
+$detalhes = $null
 
 gravaLOG -texto "Gravando caixas postais no arquivo $($arquivo)" -tipo INF -arquivo $logs -mostraTempo:$true
 Out-File -FilePath $arquivo -InputObject "Nome,UPN,Cidade,UF,Empresa,Escritorio,Departamento,Cargo,Gerente,CC,nomeCC,Tipo,AD,Desabilitada,SenhaNaoExpira,Compartilhada,Encaminhada,Litigio,usado(GB),Arquivamento,Arquivamento(GB),Criacao,MudancaSenha,ultimoSyncAD,ultimoAcesso,conta,objectId,Licencas,outrasLicencas" -Encoding UTF8
@@ -86,17 +109,29 @@ Out-File -FilePath $arquivo -InputObject "Nome,UPN,Cidade,UF,Empresa,Escritorio,
 Foreach ($caixa in $caixas){
 
   $indice++
-  $licencas = Get-MgUserLicenseDetail -UserId $caixa.UserPrincipalName
-  $detalheCaixa = Get-EXOMailboxStatistics -Identity $caixa.Guid -PropertySets All -Properties LastInteractionTime, TotalItemSize
-  $detalheCredencial = $detalheCredenciais[$caixa.UserPrincipalName.ToLower()]
+  $caixaUPN = $caixa.UserPrincipalName.ToLower()
+  $licencas = $licencasPorUPN[$caixaUPN]
+  $detalheCaixa = Get-EXOMailboxStatistics -Identity $caixa.Guid -Properties LastInteractionTime, TotalItemSize
+  $detalheCredencial = $detalheCredenciais[$caixaUPN]
 
-  $tamanho = [math]::Round((($detalheCaixa.TotalItemSize.Value.ToString()).Split('(')[1].Split(' ')[0].Replace(',', '') / 1GB), 2)
+  $tamanho = 0
+  if ($null -ne $detalheCaixa -and $null -ne $detalheCaixa.TotalItemSize){
+    try {
+      $tamanho = [math]::Round((($detalheCaixa.TotalItemSize.Value.ToString()).Split('(')[1].Split(' ')[0].Replace(',', '') / 1GB), 2)
+    } catch {
+      $tamanho = 0
+    }
+  }
   $tamanhoArquivamento = 0
 
   if ($caixa.ArchiveStatus -eq 'Active'){
-    $detalheArquivo = Get-EXOMailboxStatistics -Identity $caixa.Guid -Archive -PropertySets All -Properties TotalItemSize
+    $detalheArquivo = Get-EXOMailboxStatistics -Identity $caixa.Guid -Archive -Properties TotalItemSize
     if ($null -ne $detalheArquivo -and $null -ne $detalheArquivo.TotalItemSize){
-      $tamanhoArquivamento = [math]::Round((($detalheArquivo.TotalItemSize.Value.ToString()).Split('(')[1].Split(' ')[0].Replace(',', '') / 1GB), 2)
+      try {
+        $tamanhoArquivamento = [math]::Round((($detalheArquivo.TotalItemSize.Value.ToString()).Split('(')[1].Split(' ')[0].Replace(',', '') / 1GB), 2)
+      } catch {
+        $tamanhoArquivamento = 0
+      }
     }
   }
 
@@ -105,12 +140,7 @@ Foreach ($caixa in $caixas){
     $encaminhamento = "false"
   }
 
-  try {
-    $gerente = Get-MgUserManager -UserId $caixa.UserPrincipalName -ErrorAction Stop
-    $gerente = $gerente.AdditionalProperties.displayName
-  } catch {
-    $gerente = ""
-  }
+  $gerente = $gerentePorUPN[$caixaUPN]
 
   $infoCaixa = "$($caixa.displayName)," # Nome
   $infoCaixa += "$($caixa.userPrincipalName)," # UPN
@@ -156,19 +186,29 @@ Foreach ($caixa in $caixas){
   $licencaPaga = ""
   $outrasLicencas = ""
 
-  Foreach ($licenca in $licencas){
-    $nomeLicenca = ObterDescricaoLicenca -SkuPartNumber $licenca.SkuPartNumber
-    if ($null -eq $nomeLicenca){
-      $outrasLicencas += "+$($licenca.SkuPartNumber)"
-    } else {
-      $licencaPaga += "+$($nomeLicenca)"
+  if ($null -ne $licencas){
+    Foreach ($licenca in $licencas){
+      if ($null -ne $licenca.SkuId){
+        $skuIdStr = $licenca.SkuId.ToString()
+        if ($skuMap.ContainsKey($skuIdStr)){
+          $skuPart = $skuMap[$skuIdStr]
+          $nomeLicenca = ObterDescricaoLicenca -SkuPartNumber $skuPart
+          if ($null -eq $nomeLicenca){
+            $outrasLicencas += "+$($skuPart)"
+          } else {
+            $licencaPaga += "+$($nomeLicenca)"
+          }
+        } else {
+          $outrasLicencas += "+$($skuIdStr)"
+        }
+      }
     }
   }
 
   $infoCaixa += [System.String]::Concat('"', $licencaPaga, '",') # Licencas
   $infoCaixa += [System.String]::Concat('"', $outrasLicencas, '"') # outrasLicencas
 
-  $buffer += $infoCaixa
+  $buffer.Add($infoCaixa)
 
   if ($indice % 50 -eq 0 -or $indice -eq $total){
     Write-Progress -Activity "Exportando caixas postais" -Status "Progresso: $indice de $total extraidas" -PercentComplete (($indice / $total) * 100)
@@ -180,7 +220,7 @@ Foreach ($caixa in $caixas){
 
   if ($indice % 500 -eq 0 -or $indice -eq $total){
     Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
-    $buffer = @()
+    $buffer = [System.Collections.Generic.List[string]]::new()
   }
 }
 

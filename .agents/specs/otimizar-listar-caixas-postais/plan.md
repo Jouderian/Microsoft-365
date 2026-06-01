@@ -18,20 +18,18 @@ Substituir **todas as chamadas de API individuais dentro do loop** por **pré-ca
 
 **Problema:** 1 chamada Graph por caixa = ~4.000 chamadas.
 
-**Solução:** Usar `Get-MgUser -All -Property assignedLicenses,userPrincipalName` para obter as licenças de todos os usuários em uma única chamada de paginação automática. Montar um dicionário `$licencasPorUPN` indexado por UPN.
+**Solução:** Pré-carregar todas as assinaturas do tenant com `Get-MgSubscribedSku` criando um mapeamento `$skuMap` (SkuId -> SkuPartNumber). Consolidar a listagem do Graph em uma única chamada principal de usuários contendo a propriedade `assignedLicenses`, guardando em um dicionário `$licencasPorUPN` indexado por UPN para acesso O(1) no loop.
 
 ```powershell
-# PRÉ-LOOP (uma chamada)
-$licencasPorUPN = @{}
-Get-MgUser -All -Property 'userPrincipalName','assignedLicenses' | ForEach-Object {
-  $licencasPorUPN[$_.UserPrincipalName.ToLower()] = $_.AssignedLicenses
+# PRÉ-LOOP (Busca de SKUs)
+$skuMap = @{}
+Get-MgSubscribedSku -All | ForEach-Object {
+  $skuMap[$_.SkuId.ToString()] = $_.SkuPartNumber
 }
 
-# DENTRO DO LOOP (acesso O(1))
+# DENTRO DO LOOP (acesso O(1) e tradução)
 $licencas = $licencasPorUPN[$caixa.UserPrincipalName.ToLower()]
 ```
-
-> **Nota:** `assignedLicenses` retorna o SkuId (GUID), não o SkuPartNumber. Portanto, será necessário um segundo dicionário `$skuPorId` construído com `Get-MgSubscribedSku` (também uma única chamada) para mapear SkuId → SkuPartNumber → descrição via `ObterDescricaoLicenca`.
 
 ### Gargalo 2 — Estatísticas (Get-EXOMailboxStatistics por caixa)
 
@@ -54,19 +52,9 @@ $detalheCaixa = Get-EXOMailboxStatistics -Identity $caixa.Guid -Properties LastI
 
 **Problema:** 1 chamada Graph por caixa = ~4.000 chamadas.
 
-**Solução:** Usar `Get-MgUser -All -ExpandProperty manager -Property id,userPrincipalName` para pré-carregar o gerente de todos os usuários de uma vez. Montar `$gerentePorUPN`.
+**Solução:** Consolidar a chamada principal do Graph expandindo a propriedade `manager` (`-ExpandProperty manager`) junto com os demais detalhes e licenças do usuário, montando o dicionário `$gerentePorUPN` indexado por UPN.
 
 ```powershell
-# PRÉ-LOOP (uma chamada com expand)
-$gerentePorUPN = @{}
-Get-MgUser -All -Property 'id','userPrincipalName' -ExpandProperty 'manager' | ForEach-Object {
-  $nomeGerente = ""
-  if ($_.Manager -ne $null){
-    $nomeGerente = $_.Manager.AdditionalProperties['displayName']
-  }
-  $gerentePorUPN[$_.UserPrincipalName.ToLower()] = $nomeGerente
-}
-
 # DENTRO DO LOOP (acesso O(1))
 $gerente = $gerentePorUPN[$caixa.UserPrincipalName.ToLower()]
 ```
@@ -106,14 +94,12 @@ $buffer.Add($infoCaixa)
 ## Sequência de Pré-Cargas (ordem de execução)
 
 ```
-1. Get-EXOMailbox -Properties $camposCaixa → $caixas
-2. Get-MgSubscribedSku → $skuPorId (map SkuId → SkuPartNumber)
-3. Get-MgUser -All -Property $camposDetalhesCaixa → $detalheCredenciais (já existe)
-4. Get-MgUser -All -Property 'userPrincipalName','assignedLicenses' → $licencasPorUPN [NOVO]
-5. Get-MgUser -All -Property 'id','userPrincipalName' -ExpandProperty 'manager' → $gerentePorUPN [NOVO]
+1. Get-EXOMailbox -Properties $camposCaixa → $caixas [OTIMIZADO]
+2. Get-MgSubscribedSku -All → $skuMap (tabela hash SkuId → SkuPartNumber) [NOVO]
+3. Get-MgUser -All -Property $propriedadesGraph -ExpandProperty manager → Popula $detalheCredenciais, $licencasPorUPN e $gerentePorUPN [CONSOLIDADO]
 ```
 
-> **Atenção:** Os passos 3, 4 e 5 fazem chamadas separadas ao Graph. Podemos otimizar ainda mais combinando os campos em uma única chamada caso a quantidade de `$select` suportada pela API permita. Isso será validado na implementação.
+> **Atenção:** Os passos de carregamento do Graph estão 100% consolidados em uma única chamada de rede paginada automaticamente pelo SDK, reduzindo drasticamente o overhead de conexão.
 
 ---
 
