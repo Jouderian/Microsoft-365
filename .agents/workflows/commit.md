@@ -137,6 +137,22 @@ Informar o hash e a mensagem do commit criado.
 
 ---
 
+### 7. Sincronizar com o remoto
+
+Após confirmar o sucesso do commit, perguntar ao usuário se ele deseja enviar a atualização para o repositório remoto:
+
+```
+Deseja enviar (push) estas alterações para o repositório remoto agora?
+```
+
+Se o usuário aprovar, executar:
+
+```bash
+git push
+```
+
+---
+
 ## Exemplos
 
 **Feature simples:**
