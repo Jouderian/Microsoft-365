@@ -1,5 +1,5 @@
 ---
-description: Procedimento para criar commits seguindo as convenções do projeto. Usar quando quiser fazer commit das alterações staged no repositório. Gera mensagem de commit em Conventional Commits, Português-BR, com escopo obrigatório, e apresenta para aprovação
+description: Procedimento para criar commits conforme as convenções do projeto. Use ao commitar alterações staged. Gera mensagem de commit em Conventional Commits, Português-BR, com escopo obrigatório, e exibe para aprovação.
 ---
 
 # Padrão de Commits
