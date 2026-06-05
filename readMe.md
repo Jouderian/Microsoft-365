@@ -31,6 +31,7 @@ Abaixo você encontra a lista de todos os `scripts` e a descrição da sua princ
 | [`limparCacheTeamsOutlook.ps1`](docs/limparCacheTeamsOutlook.md) | Limpa o cache de todas as versões do Microsoft Teams (clássico e novo) e Outlook para o usuário do Windows, de forma parametrizada. |
 | [`limparRegistrosIntune.ps1`](docs/limparRegistrosIntune.md) | Verifica e ajusta o serviço dmwappushservice e limpa registros de Enrollments do Intune. |
 | [`listaPastasCaixaPostal.ps1`](docs/listaPastasCaixaPostal.md) | Audita o interior de um e-mail específico e gera a listagem de suas pastas. |
+| [`listarAdministradoresTenant.ps1`](docs/listarAdministradoresTenant.md) | Lista todos os usuários com papéis administrativos no tenant M365 via Microsoft Graph. |
 | [`listarCaixasComEncaminhamento.ps1`](docs/listarCaixasComEncaminhamento.md) | Extrai uma listagem de todas as caixas postais focando em identificar endereços externos de encaminhamento em uso. |
 | [`listarCaixasCompartilhadas.ps1`](docs/listarCaixasCompartilhadas.md) | Lista somente caixas do tipo SharedMailbox ou quaisquer caixas que tenham permissão de acesso compartilhado e delegados (Full Access/Send As). |
 | [`listarCaixasPostais.ps1`](docs/listarCaixasPostais.md) | Extrai um inventário mestre de todas as caixas postais (inclui atributos do AD, licenças, métricas de armazenamento de arquivo/primário, gerentes, last sign-in). |
