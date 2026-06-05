@@ -7,7 +7,7 @@ O script se conecta ao Microsoft Graph, busca todos os papéis administrativos (
 
 ## Detalhes
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: 5 (11/02/26) - Migrado para Microsoft Graph
+- **Versão Atual**: 7 (05/06/26) - Implementa expansão de grupos de segurança associados a papéis e coluna viaGrupo
 - **Saída**: Arquivo CSV (`$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaDeMembrosAdministrativos.csv`) contendo as seguintes colunas:
   - **grupoId**: ID do papel administrativo.
   - **grupo**: Nome de exibição do papel (ex: Global Administrator).
@@ -15,6 +15,12 @@ O script se conecta ao Microsoft Graph, busca todos os papéis administrativos (
   - **usuario**: Nome de exibição do usuário.
   - **UPN**: User Principal Name do usuário.
   - **ativa**: Status da conta (habilitada/desabilitada).
+  - **viaGrupo**: Indica se o privilégio é uma atribuição `Direta` ou o nome do Grupo de Segurança (ex: `SG-INTUNE-Admins`) por meio do qual o usuário obteve acesso.
+
+## Características Especiais
+- **Expansão de Grupos:** Caso um papel administrativo seja atribuído a um Grupo de Segurança (como `SG-INTUNE-Admins`), o script detecta o grupo e expande recursivamente todos os seus membros para listar os usuários que de fato herdaram o acesso administrativo.
+- **Resiliência:** O script processa cada membro do grupo administrativo dentro de um bloco `try/catch`. Se houver falha ao carregar informações de um usuário específico (como Service Principals ou contas deletadas recentemente), um aviso é exibido no console e a execução continua para os demais membros.
+- **Performance:** Utiliza atribuição direta via pipeline do PowerShell no loop principal, eliminando o gargalo de redimensionamento de arrays via operador `+=`.
 
 ## Módulos / Dependências
 - **Microsoft.Graph** (User.Read.All, Directory.Read.All, RoleManagement.Read.Directory)
