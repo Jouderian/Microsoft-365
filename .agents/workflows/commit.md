@@ -12,21 +12,25 @@ Sempre garanta que seu commit possua rastreabilidade para uma especificação e 
 
 ## Passos
 
-### 1. Atualizar wiki (se aplicável)
+### 1. Atualizar documentação e wiki (se aplicável)
 
-Avaliar se a sessão produziu conhecimento relevante, conforme critérios de `.agents/rules/wiki-maintenance.md`:
-- Decisões arquiteturais ou trade-offs
-- Correções de bugs não-triviais
-- Novos padrões, convenções ou refatorações
-- Mudanças em specs, APIs, schema Drizzle ou contratos públicos
+Antes de gerar o commit, avalie a necessidade de atualizar ou criar documentação relacionada às mudanças efetuadas:
 
-Se aplicável:
-1. Ler `.agents/wiki/index.md` para identificar páginas existentes
-2. Atualizar as páginas afetadas ou criar novas
-3. Atualizar o `index.md` se novas páginas foram criadas
-4. As mudanças no wiki serão incluídas no stage junto com o código
+1. **Documentação Integrada ao Código**: Se alterou ou criou scripts PowerShell (`.ps1`), certifique-se de que o cabeçalho de ajuda base do script (`<# .SYNOPSIS ... #>`) e os blocos de comentários de funções foram atualizados ou criados de acordo.
+2. **Documentação do Repositório**: Avalie se a alteração afeta a arquitetura global ou o uso das ferramentas e requer atualizações no `README.md` ou na pasta `/docs`.
+3. **Base de Conhecimento (Wiki)**: Avalie se a sessão produziu conhecimento técnico novo e relevante conforme `.agents/rules/wiki-maintenance.md`:
+   - Decisões arquiteturais ou trade-offs (que demandam ADRs)
+   - Gotchas e correções de bugs não-triviais de APIs ou sistemas externos
+   - Novos padrões, convenções ou refatorações estruturais
+   - Mudanças em specs ou contratos públicos
 
-Se a sessão foi puramente cosmética (formatação, typos) ou não produziu conhecimento novo, pular este passo.
+Se for aplicável atualizar a Wiki:
+1. Consulte `.agents/wiki/index.md` para identificar páginas relevantes existentes.
+2. Atualize as páginas afetadas ou registre uma nova ADR/artigo.
+3. Se novas páginas foram criadas, registre-as no `index.md`.
+4. Adicione as mudanças de documentação e wiki no stage (`git add`) para que façam parte do mesmo commit do código.
+
+Se a sessão foi puramente cosmética (formatação, ajustes simples) ou não gerou necessidade de documentação nova, pular este passo.
 
 ---
 
