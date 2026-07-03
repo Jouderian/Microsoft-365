@@ -188,7 +188,8 @@ Foreach ($Grupo in $GruposSeguranca){
   Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
   $buffer = @()
 }
-Write-Progress -Activity "Exportando Listas/Grupos" -PercentComplete 100
+
+Write-Progress -Activity "Exportando Listas/Grupos" -Completed
 
 gravaLOG "Desconectando..." -tipo INF -mostraTempo $true
 Disconnect-ExchangeOnline -Confirm:$false

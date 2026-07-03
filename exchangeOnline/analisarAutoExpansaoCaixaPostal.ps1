@@ -37,8 +37,7 @@ VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O modulo Ex
 try {
   Import-Module ExchangeOnlineManagement -ErrorAction Stop
   Connect-ExchangeOnline -ShowBanner:$false
-}
-catch {
+} catch {
   gravaLOG "$((Get-Date).ToString('HH:mm:ss')) - ao conectar ao Exchange Online: $($_.Exception.Message)" -tipo ERR -arquivo $logs
   break
 }
@@ -133,15 +132,13 @@ function Get-ExchangeMailboxAudit {
         if ($ri) {
           $result.ArchiveRecoverableItemsSize_GB = [math]::Round(($ri.FolderAndSubfolderSize / 1GB), 2)
         }
-      }
-      catch {}
+      } catch {}
     }
 
     # Limiar de expansão (90 GB) – flags
-    if ($result.ArchiveMailboxSize_GB -ge 90) {
+    if ($result.ArchiveMailboxSize_GB -ge 90){
       $result.ExpansionThresholdReached = $true
-    }
-    elseif ($result.ArchiveMailboxSize_GB -ge 80) {
+    } elseif ($result.ArchiveMailboxSize_GB -ge 80){
       $result.NearExpansionThreshold = $true
     } # aviso preventivo
 
@@ -149,29 +146,26 @@ function Get-ExchangeMailboxAudit {
     try {
       $diag = Export-MailboxDiagnosticLogs -Identity $Identity -ComponentName MRM -Archive -ErrorAction SilentlyContinue | 
       Select-Object -ExpandProperty EventLogs -ErrorAction SilentlyContinue
-      if ($diag) {
+      if ($diag){
         # Extrai algumas pistas úteis
         $mfa = ($diag | Select-String -Pattern 'Start.*Assistant|End.*Assistant|Processed' -SimpleMatch).Line
         $result.LastMRMRun = ($mfa | Select-Object -Last 1)
         # Alguns tenants exibem carimbo tipo "LastProcessedTime" no blob JSON
         $json = (Export-MailboxDiagnosticLogs -Identity $Identity -ComponentName MRM -Archive -ErrorAction SilentlyContinue).MailboxLog
-        if ($json) {
+        if ($json){
           $obj = $null
           try {
             $obj = $json | ConvertFrom-Json -ErrorAction Stop
-          }
-          catch {}
-          if ($obj -and $obj.MRMAssistant) {
+          } catch {}
+          if ($obj -and $obj.MRMAssistant){
             $result.LastProcessedByMFA = $obj.MRMAssistant.LastEndTime
           }
         }
       }
-    }
-    catch {
+    } catch {
       # Silencia erros de parsing; informação é opcional
     }
-  }
-  else {
+  } else {
     $result.Notes = "Arquivo Online não habilitado."
   }
 
@@ -185,23 +179,22 @@ function Get-ExchangeMailboxAudit {
 
 gravaLOG "Buscando caixas postais..." -tipo INF -arquivo $logs
 
-if ($UserPrincipalName) {
+if ($UserPrincipalName){
   $caixas = @($UserPrincipalName)
-}
-else {
+} else {
   # Todos usuários com caixa (exclui recursos/shared se desejar ajustar o filtro)
   $caixas = (Get-Mailbox -RecipientTypeDetails UserMailbox -ResultSize Unlimited | Select-Object -ExpandProperty UserPrincipalName)
 }
 
 gravaLOG "Buscando informacoes de Archive e Auto-Expanding Archive para $($caixas.Count) caixas postais..." -tipo INF -arquivo $logs
-$report = foreach ($caixa in $caixas) {
+$report = foreach ($caixa in $caixas){
   Get-ExchangeMailboxAudit -Identity $caixa
 }
 
 # Exibição
 $report | Sort-Object -Property ArchiveMailboxSize_GB -Descending | Format-Table -AutoSize
 
-if ($ExportCsvPath) {
+if ($ExportCsvPath){
   $report | Export-Csv -Path $ExportCsvPath -NoTypeInformation -Encoding UTF8
   gravaLOG "Relatório exportado para: $ExportCsvPath" -tipo INF -arquivo $logs -mostraTempo $true
 }

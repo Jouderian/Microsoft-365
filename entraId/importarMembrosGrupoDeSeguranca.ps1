@@ -33,8 +33,7 @@ gravaLOG "Acionando tentativa de autenticacao msGraph interativa" -tipo INF -arq
 try {
   Connect-MgGraph -Scopes "Group.ReadWrite.All", "User.Read.All" -NoWelcome
   gravaLOG "Ambiente msGraph Autenticado" -tipo OK -arquivo $logs
-}
-catch {
+} catch {
   gravaLOG "Falha critica no login Graph: $($_.Exception.Message)" -tipo ERR -arquivo $logs
   Exit 1
 }
@@ -97,12 +96,13 @@ foreach ($linha in $dadosCsv) {
 
     gravaLOG "Inclusao de $email no grupo $nomeIdentificado realizada com sucesso." -tipo OK -arquivo $logs
 
-  }
-  catch {
+  } catch {
     gravaLOG "Erro ao incluir usuario [$email] no grupo [$nome]: $($_.Exception.Message)" -tipo ERR -arquivo $logs
   }
 
 }
+
+Write-Progress -Activity "Adicionando membros ao grupo M365" -Completed
 
 # Finalizando o script
 $final = Get-Date

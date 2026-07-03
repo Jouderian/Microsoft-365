@@ -70,7 +70,7 @@ foreach ($Mailbox in $Mailboxes){
     $Results += [PSCustomObject]@{
       SharedMailbox = $Mailbox.PrimarySmtpAddress
       MailboxType   = $Mailbox.RecipientTypeDetails
-      Membros = "SEM MEMBROS"
+      Membros       = "SEM MEMBROS"
     }
     continue
   }
@@ -79,11 +79,12 @@ foreach ($Mailbox in $Mailboxes){
     $Results += [PSCustomObject]@{
       SharedMailbox = $Mailbox.PrimarySmtpAddress
       MailboxType   = $Mailbox.RecipientTypeDetails
-      Membros = $Member.User
+      Membros       = $Member.User
     }
   }
 }
-Write-Progress -Activity "Exportando caixas compartilhadas" -PercentComplete 100
+
+Write-Progress -Activity "Exportando caixas compartilhadas" -Completed
 
 $Results | Export-Csv -Path $arquivo -NoTypeInformation -Encoding UTF8
 

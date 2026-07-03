@@ -27,7 +27,7 @@ param(
 $limparTeams = $true
 $limparOutlook = $true
 
-if ($somenteTeams -or $somenteOutlook) {
+if ($somenteTeams -or $somenteOutlook){
   $limparTeams = $somenteTeams
   $limparOutlook = $somenteOutlook
 }
@@ -50,7 +50,7 @@ function Stop-ProcessSafe {
   foreach ($name in $names){
     try {
       $procs = Get-Process -Name $name -ErrorAction SilentlyContinue
-      if ($procs) {
+      if ($procs){
         Write-Log "Finalizando processo: $name" "INFO"
         $procs | Stop-Process -Force -ErrorAction SilentlyContinue
       } else {
@@ -318,7 +318,7 @@ function Start-OutlookSafe {
 Write-Log "==== INICIO DA LIMPEZA DE CACHE ===="
 
 # 1. Fechar Aplicativos Condicionalmente
-if ($limparTeams) {
+if ($limparTeams){
   Write-Log "Fechando processos do Teams..." "INFO"
   Stop-ProcessSafe -names @(
     "ms-teams",        # novo Teams (ms-teams.exe)
@@ -329,7 +329,7 @@ if ($limparTeams) {
   )
 }
 
-if ($limparOutlook) {
+if ($limparOutlook){
   Write-Log "Fechando processos do Outlook..." "INFO"
   Stop-ProcessSafe -names @(
     "olk",

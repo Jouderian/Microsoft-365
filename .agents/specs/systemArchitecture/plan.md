@@ -15,7 +15,7 @@ As intenções a longo prazo deste repositório usando a metodologia Agent Flywh
 ## Documentação do Fluxo Identificado
 
 ### 1. Executable (Ambiente e Execução)
-1. **Modelos de Execução:** Os scripts dependem nativamente do Windows PowerShell 5.1/7+.
+1. **Modelos de Execução:** Os scripts dependem nativamente do Windows PowerShell 5.1+.
 2. **Módulos Oficiais Utilizados:** 
    - `ExchangeOnlineManagement` (Gestão de caixas e mail flow)
    - `Microsoft.Graph.Authentication`, `Microsoft.Graph.Groups`, `Microsoft.Graph.Users` (Identidade cloud)

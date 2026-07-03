@@ -12,6 +12,8 @@
     Arquivo CSV com a relacao de caixas postais
 #>
 
+. "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
+
 Clear-Host
 
 VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O modulo Exchange Online Management e necessario e nao esta instalado no sistema." -arquivoLogs $logs
@@ -20,8 +22,7 @@ VerificaModulo -NomeModulo "ExchangeOnlineManagement" -MensagemErro "O modulo Ex
 try {
   Import-Module ExchangeOnlineManagement
   Connect-ExchangeOnline -ShowBanner:$false
-}
-catch {
+} catch {
   gravaLOG -texto "Erro ao conectar ao Exchange Online: $($_.Exception.Message)" -tipo Erro -arquivo $logs -mostraTempo:$true
   Exit
 }
@@ -38,7 +39,7 @@ $indice = 0
 
 Write-Host "Tipo,Nome,UPN,Destino"
 
-foreach ($caixa in $caixas) {
+foreach ($caixa in $caixas){
 
   $indice++
   Write-Progress -Activity "Analisando caixas postais" -Status "Progresso: $($indice) de $($totalCaixas)" -PercentComplete ($indice / $totalCaixas * 100)
@@ -46,7 +47,7 @@ foreach ($caixa in $caixas) {
   Write-Host "$($caixa.RecipientTypeDetails),$($caixa.Name),$($caixa.UserPrincipalName),$($caixa.ForwardingSmtpAddress)"
 }
 
-Write-Progress -Activity "Analisando caixas postais" -PercentComplete 100
+Write-Progress -Activity "Analisando caixas postais" -Completed
 
 # Finalizando o script
 $final = Get-Date

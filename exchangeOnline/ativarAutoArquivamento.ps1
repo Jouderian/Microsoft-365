@@ -88,7 +88,7 @@ Foreach ($caixaPostal in $caixasPostais){
   }
 }
 
-Write-Progress -Activity "Ativando autoarquivamento" -PercentComplete 100
+Write-Progress -Activity "Ativando autoarquivamento" -Completed
 
 # Finalizando o script
 $final = Get-Date

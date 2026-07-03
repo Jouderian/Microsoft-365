@@ -27,8 +27,7 @@ $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\eMails.txt"
 try {
   Import-Module ExchangeOnlineManagement
   Connect-ExchangeOnline -ShowBanner:$false
-}
-catch {
+} catch {
   Write-Host "Erro ao conectar o Exchange: $($_.Exception.Message)" -ForegroundColor Red
   Exit
 }
@@ -37,23 +36,14 @@ catch {
 $membros = Import-Csv -Path $arquivo
 
 # Adicionar cada eMail à lista de distribuição
-f
-reach ($membro in $membros) {
+foreach ($membro in $membros){
   try {
     tryte $listaDistribuicao -Member $membro.eMail
     Write-Host "Adicionado: $($membro.eMail)" -ForegroundColor Green
+  } catch {
+    Write-Host "Erro ao adicionar: $($membro.eMail) - $($_.Exception.Message)" -ForegroundColor Red
   }
-  catchnn
-  Write-Host "Erro ao adicionar: $($membro.eMail) - $($_.Exception.Message)" -ForegroundColor Red
-}
 }
 
 # Desconectar do Exchange Online
-Disconnect-ExchangeOnline -Confirm:$falseect-ExchangeOnline -Confirm:$false
-} catch {
-  Write-Host "Erro ao adicionar: $($membro.eMail) - $($_.Exception.Message)" -ForegroundColor Red
-}
-}
-
-# Desconectar do Exchange Online
-Disconnect-ExchangeOnline -Confirm:$falseect-ExchangiOnlinr -Comfirm:$false:$false
+Disconnect-ExchangeOnline -Confirm:$false

@@ -14,7 +14,7 @@
 #>
 
 Clear-Host
-. "..\bibliotecaDeFuncoes.ps1"
+. "C:\ScriptsRotinas\bibliotecas\bibliotecaDeFuncoes.ps1"
 
 # Variaveis iniciais
 $inicio = Get-Date
@@ -33,8 +33,7 @@ gravaLOG "Acionando tentativa de autenticacao msGraph interativa" -tipo INF -arq
 try {
   Connect-MgGraph -Scopes "Group.ReadWrite.All", "User.Read.All" -NoWelcome
   gravaLOG "Ambiente msGraph logado." -tipo OK -arquivo $logs
-}
-catch {
+} catch {
   gravaLOG "Autenticacao recusada: $($_.Exception.Message)" -tipo ERR -arquivo $logs
   Exit 1
 }
@@ -90,11 +89,12 @@ foreach ($linha in $dadosCsv) {
 
     gravaLOG "Proprietario $proprietario.DisplayName atribuido ao grupo: $nome." -tipo OK -arquivo $logs
 
-  }
-  catch {
+  } catch {
     gravaLOG "(!) Excecao grave no lote [$nome]: $($_.Exception.Message)" -tipo ERR -arquivo $logs
   }
 }
+
+Write-Progress -Activity "Provisionamento Security Groups M365" -Completed
 
 # Finalizando o script
 $final = Get-Date
