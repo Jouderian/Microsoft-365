@@ -27,10 +27,14 @@ As intenções a longo prazo deste repositório usando a metodologia Agent Flywh
 6. **Workflow:** Para criar um novo script, siga `.agents/workflows/newScript.md`.
 
 ### 2. Estrutura de Diretórios
-- `/`: Scripts que interagem nativamente com Microsoft 365 (Exchange, Graph, Teams).
-- `/activeDirectory`: Scripts que interagem unicamente com o AD DS on-premise local.
-- `/docs`: Documentação legível de cada script mapeado, separada pelo mesmo contexto raiz/AD.
-- `/.agents`: Core de metadados, regras, workflows e especificações guiadas por SDD.
+- `/`: Biblioteca core de funções compartilhada (`bibliotecaDeFuncoes.ps1`), dados e arquivos do projeto.
+- `/activeDirectory`: Scripts de AD DS on-premise local.
+- `/exchangeOnline`: Scripts que gerenciam mailboxes, listas e fluxos no Exchange Online.
+- `/entraId`: Scripts voltados para identidades, licenças, grupos do Entra ID e auditoria de tenant (via Graph).
+- `/intune`: Scripts focados em gerenciamento e registros de dispositivos MDM (Intune).
+- `/suporteUsuario`: Scripts client-side de manutenção e resolução de problemas no lado do usuário.
+- `/docs`: Documentação dos scripts, replicando a mesma estrutura de diretórios do código.
+- `/.agents`: Core de metadados, regras, workflows e especificações de agentes.
 
 ### Próximos Passos (Veja .agents/todo.md e tasks.md)
 O rastreio do que deve ser tocado está catalogado em `.agents/todo.md` e guiado pela priorização matemática documentada ou delegada pelos agentes. Adicionalmente, as tarefas mais profundas de arquitetura constam em `tasks.md`.

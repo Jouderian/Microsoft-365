@@ -14,7 +14,7 @@
 #>
 
 Clear-Host
-. ".\bibliotecaDeFuncoes.ps1"
+. "..\bibliotecaDeFuncoes.ps1"
 
 # Variaveis iniciais
 $inicio = Get-Date

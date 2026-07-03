@@ -12,42 +12,49 @@ Este software e seus códigos associados estão licenciados sob a **PolyForm Non
 
 Para ver os termos na íntegra, consulte o arquivo `LICENSE` na raiz do repositório.
 
-## Resumo dos Scripts
-
-Abaixo você encontra a lista de todos os `scripts` e a descrição da sua principal função:
-
-| Script | Descrição |
-|--------|-----------|
-| [`analisarAutoExpansaoCaixaPostal.ps1`](docs/analisarAutoExpansaoCaixaPostal.md) | Audita o Archive e a Auto-Expanding Archive das caixas postais no Exchange Online. |
-| [`analiseConfiguracoesDeSeguranca.ps1`](docs/analiseConfiguracoesDeSeguranca.md) | Executa o script Orca que analisa as configurações de recomendação do Microsoft Defender para M365. |
-| [`apagarListasSemMembros.ps1`](docs/apagarListasSemMembros.md) | Apaga fisicamente Listas de Distribuição e Grupos de Segurança M365 (vazios e sem membros). |
-| [`ativarAutoArquivamento.ps1`](docs/ativarAutoArquivamento.md) | Ativa de forma massiva o autoarquivamento das caixas postais. |
-| [`ativarLitigio.ps1`](docs/ativarLitigio.md) | Script para ativar a retenção de litígio nas caixas postais com licenças: Office 365 E3 e Business Premium. |
-| [`bibliotecaDeFuncoes.ps1`](docs/bibliotecaDeFuncoes.md) | Biblioteca matriz de funções de uso geral para centralizar recursos nos demais scripts. |
-| [`importarGruposSeguranca.ps1`](docs/importarGruposSeguranca.md) | Importa e provisiona Grupos de Segurança puros no Entra ID a partir de um CSV, definindo automaticamente seu proprietário. |
-| [`importarMembrosGrupoDeSeguranca.ps1`](docs/importarMembrosGrupoDeSeguranca.md) | Importa novos membros de um Grupo. |
-| [`importarMembrosListaDeDistribuicao.ps1`](docs/importarMembrosListaDeDistribuicao.md) | Importa novos membros para uma lista de distribuição do Exchange. |
-| [`liberarBloqueioEmail.ps1`](docs/liberarBloqueioEmail.md) | Libera fluxos e status de uma caixa postal bloqueada no Exchange Online. |
-| [`limparCacheTeamsOutlook.ps1`](docs/limparCacheTeamsOutlook.md) | Limpa o cache de todas as versões do Microsoft Teams (clássico e novo) e Outlook para o usuário do Windows, de forma parametrizada. |
-| [`limparRegistrosIntune.ps1`](docs/limparRegistrosIntune.md) | Verifica e ajusta o serviço dmwappushservice e limpa registros de Enrollments do Intune. |
-| [`listaPastasCaixaPostal.ps1`](docs/listaPastasCaixaPostal.md) | Audita o interior de um e-mail específico e gera a listagem de suas pastas. |
-| [`listarAdministradoresTenant.ps1`](docs/listarAdministradoresTenant.md) | Lista todos os usuários com papéis administrativos no tenant M365 via Microsoft Graph. |
-| [`listarCaixasComEncaminhamento.ps1`](docs/listarCaixasComEncaminhamento.md) | Extrai uma listagem de todas as caixas postais focando em identificar endereços externos de encaminhamento em uso. |
-| [`listarCaixasCompartilhadas.ps1`](docs/listarCaixasCompartilhadas.md) | Lista somente caixas do tipo SharedMailbox ou quaisquer caixas que tenham permissão de acesso compartilhado e delegados (Full Access/Send As). |
-| [`listarCaixasPostais.ps1`](docs/listarCaixasPostais.md) | Extrai um inventário mestre de todas as caixas postais (inclui atributos do AD, licenças, métricas de armazenamento de arquivo/primário, gerentes, last sign-in). |
-| [`listarMembrosDeUmaLista.ps1`](docs/listarMembrosDeUmaLista.md) | Mostra os usuários contidos em um grupo ou Lista do EntraID (via Microsoft Graph PowerShell). |
-| [`listarMembrosListas.ps1`](docs/listarMembrosListas.md) | Exporta a relação cruzando os membros das Listas do Exchange e de Grupos do M365, incluindo Grupos de Segurança. |
-| [`mudarLicencas.ps1`](docs/mudarLicencas.md) | Faz a manutenção ou permuta em massa nas licenças dos usuários oriundos de num arquivo csv. |
-| [`removerDispositivos.ps1`](docs/removerDispositivos.md) | Remove do EntraID os dispositivos sem uso e obsoletos há mais de 190 dias. |
-| [`removerEventosCalendario.ps1`](docs/removerEventosCalendario.md) | Procura e retira eventos de reuniões problemáticas no calendário de uma caixa postal. |
-| [`sincronizaAdM365.ps1`](docs/sincronizaAdM365.md) | Força imediatamente o ciclo de sincronismo Delta entre o Active Directory local e a nuvem. |
-| [`testarEnvioHVE.ps1`](docs/testarEnvioHVE.md) | Testa o envio direto de mensagem usando credencial HVE (High Volume Email) do Exchange Online. |
-
 ---
 
 > [!NOTE]
 > **Metodologia de Manutenção**
 > Para mais detalhes sobre as regras de arquitetura *Agent-Flywheel* deste projeto, ou para ver o status dos planos de desenvolvimento e aprovações, consulte o plano mestre de arquitetura em `.agents/specs/systemArchitecture/plan.md`.
+
+---
+
+## Scripts — Pasta `exchangeOnline`
+
+Scripts focados em gerenciamento de caixas de correio, auditorias de fluxo de e-mails, políticas de autoarquivamento, retenção (litígio) e listas de distribuição no Exchange Online.
+
+| Script | Descrição |
+|--------|-----------|
+| [`analisarAutoExpansaoCaixaPostal.ps1`](docs/exchangeOnline/analisarAutoExpansaoCaixaPostal.md) | Audita o Archive e a Auto-Expanding Archive das caixas postais no Exchange Online. |
+| [`analiseConfiguracoesDeSeguranca.ps1`](docs/exchangeOnline/analiseConfiguracoesDeSeguranca.md) | Executa o script Orca que analisa as configurações de recomendação do Microsoft Defender para M365. |
+| [`ativarAutoArquivamento.ps1`](docs/exchangeOnline/ativarAutoArquivamento.md) | Ativa de forma massiva o autoarquivamento das caixas postais. |
+| [`ativarLitigio.ps1`](docs/exchangeOnline/ativarLitigio.md) | Script para ativar a retenção de litígio nas caixas postais com licenças: Office 365 E3 e Business Premium. |
+| [`importarMembrosListaDeDistribuicao.ps1`](docs/exchangeOnline/importarMembrosListaDeDistribuicao.md) | Importa novos membros para uma lista de distribuição do Exchange. |
+| [`liberarBloqueioEmail.ps1`](docs/exchangeOnline/liberarBloqueioEmail.md) | Libera fluxos e status de uma caixa postal bloqueada no Exchange Online. |
+| [`listaPastasCaixaPostal.ps1`](docs/exchangeOnline/listaPastasCaixaPostal.md) | Audita o interior de um e-mail específico e gera a listagem de suas pastas. |
+| [`listarCaixasComEncaminhamento.ps1`](docs/exchangeOnline/listarCaixasComEncaminhamento.md) | Extrai uma listagem de todas as caixas postais focando em identificar endereços externos de encaminhamento em uso. |
+| [`listarCaixasCompartilhadas.ps1`](docs/exchangeOnline/listarCaixasCompartilhadas.md) | Lista somente caixas do tipo SharedMailbox ou quaisquer caixas que tenham permissão de acesso compartilhado e delegados (Full Access/Send As). |
+| [`listarCaixasPostais.ps1`](docs/exchangeOnline/listarCaixasPostais.md) | Extrai um inventário mestre de todas as caixas postais (inclui atributos do AD, licenças, métricas de armazenamento de arquivo/primário, gerentes, last sign-in). |
+| [`removerEventosCalendario.ps1`](docs/exchangeOnline/removerEventosCalendario.md) | Procura e retira eventos de reuniões problemáticas no calendário de uma caixa postal. |
+| [`testarEnvioHVE.ps1`](docs/exchangeOnline/testarEnvioHVE.md) | Testa o envio direto de mensagem usando credencial HVE (High Volume Email) do Exchange Online. |
+
+---
+
+## Scripts — Pasta `entraId`
+
+Scripts voltados para a governança do Microsoft Entra ID (Azure AD), manutenção e provisionamento massivo de grupos de segurança puros, controle de licenças de usuários e listagem de privilégios.
+
+| Script | Descrição |
+|--------|-----------|
+| [`apagarListasSemMembros.ps1`](docs/entraId/apagarListasSemMembros.md) | Apaga fisicamente Listas de Distribuição e Grupos de Segurança M365 (vazios e sem membros). |
+| [`importarGruposSeguranca.ps1`](docs/entraId/importarGruposSeguranca.md) | Importa e provisiona Grupos de Segurança puros no Entra ID a partir de um CSV, definindo automaticamente seu proprietário. |
+| [`importarMembrosGrupoDeSeguranca.ps1`](docs/entraId/importarMembrosGrupoDeSeguranca.md) | Importa novos membros de um Grupo. |
+| [`listarAdministradoresTenant.ps1`](docs/entraId/listarAdministradoresTenant.md) | Lista todos os usuários com papéis administrativos no tenant M365 via Microsoft Graph. |
+| [`listarMembrosDeUmaLista.ps1`](docs/entraId/listarMembrosDeUmaLista.md) | Mostra os usuários contidos em um grupo ou Lista do EntraID (via Microsoft Graph PowerShell). |
+| [`listarMembrosListas.ps1`](docs/entraId/listarMembrosListas.md) | Exporta a relação cruzando os membros das Listas do Exchange e de Grupos do M365, incluindo Grupos de Segurança. |
+| [`mudarLicencas.ps1`](docs/entraId/mudarLicencas.md) | Faz a manutenção ou permuta em massa nas licenças dos usuários oriundos de um arquivo csv. |
+| [`removerDispositivos.ps1`](docs/entraId/removerDispositivos.md) | Remove do EntraID os dispositivos sem uso e obsoletos há mais de 190 dias. |
 
 ---
 
@@ -73,13 +80,37 @@ Scripts voltados para gestão de credenciais, grupos, computadores e operações
 | [`removerArquivosTemporarios.ps1`](docs/activeDirectory/removerArquivosTemporarios.md) | Script de limpeza de disco otimizado para reduzir espaço utilizado em máquinas Windows. |
 | [`removerComputadoresAD.ps1`](docs/activeDirectory/removerComputadoresAD.md) | Remove computadores do AD com base em uma lista fornecida. |
 | [`removerDominioAD.ps1`](docs/activeDirectory/removerDominioAD.md) | Remove um domínio específico das credenciais no AD. |
+| [`sincronizaAdM365.ps1`](docs/activeDirectory/sincronizaAdM365.md) | Força imediatamente o ciclo de sincronismo Delta entre o Active Directory local e a nuvem. |
 | [`testarConexaoLDAP.ps1`](docs/activeDirectory/testarConexaoLDAP.md) | Testa a conexão LDAP com um servidor Active Directory. |
 | [`validaGPOs.ps1`](docs/activeDirectory/validaGPOs.md) | Faz auditoria offline de GPOs aplicadas no AD DS com suporte para validação extra através de RSoP das máquinas. |
 
 ---
 
-## Arquivos de Suporte
+## Scripts — Pasta `intune`
+
+Scripts voltados para gerenciamento de dispositivos móveis e desktops no Microsoft Intune (MDM).
+
+| Script | Descrição |
+|--------|-----------|
+| [`limparRegistrosIntune.ps1`](docs/intune/limparRegistrosIntune.md) | Verifica e ajusta o serviço dmwappushservice e limpa registros de Enrollments do Intune. |
+
+---
+
+## Scripts — Pasta `suporteUsuario`
+
+Scripts client-side executados no ambiente do usuário final para resolução de problemas e manutenção do ecossistema local.
+
+| Script | Descrição |
+|--------|-----------|
+| [`limparCacheTeamsOutlook.ps1`](docs/suporteUsuario/limparCacheTeamsOutlook.md) | Limpa o cache de todas as versões do Microsoft Teams (clássico e novo) e Outlook para o usuário do Windows, de forma parametrizada. |
+
+---
+
+## Arquivos de Suporte e Biblioteca Core
+
+Estes arquivos residem na raiz do repositório por serem compartilhados ou servirem de biblioteca matriz de funções de uso geral.
 
 | Arquivo | Descrição |
 |---------|-----------|
-| `SkuDataComplete.csv` | Tabela de referência com os SKUs e nomes amigáveis das licenças do Microsoft 365, utilizada internamente pela função `ObterDescricaoLicenca` da `bibliotecaDeFuncoes.ps1`. |
+| [`bibliotecaDeFuncoes.ps1`](docs/bibliotecaDeFuncoes.md) | Biblioteca matriz de funções de uso geral para centralizar recursos nos demais scripts. |
+| `SkuDataComplete.csv` | Tabela de referência com os SKUs e nomes amigáveis das licenças do Microsoft 365, utilizada internamente para obter as descrições de licenciamento. |
