@@ -11,3 +11,8 @@ description: Backlog persistente do projeto — tarefas pendentes e ideias de me
 
 - **[MELHORIA]** Avaliar paralelismo com `ForEach-Object -Parallel` (PowerShell 7+) para a etapa de `Get-EXOMailboxStatistics`, que permanece sendo chamada individualmente por caixa (~3.000+ chamadas). Esta é a maior oportunidade de ganho de performance restante. Requer PS7+ e análise de limites de throttling do Exchange Online.
   - _Origem: implementation_plan.md — decisão adiada em 02/07/26 (restrição de compatibilidade PS5)_
+
+## Novo Script — listarUsuariosEntraId.ps1
+
+- **[NOVO]** Criar a especificação (SDD) para um script que listará os usuários do Entra ID.
+  - _Situação:_ Aguardando início (fase de levantamento de requisitos e criação do `spec.md`).
