@@ -4,7 +4,7 @@ description: Plano de implementação detalhado para mapeamento de credenciais d
 
 # Plano de Implementação: Listar Credenciais do Entra ID
 
-Este plano detalha o design técnico para a construção do script `listarCredenciaisEntraId.ps1` no repositório sob a pasta `entraId/`, em conformidade com as regras do projeto e SDD.
+Este plano detalha o design técnico para a construção do script `listarCredenciais.ps1` no repositório sob a pasta `entraId/`, em conformidade com as regras do projeto e SDD.
 
 ## 1. Arquitetura do Script
 
@@ -19,33 +19,33 @@ O script será executado localmente ou em esteiras de automação, consumindo o 
  └──────┬───────┘
         │
         ▼
- ┌──────────────┐
- │ Connect-Mg*  │  (Autenticação utilizando escopos adequados)
- └──────┬───────┘
+ ┌─────────────┐
+ │ Connect-Mg* │  (Autenticação utilizando escopos adequados)
+ └──────┬──────┘
         │
         ▼
-┌──────────────────────────────┐
-│ listarCredenciaisEntraId.ps1 │
-└──────┬───────────────┬───────┘
-       │               │
-       ▼ (AppRegs)     ▼ (EnterpriseApps)
-┌──────────────┐ ┌──────────────┐
-│  Get-MgApp   │ │ Get-MgServP  │
-└──────┬───────┘ └──────┬───────┘
+┌───────────────────────┐
+│ listarCredenciais.ps1 │
+└──────┬─────────────┬──┘
+       │             │
+       ▼ (AppRegs)   ▼ (EnterpriseApps)
+┌────────────┐ ┌─────────────┐
+│  Get-MgApp │ │ Get-MgServP │
+└──────┬─────┘ └──────┬──────┘
+       │              │
+       ▼ (Owners)     ▼ (Filtro Microsoft / Managed Identity)
+┌──────────────┐      │
+│ Get-MgAppOwn │      ▼ (Owners)
+└──────┬───────┘ ┌────────────────┐
+       │         │ Get-MgServPOwn │
+       │         └──────┬─────────┘
        │                │
-       ▼ (Owners)       ▼ (Filtro Microsoft / Managed Identity)
-┌──────────────┐        │
-│ Get-MgAppOwn │        ▼ (Owners)
-└──────┬───────┘ ┌──────────────┐
-       │         │Get-MgServPOwn│
-       │         └──────┬───────┘
-       │                │
-       └──────┬─────────┘
-              │
-              ▼
-┌──────────────────────────────┐
-│ Mapeamento de Credenciais    │ (Cálculo de expiração, DaysRemaining)
-└──────┬───────────────────────┘
+       └───────┬────────┘
+               │
+               ▼
+┌───────────────────────────┐
+│ Mapeamento de Credenciais │ (Cálculo de expiração, DaysRemaining)
+└──────┬────────────────────┘
        │
        ├─► [Console Output] (Format-Table / Out-GridView / Objects)
        │

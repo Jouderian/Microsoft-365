@@ -5,7 +5,7 @@ description: Especificação para o script de auditoria e listagem de credenciai
 # Especificação: Listar Credenciais do Entra ID
 
 > [!NOTE]
-> Documento de especificação (SDD) para o script `listarCredenciaisEntraId.ps1`.
+> Documento de especificação (SDD) para o script `listarCredenciais.ps1`.
 
 ## 1. Visão Geral
 * **Funcionalidade:** Auditoria de Credenciais do Entra ID.
@@ -41,7 +41,7 @@ description: Especificação para o script de auditoria e listagem de credenciai
    * A coleta é apenas leitura, não alterando estado.
    * Exceções ao ler um App específico devem ser tratadas (`try/catch`), logadas, e o loop deve prosseguir sem falhar a execução geral do script.
 4. **Padrões de Código:**
-   * Nomenclatura em *camelCase* (`listarCredenciaisEntraId.ps1`, `$diasParaExpirar`).
+   * Nomenclatura em *camelCase* (`listarCredenciais.ps1`, `$diasParaExpirar`).
    * Verbos completos do PowerShell, proibido o uso de aliases implícitos (`%`, `?`).
    * Inclusão do cabeçalho de documentação padronizado (`<# .SYNOPSIS #>`).
    * Idioma principal: pt-BR.

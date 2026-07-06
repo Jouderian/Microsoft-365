@@ -1,5 +1,5 @@
 ---
-description: Lista de tarefas para implementação do script listarCredenciaisEntraId.ps1
+description: Lista de tarefas para implementação do script listarCredenciais.ps1
 ---
 
 # Checklist de Implementação: Listar Credenciais do Entra ID
@@ -8,7 +8,7 @@ description: Lista de tarefas para implementação do script listarCredenciaisEn
   - [x] Validar e garantir escopos mínimos do Graph API (Application.Read.All)
   - [x] Implementar verificação de conexão com Microsoft.Graph (`Get-MgContext`)
 - [x] **Fase 2: Estrutura Principal e Parâmetros**
-  - [x] Criar arquivo `listarCredenciaisEntraId.ps1` com cabeçalho de documentação padronizado (`.SYNOPSIS`)
+  - [x] Criar arquivo `listarCredenciais.ps1` com cabeçalho de documentação padronizado (`.SYNOPSIS`)
   - [x] Declarar parâmetros: `-TipoAplicacao`, `-DiasParaExpirar`, `-ExportarCsv`
 - [x] **Fase 3: Coleta e Filtro de App Registrations**
   - [x] Chamar `Get-MgApplication -All`

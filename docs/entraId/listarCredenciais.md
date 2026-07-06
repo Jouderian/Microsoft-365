@@ -1,9 +1,9 @@
-# Listar Credenciais do Entra ID (`listarCredenciaisEntraId.ps1`)
+# Listar Credenciais do Entra ID (`listarCredenciais.ps1`)
 
 Este script mapeia e lista todas as credenciais (Client Secrets e Certificados) associadas aos aplicativos (*App Registrations*) e *Enterprise Applications* (*Service Principals*) no Entra ID. O objetivo principal é identificar expirações próximas e prevenir interrupções de serviços.
 
 ## Detalhes do Script
-- **Caminho:** `entraId/listarCredenciaisEntraId.ps1`
+- **Caminho:** `entraId/listarCredenciais.ps1`
 - **Autor:** Jouderian Nobre
 - **Data de Criação:** 04/07/2026
 - **Versão:** 01 (04/07/26) - Versão inicial guiada por SDD
@@ -36,8 +36,8 @@ O script grava automaticamente o resultado em CSV delimitado por ponto e vírgul
 ## Como Executar
 ```powershell
 # Listar tudo na tela e salvar em CSV no OneDrive automaticamente
-.\entraId\listarCredenciaisEntraId.ps1
+.\entraId\listarCredenciais.ps1
 
 # Listar apenas App Registrations que expiram nos próximos 30 dias e atualizar o CSV
-.\entraId\listarCredenciaisEntraId.ps1 -TipoAplicacao AppRegistrations -DiasParaExpirar 30
+.\entraId\listarCredenciais.ps1 -TipoAplicacao AppRegistrations -DiasParaExpirar 30
 ```

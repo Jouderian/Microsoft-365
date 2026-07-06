@@ -51,7 +51,7 @@ Scripts voltados para a governança do Microsoft Entra ID (Azure AD), manutenç�
 | [`importarGruposSeguranca.ps1`](docs/entraId/importarGruposSeguranca.md) | Importa e provisiona Grupos de Segurança puros no Entra ID a partir de um CSV, definindo automaticamente seu proprietário. |
 | [`importarMembrosGrupoDeSeguranca.ps1`](docs/entraId/importarMembrosGrupoDeSeguranca.md) | Importa novos membros de um Grupo. |
 | [`listarAdministradoresTenant.ps1`](docs/entraId/listarAdministradoresTenant.md) | Lista todos os usuários com papéis administrativos no tenant M365 via Microsoft Graph. |
-| [`listarCredenciaisEntraId.ps1`](docs/entraId/listarCredenciaisEntraId.md) | Lista e audita credenciais (Secrets e Certificados) das aplicações e service principals no Entra ID. |
+| [`listarCredenciais.ps1`](docs/entraId/listarCredenciais.md) | Lista e audita credenciais (Secrets e Certificados) das aplicações e service principals no Entra ID. |
 | [`listarMembrosDeUmaLista.ps1`](docs/entraId/listarMembrosDeUmaLista.md) | Mostra os usuários contidos em um grupo ou Lista do EntraID (via Microsoft Graph PowerShell). |
 | [`listarMembrosListas.ps1`](docs/entraId/listarMembrosListas.md) | Exporta a relação cruzando os membros das Listas do Exchange e de Grupos do M365, incluindo Grupos de Segurança. |
 | [`mudarLicencas.ps1`](docs/entraId/mudarLicencas.md) | Faz a manutenção ou permuta em massa nas licenças dos usuários oriundos de um arquivo csv. |

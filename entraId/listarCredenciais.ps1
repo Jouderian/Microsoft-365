@@ -18,7 +18,7 @@
   .PARAMETER DiasParaExpirar
     Filtra as credenciais que expiram em até X dias (ou já expiradas). Se omitido, lista todas.
   .EXAMPLE
-    .\listarCredenciaisEntraId.ps1 -TipoAplicacao AppRegistrations -DiasParaExpirar 30
+    .\listarCredenciais.ps1 -TipoAplicacao AppRegistrations -DiasParaExpirar 30
 #>
 
 [CmdletBinding()]
@@ -32,7 +32,7 @@ Clear-Host
 
 # Declarando variaveis
 $inicio = Get-Date
-$logs = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listarCredenciaisEntraId_$($inicio.ToString('yyyyMMdd')).txt"
+$logs = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listarCredenciais_$($inicio.ToString('yyyyMMdd')).txt"
 $arquivo = "$($env:ONEDRIVE)\Documentos\WindowsPowerShell\credenciaisEntraID.csv"
 
 gravaLOG "$("=" * 62) $($inicio.ToString('dd/MM/yy HH:mm:ss'))" -tipo WRN -arquivo $logs
