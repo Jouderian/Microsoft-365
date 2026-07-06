@@ -1,9 +1,9 @@
-﻿# listarCaixasComEncaminhamento.ps1
+# listarCaixasComEncaminhamento.ps1
 
-> **Sinopse**: Extrai uma listagem com todas as caixas postais do Exchange (Microsoft 365).
+> **Sinopse**: Identifica caixas postais com regras de encaminhamento configuradas (ForwardingAddress ou DeliverToMailboxAndForward).
 
 ## Descrição
-O script se conecta ao ambiente do Microsoft 365, busca todas as caixas postais existentes e extrai uma série de informações sobre cada caixa postal, como nome, UPN, cidade, empresa, tipo, tamanho utilizado, entre outros. As informações são gravadas em um arquivo CSV para análise posterior.
+Este script se conecta ao Exchange Online, analisa as configurações das caixas postais e identifica aquelas que possuem encaminhamentos de e-mail ativos (seja para endereços internos ou externos), exportando o relatório para análise.
 
 ## Detalhes
 - **Autor**: Jouderian Nobre

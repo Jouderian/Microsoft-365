@@ -1,4 +1,4 @@
-# listarCredenciaisAD.ps1
+# listarCredenciais.ps1
 
 > **Sinopse**: Script para gerar um arquivo .csv com as principais informcoes dos usuarios do AD.
 

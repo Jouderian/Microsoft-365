@@ -1,4 +1,4 @@
-# listarMembrosGrupoAD.ps1
+# listarMembrosGrupo.ps1
 
 > **Sinopse**: Listar os membros de um grupo do Active Directory
 

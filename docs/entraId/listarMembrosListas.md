@@ -15,7 +15,7 @@ Para **Grupos de Segurança**, os metadados dos membros (`displayName`, `userPri
 ## Detalhes
 
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: 07 (11/04/26)
+- **Versão Atual**: 08 (12/04/26)
 - **Módulos**: `ExchangeOnlineManagement`, `Microsoft.Graph`
 - **Escopos Graph**: `Group.Read.All`, `User.Read.All`
 
@@ -75,3 +75,4 @@ Para **Grupos de Segurança**, os metadados dos membros (`displayName`, `userPri
 | 05 | 26/03/26 | Otimização de performance |
 | 06 | 05/04/26 | Parâmetro `-Acao` para modo listar ou apagar |
 | 07 | 11/04/26 | Eliminado `Get-MgUser` por membro (N+1 → 1 chamada/grupo via `-Property`); UPN para Grupos de Segurança |
+| 08 | 12/04/26 | Enriquecimento híbrido de UPN para membros de DLs: Graph em lote para membros com EntraID, fallback PrimarySMTPAddress para Mail Contacts externos |

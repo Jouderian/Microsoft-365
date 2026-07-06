@@ -1,4 +1,4 @@
-# removerDominioAD.ps1
+# removerDominio.ps1
 
 > **Sinopse**: Remove um dominio especifico das credenciais no AD
 

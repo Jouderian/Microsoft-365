@@ -1,4 +1,4 @@
-﻿# listarCaixasCompartilhadas.ps1
+# listarCaixasCompartilhadas.ps1
 
 > **Sinopse**: Lista caixas compartilhadas e caixas com delegações de acesso no Exchange Online
 
@@ -7,7 +7,7 @@ O script se conecta ao Exchange Online, busca todas as caixas postais e filtra a
 
 ## Detalhes
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: 06 (05/04/26) - Atualizacao da documentacao
+- **Versão Atual**: 04 (27/02/26) - Passa a consultar todas as caixas postais sem filtrar por SharedMailbox
 - **Saída**: Arquivo CSV com a relacao de caixas compartilhadas e seus membros.
 
 ## Módulos / Dependências

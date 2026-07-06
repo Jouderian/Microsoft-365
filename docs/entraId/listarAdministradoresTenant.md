@@ -7,7 +7,7 @@ O script se conecta ao Microsoft Graph, busca todos os papéis administrativos (
 
 ## Detalhes
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: 7 (05/06/26) - Implementa expansão de grupos de segurança associados a papéis e coluna viaGrupo
+- **Versão Atual**: 6 (05/06/26) - Melhoria de performance no loop, tratamento de erro e implementa expansão de grupos de segurança associados a papéis e coluna viaGrupo
 - **Saída**: Arquivo CSV (`$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaDeMembrosAdministrativos.csv`) contendo as seguintes colunas:
   - **grupoId**: ID do papel administrativo.
   - **grupo**: Nome de exibição do papel (ex: Global Administrator).

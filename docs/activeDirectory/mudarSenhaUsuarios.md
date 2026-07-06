@@ -1,4 +1,4 @@
-# mudarSenhaUsuariosAD.ps1
+# mudarSenhaUsuarios.ps1
 
 > **Sinopse**: Sem sinopse.
 

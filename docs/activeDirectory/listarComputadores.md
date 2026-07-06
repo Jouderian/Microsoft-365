@@ -1,4 +1,4 @@
-# listarComputadoresAD.ps1
+# listarComputadores.ps1
 
 > **Sinopse**: Relacao de computadores do AD
 
@@ -7,7 +7,7 @@ Script de utilidade em PowerShell.
 
 ## Detalhes
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: 02 (20/02/25) Jouderian Nobre: Passa a validar se a execução tem privilégios administrativos
+- **Versão Atual**: 06 (25/02/25) Jouderian Nobre: Passa a validar se a execução tem privilégios administrativos
 - **Saída**: Lista em console ou CSV das contas de computador existentes.
 
 ## Módulos / Dependências

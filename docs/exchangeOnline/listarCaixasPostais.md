@@ -7,7 +7,7 @@ O script se conecta ao ambiente do Microsoft 365, busca todas as caixas postais 
 
 ## Detalhes
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: 25 (31/05/26) - Otimização de altíssima performance com pré-carga única Graph/Exchange e gerenciamento otimizado de memória
+- **Versão Atual**: 27 (02/07/26) - Otimizações pré-carga de arquivamentos, pre-sizing de hashtables e cache de licenças
 - **Saída**: Arquivo CSV (`$($env:ONEDRIVE)\Documentos\WindowsPowerShell\listaDeCaixasPostais.csv`) contendo as seguintes 29 colunas de informações:
   - **Nome**: Nome de exibição (`displayName`).
   - **UPN**: User Principal Name (`userPrincipalName`).

@@ -67,21 +67,22 @@ Scripts voltados para gestão de credenciais, grupos, computadores e operações
 |--------|-----------|
 | [`ajustarCaixasDivergenciaUPN_SMTP.ps1`](docs/activeDirectory/ajustarCaixasDivergenciaUPN_SMTP.md) | Ajusta as credenciais do AD cujo UPN está divergente do endereço SMTP no atributo `proxyAddresses`. |
 | [`ajustarLimiteExclusaoSyncAD.ps1`](docs/activeDirectory/ajustarLimiteExclusaoSyncAD.md) | Ajusta temporariamente o limite de exclusões do Entra Connect Sync e restaura ao final da operação. |
-| [`ajustarPaisCredenciaisAD.ps1`](docs/activeDirectory/ajustarPaisCredenciaisAD.md) | Ajusta os atributos País, Apelido e Código do País de todas as credenciais ativas no AD. |
-| [`copiarSystemStateAD.ps1`](docs/activeDirectory/copiarSystemStateAD.md) | Realiza cópia de segurança (backup) do System State do Active Directory. |
-| [`criarCredenciaisAD.ps1`](docs/activeDirectory/criarCredenciaisAD.md) | Cria usuários em massa no AD com base em um arquivo CSV. |
-| [`expirarUsuariosAD.ps1`](docs/activeDirectory/expirarUsuariosAD.md) | Expira ou libera credenciais com base em uma planilha de agendamento. |
-| [`listaEventosCredencial.ps1`](docs/activeDirectory/listaEventosCredencial.md) | Localiza eventos de segurança de credenciais no AD (bloqueio, desbloqueio, alteração de senha e mudanças de informações). |
-| [`listarComputadoresAD.ps1`](docs/activeDirectory/listarComputadoresAD.md) | Gera a relação de computadores registrados no Active Directory. |
-| [`listarCredenciaisAD.ps1`](docs/activeDirectory/listarCredenciaisAD.md) | Gera um arquivo `.csv` com as principais informações dos usuários do AD. |
-| [`listarMembrosGrupoAD.ps1`](docs/activeDirectory/listarMembrosGrupoAD.md) | Lista os membros de um grupo do Active Directory. |
+| [`ajustarPaisCredenciais.ps1`](docs/activeDirectory/ajustarPaisCredenciais.md) | Ajusta os atributos País, Apelido e Código do País de todas as credenciais ativas no AD. |
+| [`atualizarCredenciais.ps1`](docs/activeDirectory/atualizarCredenciais.md) | Atualiza os dados das credenciais no Active Directory com base na planilha QLP (Quadro de Lotação de Pessoal) do RH. |
+| [`copiarSystemState.ps1`](docs/activeDirectory/copiarSystemState.md) | Realiza cópia de segurança (backup) do System State do Active Directory. |
+| [`criarCredenciais.ps1`](docs/activeDirectory/criarCredenciais.md) | Cria usuários em massa no AD com base em um arquivo CSV. |
+| [`expirarUsuarios.ps1`](docs/activeDirectory/expirarUsuarios.md) | Expira ou libera credenciais com base em uma planilha de agendamento. |
+| [`listarEventosCredencial.ps1`](docs/activeDirectory/listarEventosCredencial.md) | Localiza eventos de segurança de credenciais no AD (bloqueio, desbloqueio, alteração de senha e mudanças de informações). |
+| [`listarComputadores.ps1`](docs/activeDirectory/listarComputadores.md) | Gera a relação de computadores registrados no Active Directory. |
+| [`listarCredenciais.ps1`](docs/activeDirectory/listarCredenciais.md) | Gera um arquivo `.csv` com as principais informações dos usuários do AD. |
+| [`listarMembrosGrupo.ps1`](docs/activeDirectory/listarMembrosGrupo.md) | Lista os membros de um grupo do Active Directory. |
 | [`mudarCredenciais.ps1`](docs/activeDirectory/mudarCredenciais.md) | Altera o nome da credencial, domínio e endereço de e-mail de um usuário. |
-| [`mudarSenhaUsuariosAD.ps1`](docs/activeDirectory/mudarSenhaUsuariosAD.md) | Altera a senha de um usuário específico no AD. |
-| [`mudarSenhaUsuariosBloqueadosAD.ps1`](docs/activeDirectory/mudarSenhaUsuariosBloqueadosAD.md) | Altera aleatoriamente a senha dos usuários bloqueados no Active Directory. |
+| [`mudarSenhaUsuarios.ps1`](docs/activeDirectory/mudarSenhaUsuarios.md) | Altera a senha de um usuário específico no AD. |
+| [`mudarSenhaUsuariosBloqueados.ps1`](docs/activeDirectory/mudarSenhaUsuariosBloqueados.md) | Altera aleatoriamente a senha dos usuários bloqueados no Active Directory. |
 | [`removerArquivosTemporarios.ps1`](docs/activeDirectory/removerArquivosTemporarios.md) | Script de limpeza de disco otimizado para reduzir espaço utilizado em máquinas Windows. |
-| [`removerComputadoresAD.ps1`](docs/activeDirectory/removerComputadoresAD.md) | Remove computadores do AD com base em uma lista fornecida. |
-| [`removerDominioAD.ps1`](docs/activeDirectory/removerDominioAD.md) | Remove um domínio específico das credenciais no AD. |
-| [`sincronizaAdM365.ps1`](docs/activeDirectory/sincronizaAdM365.md) | Força imediatamente o ciclo de sincronismo Delta entre o Active Directory local e a nuvem. |
+| [`removerComputadores.ps1`](docs/activeDirectory/removerComputadores.md) | Remove computadores do AD com base em uma lista fornecida. |
+| [`removerDominio.ps1`](docs/activeDirectory/removerDominio.md) | Remove um domínio específico das credenciais no AD. |
+| [`sincronizarM365.ps1`](docs/activeDirectory/sincronizarM365.md) | Força imediatamente o ciclo de sincronismo Delta entre o Active Directory local e a nuvem. |
 | [`testarConexaoLDAP.ps1`](docs/activeDirectory/testarConexaoLDAP.md) | Testa a conexão LDAP com um servidor Active Directory. |
 | [`validaGPOs.ps1`](docs/activeDirectory/validaGPOs.md) | Faz auditoria offline de GPOs aplicadas no AD DS com suporte para validação extra através de RSoP das máquinas. |
 

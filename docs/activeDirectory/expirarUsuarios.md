@@ -1,4 +1,4 @@
-# expirarUsuariosAD.ps1
+# expirarUsuarios.ps1
 
 > **Sinopse**: Expira ou libera credenciais baseado em uma planilha com o agendamento
 
@@ -7,7 +7,7 @@ Script de utilidade em PowerShell.
 
 ## Detalhes
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: 02 (20/02/25) Jouderian Nobre: Passa a validar se a execução tem privilégios administrativos
+- **Versão Atual**: 07 (29/12/24) Jouderian Nobre: Passa a ler a variavel do Windows para local do arquivo
 - **Saída**: Desativação e marcação de expiração das contas de usuário configuradas.
 
 ## Módulos / Dependências

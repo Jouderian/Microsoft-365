@@ -1,4 +1,4 @@
-# mudarSenhaUsuariosBloqueadosAD.ps1
+# mudarSenhaUsuariosBloqueados.ps1
 
 > **Sinopse**: Muda aleatoriamente a senha dos usuarios bloqueados no Active Directory
 

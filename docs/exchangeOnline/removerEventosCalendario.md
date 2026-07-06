@@ -1,9 +1,9 @@
-﻿# removerEventosCalendario.ps1
+# removerEventosCalendario.ps1
 
-> **Sinopse**: Remove eventos de uma caixa postal
+> **Sinopse**: Cancela e remove reuniões agendadas por um usuário específico no calendário do Exchange Online.
 
 ## Descrição
-O script se conecta ao ambiente do Microsoft 365, busca todos os eventos existentes e extrai uma série de informações sobre cada evento, como nome, UPN, cidade, empresa, tipo, tamanho utilizado, entre outros. As informações são gravadas em um arquivo CSV para análise posterior.
+O script conecta-se ao Exchange Online e executa o cancelamento/remoção de reuniões organizadas por uma caixa postal específica (por exemplo, de um usuário desligado), liberando a agenda dos participantes e salas de reunião.
 
 ## Detalhes
 - **Autor**: Jouderian Nobre

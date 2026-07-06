@@ -1,4 +1,4 @@
-# atualizarCredenciaisAD.ps1
+# atualizarCredenciais.ps1
 
 > **Sinopse**: Script para atualizar os dados das credenciais no Active Directory com base na planilha QLP (Quadro de Lotação de Pessoal) do RH.
 

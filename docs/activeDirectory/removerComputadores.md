@@ -1,4 +1,4 @@
-# removerComputadoresAD.ps1
+# removerComputadores.ps1
 
 > **Sinopse**: Remove os computadores do AD baseado em uma listagem
 

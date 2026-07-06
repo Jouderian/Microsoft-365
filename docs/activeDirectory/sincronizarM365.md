@@ -1,4 +1,4 @@
-﻿# sincroniza_AD_M365.PS1
+# sincronizarM365.ps1
 
 > **Sinopse**: Forca um sincronismo entre o AD e o M365
 
