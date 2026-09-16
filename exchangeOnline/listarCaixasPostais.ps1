@@ -88,20 +88,20 @@ try {
 # Buscando detalhes consolidados das caixas postais (licenças e gerentes)
 gravaLOG -texto "Buscando licencas e gerentes das $($total) caixas postais encontradas..." -tipo INF -arquivo $logs -mostraTempo:$true
 $detalhes = Get-MgUser -All -Property $propriedadesGraph -ExpandProperty manager
-Foreach ($detalhe in $detalhes){
-  if ($null -ne $detalhe.UserPrincipalName){
+Foreach ($detalhe in $detalhes) {
+  if ($null -ne $detalhe.UserPrincipalName) {
     $upn = $detalhe.UserPrincipalName.ToLower()
 
     $detalheCredenciais[$upn] = $detalhe
-    if ($null -ne $detalhe.AssignedLicenses){
+    if ($null -ne $detalhe.AssignedLicenses) {
       $licencasPorUPN[$upn] = $detalhe.AssignedLicenses
     }
 
     $nomeGerente = ""
-    if ($null -ne $detalhe.Manager){
-      if ($null -ne $detalhe.Manager.AdditionalProperties -and $detalhe.Manager.AdditionalProperties.ContainsKey('displayName')){
+    if ($null -ne $detalhe.Manager) {
+      if ($null -ne $detalhe.Manager.AdditionalProperties -and $detalhe.Manager.AdditionalProperties.ContainsKey('displayName')) {
         $nomeGerente = $detalhe.Manager.AdditionalProperties['displayName']
-      } elseif ($null -ne $detalhe.Manager.DisplayName){
+      } elseif ($null -ne $detalhe.Manager.DisplayName) {
         $nomeGerente = $detalhe.Manager.DisplayName
       }
     }
@@ -120,14 +120,14 @@ try {
 
     try {
       $stat = Get-EXOMailboxStatistics -Identity $_.Guid -Properties TotalItemSize
-      if ($null -ne $stat){
+      if ($null -ne $stat) {
         $estatisticasPorGuid[$_.Guid.ToString()] = $stat
       }
     } catch {
       gravaLOG -texto "  Buscando estatisticas da caixa $($_.UserPrincipalName): $($_.Exception.Message)" -tipo ERR -arquivo $logs -mostraTempo:$true
     }
 
-    if ($indice % 50 -eq 0 -or $indice -eq $total){
+    if ($indice % 50 -eq 0 -or $indice -eq $total) {
       Write-Progress -Activity "Buscando estatisticas das $($total) caixas postais" -Status "Progresso: $indice de $total extraidas" -PercentComplete (($indice / $total) * 100)
     }
   }
@@ -140,20 +140,20 @@ Write-Progress -Activity "Buscando estatisticas das $($total) caixas postais" -C
 $arquivoEstatisticasPorGuid = [System.Collections.Hashtable]::new([math]::Max(16, [int]($total * 0.15)))
 $caixasComArquivo = $caixas | Where-Object { $_.ArchiveStatus -eq 'Active' }
 $totalArquivos = @($caixasComArquivo).Count
-if ($totalArquivos -gt 0){
+if ($totalArquivos -gt 0) {
   gravaLOG -texto "Buscando estatisticas de $($totalArquivos) arquivamentos ativos..." -tipo INF -arquivo $logs -mostraTempo:$true
   $indiceArquivo = 0
-  foreach ($caixaArq in $caixasComArquivo){
+  foreach ($caixaArq in $caixasComArquivo) {
     $indiceArquivo++
     try {
       $stat = Get-EXOMailboxStatistics -Identity $caixaArq.Guid -Archive -Properties TotalItemSize
-      if ($null -ne $stat){
+      if ($null -ne $stat) {
         $arquivoEstatisticasPorGuid[$caixaArq.Guid.ToString()] = $stat
       }
     } catch {
       gravaLOG -texto "  Buscando estatisticas de arquivamento da caixa $($caixaArq.UserPrincipalName): $($_.Exception.Message)" -tipo ERR -arquivo $logs -mostraTempo:$true
     }
-    if ($indiceArquivo % 50 -eq 0 -or $indiceArquivo -eq $totalArquivos){
+    if ($indiceArquivo % 50 -eq 0 -or $indiceArquivo -eq $totalArquivos) {
       Write-Progress -Activity "Buscando estatisticas de arquivamentos" -Status "Progresso: $indiceArquivo de $totalArquivos" -PercentComplete (($indiceArquivo / $totalArquivos) * 100)
     }
   }
@@ -172,7 +172,7 @@ try {
   $ProgressPreference = $oldProgress
   Import-Csv $arquivoRelatorio | ForEach-Object {
     $upn = $_.'User Principal Name'
-    if ($null -ne $upn -and $upn -ne ''){
+    if ($null -ne $upn -and $upn -ne '') {
       $atividadePorUPN[$upn.ToLower()] = $_
     }
   }
@@ -187,7 +187,7 @@ Out-File -FilePath $arquivo -InputObject "Nome,UPN,Cidade,UF,Empresa,Escritorio,
 
 $cacheLicenca = @{}
 $indice = 0
-Foreach ($caixa in $caixas){
+Foreach ($caixa in $caixas) {
 
   $indice++
   $caixaUPN = $caixa.UserPrincipalName.ToLower()
@@ -196,7 +196,7 @@ Foreach ($caixa in $caixas){
   $detalheCredencial = $detalheCredenciais[$caixaUPN]
 
   $tamanho = 0
-  if ($null -ne $detalheCaixa -and $null -ne $detalheCaixa.TotalItemSize){
+  if ($null -ne $detalheCaixa -and $null -ne $detalheCaixa.TotalItemSize) {
     try {
       $tamanho = [math]::Round((($detalheCaixa.TotalItemSize.Value.ToString()).Split('(')[1].Split(' ')[0].Replace(',', '') / 1GB), 2)
     } catch {
@@ -205,9 +205,9 @@ Foreach ($caixa in $caixas){
   }
 
   $tamanhoArquivamento = 0
-  if ($caixa.ArchiveStatus -eq 'Active'){
+  if ($caixa.ArchiveStatus -eq 'Active') {
     $detalheArquivo = $arquivoEstatisticasPorGuid[$caixa.Guid.ToString()]
-    if ($null -ne $detalheArquivo -and $null -ne $detalheArquivo.TotalItemSize){
+    if ($null -ne $detalheArquivo -and $null -ne $detalheArquivo.TotalItemSize) {
       try {
         $tamanhoArquivamento = [math]::Round((($detalheArquivo.TotalItemSize.Value.ToString()).Split('(')[1].Split(' ')[0].Replace(',', '') / 1GB), 2)
       } catch {
@@ -217,7 +217,7 @@ Foreach ($caixa in $caixas){
   }
 
   $encaminhamento = "true"
-  if ($null -eq $caixa.ForwardingAddress){
+  if ($null -eq $caixa.ForwardingAddress) {
     $encaminhamento = "false"
   }
 
@@ -237,7 +237,7 @@ Foreach ($caixa in $caixas){
   $infoCaixa += "$($caixa.accountDisabled)," # Desabilitada
 
   $senhaNaoExpira = "false"
-  if ($null -ne $detalheCredencial -and $null -ne $detalheCredencial.passwordPolicies){
+  if ($null -ne $detalheCredencial -and $null -ne $detalheCredencial.passwordPolicies) {
     $senhaNaoExpira = ($detalheCredencial.passwordPolicies -contains "DisablePasswordExpiration").ToString()
   }
   $infoCaixa += "$senhaNaoExpira," # SenhaNaoExpira
@@ -251,20 +251,20 @@ Foreach ($caixa in $caixas){
   $infoCaixa += "$($detalheCredencial.createdDateTime.ToString('dd/MM/yy HH:mm'))," # Criacao
 
   $momento = ""
-  if ($null -ne $detalheCredencial -and $null -ne $detalheCredencial.lastPasswordChangeDateTime){
+  if ($null -ne $detalheCredencial -and $null -ne $detalheCredencial.lastPasswordChangeDateTime) {
     $momento = $detalheCredencial.lastPasswordChangeDateTime.ToString('dd/MM/yy HH:mm')
   }
   $infoCaixa += "$momento," # MudancaSenha
 
   $momento = ""
-  if ($null -ne $detalheCredencial -and $null -ne $detalheCredencial.onPremisesLastSyncDateTime){
+  if ($null -ne $detalheCredencial -and $null -ne $detalheCredencial.onPremisesLastSyncDateTime) {
     $momento = $detalheCredencial.onPremisesLastSyncDateTime.ToString('dd/MM/yy HH:mm')
   }
   $infoCaixa += "$momento," # ultimoSyncAD
 
   $ultimaMensagem = ""
   $atividadeCaixa = $atividadePorUPN[$caixaUPN]
-  if ($null -ne $atividadeCaixa -and $atividadeCaixa.'Last Activity Date' -ne ''){
+  if ($null -ne $atividadeCaixa -and $atividadeCaixa.'Last Activity Date' -ne '') {
     try {
       $ultimaMensagem = ([datetime]$atividadeCaixa.'Last Activity Date').ToString('dd/MM/yy HH:mm')
     } catch {
@@ -279,17 +279,17 @@ Foreach ($caixa in $caixas){
   $licencaPaga = ""
   $outrasLicencas = ""
 
-  if ($null -ne $licencas){
-    Foreach ($licenca in $licencas){
-      if ($null -ne $licenca.SkuId){
+  if ($null -ne $licencas) {
+    Foreach ($licenca in $licencas) {
+      if ($null -ne $licenca.SkuId) {
         $skuIdStr = $licenca.SkuId.ToString()
-        if ($skuMap.ContainsKey($skuIdStr)){
+        if ($skuMap.ContainsKey($skuIdStr)) {
           $skuPart = $skuMap[$skuIdStr]
-          if (-not $cacheLicenca.ContainsKey($skuPart)){
+          if (-not $cacheLicenca.ContainsKey($skuPart)) {
             $cacheLicenca[$skuPart] = ObterDescricaoLicenca -SkuPartNumber $skuPart
           }
           $nomeLicenca = $cacheLicenca[$skuPart]
-          if ($null -eq $nomeLicenca){
+          if ($null -eq $nomeLicenca) {
             $outrasLicencas += "+$($skuPart)"
           } else {
             $licencaPaga += "+$($nomeLicenca)"
@@ -306,15 +306,15 @@ Foreach ($caixa in $caixas){
 
   $buffer.Add($infoCaixa)
 
-  if ($indice % 50 -eq 0 -or $indice -eq $total){
+  if ($indice % 50 -eq 0 -or $indice -eq $total) {
     Write-Progress -Activity "Exportando caixas postais" -Status "Progresso: $indice de $total extraidas" -PercentComplete (($indice / $total) * 100)
   }
 
-  if ($indice % 250 -eq 0 -or $indice -eq $total){
+  if ($indice % 250 -eq 0 -or $indice -eq $total) {
     gravaLOG "Gravando $($indice) caixas postais. Parcial: $((NEW-TIMESPAN -Start $inicio -End (Get-Date)).ToString())" -tipo STP -arquivo $logs -mostraTempo:$true
   }
 
-  if ($indice % 500 -eq 0 -or $indice -eq $total){
+  if ($indice % 500 -eq 0 -or $indice -eq $total) {
     Add-Content -Path $arquivo -Value $buffer -Encoding UTF8
     $buffer = [System.Collections.Generic.List[string]]::new()
   }

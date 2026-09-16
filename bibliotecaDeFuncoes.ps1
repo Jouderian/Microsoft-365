@@ -170,7 +170,7 @@ function verificaModulo {
   $modulo = Get-Module -Name $NomeModulo -ListAvailable
   if ($Modulo.count -eq 0){
     if ($arquivoLogs){
-      gravaLOG -texto $MensagemErro -arquivo $arquivoLogs -tipo Erro
+      gravaLOG -texto $MensagemErro -tipo ERR -arquivo $arquivoLogs
     } else {
       Write-Host $MensagemErro -ForegroundColor Red
     }
