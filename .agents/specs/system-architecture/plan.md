@@ -23,8 +23,8 @@ As intenções a longo prazo deste repositório usando a metodologia Agent Flywh
    - `MicrosoftTeams` (Limpezas de cache/config)
 3. **Padrão de Autenticação:** Autenticação Interativa (Delegated) como padrão para execução via administrador local.
 4. **Padrão de Logging:** Utilização da função `gravaLOG` (via `bibliotecaDeFuncoes.ps1`) com saída centralizada e retenção em formato textual.
-5. **Agentes:** Consultam primeiro as normas em `.agents/rules/general.md` e `.agents/rules/codeStandards.md`.
-6. **Workflow:** Para criar um novo script, siga `.agents/workflows/newScript.md`.
+5. **Agentes:** Consultam primeiro as normas em `.agents/rules/general.md` e `.agents/rules/code-standards.md`.
+6. **Workflow:** Para criar um novo script, siga `.agents/workflows/new-script.md`.
 
 ### 2. Estrutura de Diretórios
 - `/`: Biblioteca core de funções compartilhada (`bibliotecaDeFuncoes.ps1`), dados e arquivos do projeto.

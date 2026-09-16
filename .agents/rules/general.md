@@ -17,10 +17,23 @@ description: Regras gerais do projeto — idioma, formato de documentos, git, SD
 - **Documentação** (specs, plans, tasks, ADRs, README, wiki): **Português do Brasil (pt-BR)**.
 - **Código-fonte** (classes, métodos, propriedades, variáveis, constantes):  **Português do Brasil (pt-BR)**.
 - **Comentários no código**: **Português do Brasil (pt-BR)**.
-- **Nomes de arquivos**: **Português do Brasil (pt-BR)**, sempre em `camelCase` (ex: `registroUsuario.ps1`, `autoServico.ps1`).
-- **Nomes de diretórios**: **Português do Brasil (pt-BR)**, em `camelCase` (ex: `configuraLista/`, `cicloDeVidaCredenciail/`).
-- **Nomes de arquivos e diretorios de configurações** (./agents): **Inglês**, em `kebab-case` (ex: `.agents/specs/revogar-credenciail-ad/`).
 - **Mensagens de commit**: **Português do Brasil (pt-BR)**.
+
+## Nomes de Arquivos e Diretórios
+
+Duas zonas, cada uma com um padrão único. O formato do nome indica a zona.
+
+| Zona | Abrange | Padrão | Exemplo |
+|---|---|---|---|
+| **Código do projeto** | `*.ps1`, diretórios de módulo, espelho em `docs/` | `camelCase` em **pt-BR** | `listarCredenciais.ps1`, `activeDirectory/`, `docs/bibliotecaDeFuncoes.md` |
+| **Configuração e SDD** | tudo dentro de `.agents/` | `kebab-case` em **inglês** | `.agents/rules/code-standards.md`, `.agents/specs/auto-archive-expansion/` |
+
+**Por que kebab-case em `.agents/`:** esses caminhos são citados dentro de Markdown e de frontmatter, e diferença de caixa em git no Windows já produziu referência quebrada no projeto. `kebab-case` elimina a ambiguidade.
+
+**Exceções — mantêm a forma canônica de origem:**
+
+- Convenções externas obrigatórias: `README.md`, `LICENSE`, `CLAUDE.md`.
+- Dados de terceiros mantêm o nome da fonte: `SkuDataComplete.csv` (arquivo de licenciamento da Microsoft) — renomear quebra o rastreio com a origem.
 
 ## Formato de Documentos
 

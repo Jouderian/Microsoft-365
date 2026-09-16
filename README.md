@@ -16,7 +16,7 @@ Para ver os termos na íntegra, consulte o arquivo `LICENSE` na raiz do reposit�
 
 > [!NOTE]
 > **Metodologia de Manutenção**
-> Para mais detalhes sobre as regras de arquitetura *Agent-Flywheel* deste projeto, ou para ver o status dos planos de desenvolvimento e aprovações, consulte o plano mestre de arquitetura em `.agents/specs/systemArchitecture/plan.md`.
+> Para mais detalhes sobre as regras de arquitetura *Agent-Flywheel* deste projeto, ou para ver o status dos planos de desenvolvimento e aprovações, consulte o plano mestre de arquitetura em `.agents/specs/system-architecture/plan.md`.
 
 ---
 
