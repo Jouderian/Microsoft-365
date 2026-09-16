@@ -32,6 +32,19 @@ Se for aplicável atualizar a Wiki:
 
 Se a sessão foi puramente cosmética (formatação, ajustes simples) ou não gerou necessidade de documentação nova, pular este passo.
 
+### 1.1. Mover pendências sanadas do backlog
+
+Se a sessão resolveu algum item de `.agents/todo.md`, movê-lo para `.agents/todoDone.md` conforme
+`.agents/rules/backlog-maintenance.md`, e adicionar os dois arquivos ao stage para que a baixa do
+backlog fique no mesmo commit da correção.
+
+// turbo
+```bash
+grep -n "\*\*\[x\]\*\*" .agents/todo.md
+```
+
+Saída vazia é a condição de conformidade.
+
 ---
 
 ### 2. Analisar as alterações staged

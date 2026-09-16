@@ -1,8 +1,5 @@
 ---
 trigger: always_on
----
-
----
 description: Regras do processo SDD — integração com planning mode, protocolo spec-change-first e detecção de drift
 ---
 

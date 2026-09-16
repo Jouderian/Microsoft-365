@@ -1,8 +1,5 @@
 ---
 trigger: always_on
----
-
----
 description: Padrões de código — princípios de design, logging, estilo, nomenclatura e cobertura de testes
 ---
 

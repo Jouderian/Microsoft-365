@@ -1,6 +1,6 @@
 ---
 trigger: always_on
-description: >
+description: Manutenção da base de conhecimento — quando registrar ADR ou artigo na wiki e como indexar
 ---
 
 # Manutenção da Base de Conhecimento (Wiki)

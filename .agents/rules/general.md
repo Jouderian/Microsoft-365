@@ -1,9 +1,6 @@
 ---
 trigger: always_on
----
-
----
-description: Regras gerais do projeto — idioma, formato de documentos, git, SDD, dependências e segurança
+description: Regras gerais do projeto — idioma, nomes de arquivos, formato de documentos, git, SDD, dependências e segurança
 ---
 
 # Regras Gerais

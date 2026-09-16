@@ -1,9 +1,6 @@
 ---
 trigger: always_on
----
-
----
-description: Estilo de resposta do agente no chat — ordem, listas, progresso, erros e encerramento (nao se aplica a documentos do repositorio)
+description: Estilo de resposta do agente no chat — ordem, listas, progresso, erros e encerramento (não se aplica a documentos do repositório)
 ---
 
 # Estilo de Resposta ao Usuário
