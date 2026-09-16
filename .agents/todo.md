@@ -132,22 +132,6 @@ description: Backlog persistente do projeto — tarefas pendentes e ideias de me
   - _Opção A (preferida):_ carregar o CSV em `obterDescricaoLicenca` e eliminar o `switch`.
   - _Opção B:_ remover o arquivo e corrigir o `README.md`.
 
-### `removeQuebraDeLinha` com código morto
-
-- **[CORREÇÃO]** `bibliotecaDeFuncoes.ps1` faz a substituição da quebra de linha usando aspas
-  **simples**, o que substitui o literal crase+`n` em vez de uma quebra de linha real. Só a
-  substituição do caractere de nova linha literal funciona; `\r` isolado não é tratado.
-
-  ```powershell
-  # Atual: a 1a substituição usa uma quebra de linha literal dentro da string (funciona);
-  # a 2a e a 3a usam aspas simples, substituindo o literal crase+n e crase+r (não fazem nada).
-  $textoTratado = $texto.replace("
-  ", ' ').replace('`n', ' ').replace('`r', ' ')
-
-  # Alvo
-  $textoTratado = $texto -replace '\r?\n|\r', ' '
-  ```
-
 ### Caminhos de saída fixos
 
 - **[MELHORIA]** Os caminhos de log e CSV estão fixos em

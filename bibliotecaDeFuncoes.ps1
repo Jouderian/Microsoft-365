@@ -19,6 +19,8 @@
     13 (16/09/26) - Funcao geraSenhaAleatoria reescrita com gerador criptografico, respeito ao
                     parametro chars e garantia de complexidade; funcao trataTexto passa a colapsar
                     sequencias de espacos e a expor a remocao de virgulas como parametro
+    14 (16/09/26) - Funcao removeQuebraDeLinha corrigida: passa a tratar CRLF, LF e CR isolado
+                    via expressao regular, no lugar das substituicoes inertes anteriores
 #>
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
@@ -27,15 +29,21 @@ function removeQuebraDeLinha {
   <#
     .SYNOPSIS
       Remove as quebras de linha de um texto, substituindo-as por espaços.
+    .DESCRIPTION
+      Trata as três convenções de fim de linha: CRLF (Windows), LF (Unix) e CR isolado
+      (Mac clássico, e o que sobra de textos colados de outras origens). Cada quebra vira
+      um único espaço — CRLF não produz espaço duplo.
     .PARAMETER texto
       O texto do qual as quebras de linha serão removidas.
+    .OUTPUT
+      Retorna o texto em uma única linha.
   #>
 
   param (
     [Parameter(Mandatory = $true)][string]$texto
   )
-  $textoTratado = $texto.replace("
-", ' ').replace('`n', ' ').replace('`r', ' ')
+  # A alternância trata CRLF como uma unidade antes de considerar o CR isolado
+  $textoTratado = $texto -replace '\r?\n|\r', ' '
   Return $textoTratado
 }
 

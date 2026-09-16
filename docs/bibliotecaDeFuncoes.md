@@ -7,7 +7,7 @@ Script de utilidade em PowerShell que exporta diversas funções fundamentais ut
 
 ## Detalhes
 - **Autor**: Jouderian Nobre
-- **Versão Atual**: 13 (16/09/26) - Função `geraSenhaAleatoria` reescrita com gerador criptográfico, respeito ao parâmetro `chars` e garantia de complexidade; função `trataTexto` passa a colapsar sequências de espaços e a expor a remoção de vírgulas como parâmetro
+- **Versão Atual**: 14 (16/09/26) - Função `removeQuebraDeLinha` corrigida: passa a tratar CRLF, LF e CR isolado via expressão regular, no lugar das substituições inertes anteriores
 - **Saída**: N/A
 
 ## Notas de Uso
@@ -23,6 +23,11 @@ Gera senhas com `System.Security.Cryptography.RandomNumberGenerator` (não com `
 ### `trataTexto`
 - `-removeEspacoduplo` colapsa sequências de espaços e tabulações de **qualquer comprimento** em um único espaço, sem afetar quebras de linha (controladas por `-removeQuebraLinha`).
 - `-removeVirgula` (padrão `$true`) controla a substituição de vírgulas por espaço. Em versões anteriores esse comportamento era aplicado sempre e de forma não documentada.
+
+### `removeQuebraDeLinha`
+Substitui por um único espaço as três convenções de fim de linha: CRLF (Windows), LF (Unix) e CR isolado. CRLF é tratado como uma unidade, portanto não gera espaço duplo.
+
+- Até a versão 13 apenas o CRLF era removido: as duas substituições seguintes usavam aspas simples e trocavam o literal crase+`n` e crase+`r`, sem efeito sobre quebras reais. Texto vindo de origem Unix passava intacto.
 
 ### `sorteiaIndicesSeguros`
 Função auxiliar que sorteia índices aleatórios criptograficamente seguros no intervalo `[0, limite)`. Usada por `geraSenhaAleatoria`, mas disponível para qualquer script que precise de aleatoriedade não previsível.
