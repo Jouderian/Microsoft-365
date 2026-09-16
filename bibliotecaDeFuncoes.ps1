@@ -16,6 +16,9 @@
     10 (30/03/26) - Funcao para obter o espaco usado e livre em uma unidade de disco
     11 (05/04/26) - Melhoria na funcao de gravacao de LOGs
     12 (20/04/26) - Prefixos de log alterados para texto puro (sem emojis) e encoding UTF-8 com BOM
+    13 (16/09/26) - Funcao geraSenhaAleatoria reescrita com gerador criptografico, respeito ao
+                    parametro chars e garantia de complexidade; funcao trataTexto passa a colapsar
+                    sequencias de espacos e a expor a remocao de virgulas como parametro
 #>
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
@@ -45,7 +48,11 @@ function trataTexto {
     .PARAMETER removeQuebraLinha
       Indica se deve remover quebras de linha (opcional, padrão: $true).
     .PARAMETER removeEspacoduplo
-      Indica se deve remover espaços duplos (opcional, padrão: $true).
+      Indica se deve colapsar sequências de espaços e tabulações em um único espaço
+      (opcional, padrão: $true). Não afeta quebras de linha, controladas por $removeQuebraLinha.
+    .PARAMETER removeVirgula
+      Indica se as vírgulas devem ser substituídas por espaço, para que o texto possa ser
+      gravado com segurança em arquivos CSV delimitados por vírgula (opcional, padrão: $true).
     .PARAMETER notacao
       A notação a ser aplicada ao texto (opcional, padrão: " "): [m]inuscula, [M]aiuscula, [C]amelo.
   #>
@@ -53,6 +60,7 @@ function trataTexto {
     [Parameter(Mandatory = $true)][string]$texto,
     [Parameter(Mandatory = $false)][boolean]$removeQuebraLinha = $true,
     [Parameter(Mandatory = $false)][boolean]$removeEspacoduplo = $true,
+    [Parameter(Mandatory = $false)][boolean]$removeVirgula = $true,
     [Parameter(Mandatory = $false)][string]$notacao = " "
   )
   $textoTratado = $texto.Trim()
@@ -60,8 +68,15 @@ function trataTexto {
   if ($removeQuebraLinha){
     $textoTratado = removeQuebraDeLinha -texto $textoTratado
   }
+  # A vírgula vira espaço antes do colapso, para que a substituição não deixe espaços duplos
+  if ($removeVirgula){
+    $textoTratado = $textoTratado.replace(',', ' ')
+  }
   if ($removeEspacoduplo){
-    $textoTratado = $textoTratado.replace('  ', ' ')
+    # [^\S\r\n] casa espaço em branco horizontal (espaço, tabulação), preservando as quebras
+    # de linha. O quantificador + colapsa sequências de qualquer comprimento, e não apenas
+    # pares, como fazia o replace('  ', ' ') anterior.
+    $textoTratado = ($textoTratado -replace '[^\S\r\n]+', ' ').Trim()
   }
   if ($notacao -eq "C"){
     $textoTratado = (Get-Culture).TextInfo.ToTitleCase($textoTratado.ToLower())
@@ -71,8 +86,6 @@ function trataTexto {
   } elseif ($notacao -ceq "M"){
     $textoTratado = $textoTratado.ToUpper()
   }
-  $textoTratado = $textoTratado.replace(',', ' ')
-  
   Return $textoTratado
 }
 
@@ -131,22 +144,120 @@ Function gravaLOG {
   }
 }
 
+function sorteiaIndicesSeguros {
+  <#
+    .SYNOPSIS
+      Sorteia índices aleatórios criptograficamente seguros no intervalo [0, limite).
+    .DESCRIPTION
+      Usa o gerador criptográfico do .NET com amostragem por rejeição, descartando os sorteios
+      que cairiam na faixa incompleta final do UInt32. Isso elimina o viés de módulo, que faria
+      alguns caracteres serem escolhidos com mais frequência que outros.
+    .PARAMETER quantidade
+      Quantos índices devem ser sorteados.
+    .PARAMETER limite
+      Limite exclusivo do sorteio: os índices ficam entre 0 e ($limite - 1).
+    .OUTPUT
+      Retorna um array de inteiros com $quantidade posições.
+  #>
+
+  param (
+    [parameter(Mandatory = $true)][ValidateRange(1, [int]::MaxValue)][int]$quantidade,
+    [parameter(Mandatory = $true)][ValidateRange(1, [int]::MaxValue)][int]$limite
+  )
+
+  $gerador = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+  try {
+    $indices = [int[]]::new($quantidade)
+    $bytes = [byte[]]::new(4)
+
+    # Maior múltiplo de $limite que cabe em um UInt32: acima dele o sorteio é descartado
+    $teto = [uint32]([math]::Floor([uint32]::MaxValue / $limite) * $limite)
+
+    for ($i = 0; $i -lt $quantidade; $i++){
+      do {
+        $gerador.GetBytes($bytes)
+        $valor = [System.BitConverter]::ToUInt32($bytes, 0)
+      } while ($valor -ge $teto)
+
+      $indices[$i] = [int]($valor % $limite)
+    }
+
+    # A vírgula preserva o array como um único objeto no retorno
+    return , $indices
+  } finally {
+    $gerador.Dispose()
+  }
+}
+
 function geraSenhaAleatoria {
   <#
     .SYNOPSIS
-      Gera uma senha aleatória com base em um conjunto de caracteres especificado.
+      Gera uma senha aleatória criptograficamente segura a partir de um conjunto de caracteres.
+    .DESCRIPTION
+      Sorteia os caracteres com o gerador criptográfico do .NET (não com Get-Random) e com
+      reposição, de modo que a senha sempre tenha exatamente o tamanho pedido e possa repetir
+      caracteres. Quando $garanteComplexidade está ligado, a senha recebe ao menos um caractere
+      de cada classe presente em $chars (minúscula, maiúscula, dígito e símbolo) e em seguida é
+      embaralhada, para atender às políticas de senha do Active Directory e do Entra ID.
     .PARAMETER tamanho
-      O comprimento da senha a ser gerada (padrão: 16).
+      O comprimento da senha a ser gerada, entre 7 e 256 (padrão: 16).
     .PARAMETER chars
-      Os caracteres a serem usados na geração da senha (padrão: letras minúsculas, maiúsculas, números e símbolos).
+      Os caracteres a serem usados na geração da senha. O conjunto padrão não inclui vírgula,
+      ponto-e-vírgula nem aspas, que quebrariam os arquivos CSV e de log gerados pelos scripts.
+    .PARAMETER garanteComplexidade
+      Indica se a senha deve conter ao menos um caractere de cada classe presente em $chars
+      (opcional, padrão: $true).
+    .OUTPUT
+      Retorna a senha como texto puro. Cabe ao chamador convertê-la para SecureString e
+      descartar a variável após o uso.
   #>
+
   Param (
-    [parameter(Mandatory = $false)][int]$tamanho = 16,
-    [parameter(Mandatory = $false)][string]$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?@#$%^&*(.)[-]{+}|;:,<=>/_\~"
+    [parameter(Mandatory = $false)][ValidateRange(7, 256)][int]$tamanho = 16,
+    [parameter(Mandatory = $false)][ValidateNotNullOrEmpty()][string]$chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?@#$%^&*(.)[-]{+}|:<=>/_\~',
+    [parameter(Mandatory = $false)][boolean]$garanteComplexidade = $true
   )
-  
-  $password = -join ((65..90) + (97..122) + (48..57) + (33..47) | Get-Random -Count $tamanho | ForEach-Object { [char]$_ })
-  return $password
+
+  $conjunto = [char[]]@($chars.ToCharArray() | Select-Object -Unique)
+
+  $classes = @(
+    @{ nome = 'minuscula'; caracteres = [char[]]@($conjunto | Where-Object { [char]::IsLower($_) }) },
+    @{ nome = 'maiuscula'; caracteres = [char[]]@($conjunto | Where-Object { [char]::IsUpper($_) }) },
+    @{ nome = 'digito'; caracteres = [char[]]@($conjunto | Where-Object { [char]::IsDigit($_) }) },
+    @{ nome = 'simbolo'; caracteres = [char[]]@($conjunto | Where-Object { -not [char]::IsLetterOrDigit($_) }) }
+  ) | Where-Object { $_.caracteres.Count -gt 0 }
+
+  if ($garanteComplexidade -and $tamanho -lt $classes.Count){
+    throw "Tamanho $tamanho insuficiente: o conjunto informado exige ao menos $($classes.Count) caracteres para garantir a complexidade."
+  }
+
+  $senha = [System.Collections.Generic.List[char]]::new($tamanho)
+
+  # Reserva uma posição para cada classe presente no conjunto
+  if ($garanteComplexidade){
+    foreach ($classe in $classes){
+      $indice = (sorteiaIndicesSeguros -quantidade 1 -limite $classe.caracteres.Count)[0]
+      $senha.Add($classe.caracteres[$indice])
+    }
+  }
+
+  # Completa o restante sorteando livremente dentro do conjunto
+  $restante = $tamanho - $senha.Count
+  if ($restante -gt 0){
+    foreach ($indice in (sorteiaIndicesSeguros -quantidade $restante -limite $conjunto.Count)){
+      $senha.Add($conjunto[$indice])
+    }
+  }
+
+  # Embaralha (Fisher-Yates) para que as classes garantidas não fiquem sempre nas primeiras posições
+  for ($i = $senha.Count - 1; $i -gt 0; $i--){
+    $j = (sorteiaIndicesSeguros -quantidade 1 -limite ($i + 1))[0]
+    $troca = $senha[$i]
+    $senha[$i] = $senha[$j]
+    $senha[$j] = $troca
+  }
+
+  return -join $senha
 }
 
 function verificaModulo {

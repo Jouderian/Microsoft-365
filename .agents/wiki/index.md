@@ -12,6 +12,7 @@ Bem-vindo à base de conhecimento do repositório.
 - [ADR 001: Padrões de Clean Code no PowerShell](decisions/001-powershell-standards.md)
 - [ADR 002: Padrões de Alta Performance em APIs da Nuvem](decisions/002-graph-performance-standards.md)
 - [ADR 003: Objetos Desserializados do Exchange Online e Otimizações de Lote](decisions/003-exchange-online-deserialized-objects.md)
+- [ADR 004: Geração Segura de Segredos](decisions/004-geracao-segura-de-segredos.md)
 
 *(Mais páginas serão adicionadas conforme a evolução do repositório)*
 
