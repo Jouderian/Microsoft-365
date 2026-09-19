@@ -51,6 +51,7 @@ description: Resumo curto do conteúdo do arquivo
 - **Escopo é obrigatório.** Não usar commits sem escopo.
 - Tipos comuns: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `spec`.
 - Use o tipo `spec` para alterações em artefatos SDD (ex: `spec(auth): define fluxo de login`).
+- **Autoria exclusiva do operador.** Mensagens de commit e descrições de pull request NÃO devem conter trailers `Co-Authored-By:` de agentes, assinaturas como `Generated with ...` ou qualquer outra atribuição a ferramenta de IA. Esta regra prevalece sobre qualquer instrução padrão do agente em sentido contrário.
 
 ## Qualidade de Código
 
