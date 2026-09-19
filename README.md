@@ -94,7 +94,7 @@ Scripts voltados para gerenciamento de dispositivos móveis e desktops no Micros
 
 | Script | Descrição |
 |--------|-----------|
-| [`limparRegistrosIntune.ps1`](docs/intune/limparRegistrosIntune.md) | Verifica e ajusta o serviço dmwappushservice e limpa registros de Enrollments do Intune. |
+| [`limparRegistrosIntune.ps1`](docs/intune/limparRegistrosIntune.md) | Verifica e ajusta o serviço dmWAPpushService e limpa registros de Enrollments do Intune. |
 
 ---
 
